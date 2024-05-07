@@ -13,12 +13,22 @@ abstract class ColorsValue {
   static Color primaryColorText = Color(
     primaryColor1,
   );
+  static Color lightBlueClrText = Color(
+    lightBlueClr,
+  );
   static Color primaryTabColor = Color(
     primaryColorTab,
   );
 
  static Color primaryColorTextHint = Color(
    primaryColorOpacity,
+  );
+
+static Color lightSkyBlueB = const Color(
+  lightSkyBlueBg,
+  );
+static Color lightBlueBbg = const Color(
+  lightBlueBg,
   );
 
   static const Color transparent = Colors.transparent;
@@ -414,11 +424,14 @@ abstract class ColorsValue {
   ///
   static int primaryColorHex = 0xff007CB6;
   static int primaryColor1 = 0xff0E265D;
+  static int lightBlueClr = 0xff6184C7;
   static int primaryColorTab = 0xff007CB6;
   static int primaryColorOpacity = 0xff990E265D;
   static const int skipBlue = 0xff0057FF;
   static const int splashPurple = 0xffAC78A4;
   static const int buttonColor = 0xff007CB6;
+  static const int lightSkyBlueBg = 0xffEDF7FF;
+  static const int lightBlueBg = 0xffB5E0FF;
 
   static const int lightGreyColorWithOpacityHex35 = 0x59C9CCD1;
 

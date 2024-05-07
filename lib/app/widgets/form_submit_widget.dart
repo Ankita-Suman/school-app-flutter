@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 /// [text] : The text which will be shown.
 /// [textStyle] : The style of the [text].
 class FormSubmitWidget extends StatelessWidget {
-  FormSubmitWidget({
-    Key? key,
+  const FormSubmitWidget({
+    super.key,
     this.opacity = 1,
     this.disableColor,
     this.startColor,
@@ -31,7 +31,7 @@ class FormSubmitWidget extends StatelessWidget {
     this.isIconShowLeft = false,
     this.buttonHeight,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   final double opacity;
   final Color? disableColor;

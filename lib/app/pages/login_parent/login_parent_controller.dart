@@ -29,6 +29,7 @@ class LoginParentController extends GetxController
 
   @override
   void onInit() {
+    //
     super.onInit();
   }
 

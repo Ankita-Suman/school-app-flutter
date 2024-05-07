@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomTooltip extends ShapeBorder {
 
-  CustomTooltip({
+  const CustomTooltip({
     this.radius = 10,
     this.arrowWidth = 20.0,
     this.arrowHeight = 15.0,
@@ -18,7 +18,7 @@ class CustomTooltip extends ShapeBorder {
 
   @override
   Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
-      null ?? Path();
+      Path();
 
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {

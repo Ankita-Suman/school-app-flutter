@@ -16,10 +16,9 @@ class CustomOutlineButton extends StatelessWidget {
     this.width = double.maxFinite,
     TextStyle? textStyle,
     BorderRadius? borderRadius,
-    Key? key,
+    super.key,
   })  : assert(
-            child != null || text != null, 'Either child Or text is required'),
-        super(key: key) {
+            child != null || text != null, 'Either child Or text is required') {
     this.textStyle = textStyle ?? Styles.white18;
     this.borderRadius = borderRadius ?? BorderRadius.circular(Dimens.thirty);
   }

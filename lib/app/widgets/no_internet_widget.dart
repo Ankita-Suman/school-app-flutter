@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 /// Ui for No Internet widget
 class NoInternetWidget extends StatelessWidget {
-  const NoInternetWidget({Key? key}) : super(key: key);
+  const NoInternetWidget({super.key});
   static const noInternetWidgetKey = Key('no-internet-widget-key');
   @override
   Widget build(BuildContext context) => Scaffold(

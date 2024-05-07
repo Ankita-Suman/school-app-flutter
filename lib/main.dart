@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,13 +15,15 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Hive.initFlutter();
     await GetStorage.init('appData');
-    runApp(MyApp());
+    runApp(const MyApp());
   } catch (error) {
     Utility.printELog(error.toString());
   }
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }

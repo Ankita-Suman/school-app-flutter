@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// Use imageFile parameter where applicable.
 class ImageContainer extends StatelessWidget {
   const ImageContainer({
-    Key? key,
+    super.key,
     this.height = 90,
     this.width = 90,
     this.imageFile,
@@ -26,7 +26,7 @@ class ImageContainer extends StatelessWidget {
     this.borderRadius,
     this.child,
     this.fit = BoxFit.fill,
-  }) : super(key: key);
+  });
 
   final File? imageFile;
   final String? imagePath;

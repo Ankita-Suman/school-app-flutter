@@ -24,6 +24,12 @@ class TranslationsFile extends Translations {
           'homeWork': 'Homework',
           'timeTable': 'Time-Table',
           'calender': 'Calender',
+          'viewProfile': 'View Profile',
+          'academics': 'Academics',
+          'others': 'Others',
+          'noticeBoard': 'Notice Board',
+          'viewAll': 'View All',
+          'registerYourSelf': 'Register yourself on school portal',
           'passwordRequired': 'Password is required',
           'mobileNumberEmail': 'Mobile Number/Email',
           'shouldBe6Characters':

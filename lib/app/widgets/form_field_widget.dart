@@ -29,8 +29,8 @@ import 'package:flutter/services.dart';
 /// [formStyle] : The style of the form field. This will be used for the style
 ///               of the content.
 class FormFieldWidget extends StatelessWidget {
-  FormFieldWidget({
-    Key? key,
+  const FormFieldWidget({
+    super.key,
     this.focusNode,
     this.autoFocus = false,
     this.textEditingController,
@@ -75,7 +75,7 @@ class FormFieldWidget extends StatelessWidget {
     this.decoration,
     this.icon,
     this.onFieldSubmitted,
-  }) : super(key: key);
+  });
 
   final FocusNode? focusNode;
   final bool autoFocus;

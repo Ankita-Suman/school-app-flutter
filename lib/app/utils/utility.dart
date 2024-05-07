@@ -15,9 +15,6 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:logger/logger.dart';
-import 'package:lottie/lottie.dart';
-import 'package:path_provider/path_provider.dart';
-
 import '../../device/device.dart';
 import '../../domain/domain.dart';
 
@@ -199,10 +196,10 @@ abstract class Utility {
   }
 
   /// URL Launcher
-  static void launchURL(String _url) async =>
-      await canLaunchUrl(Uri.parse(_url))
-          ? await canLaunchUrl(Uri.parse(_url))
-          : showDialog('Could not open $_url');
+  static void launchURL(String url) async =>
+      await canLaunchUrl(Uri.parse(url))
+          ? await canLaunchUrl(Uri.parse(url))
+          : showDialog('Could not open $url');
 
   /// Show info dialog
   static void showDialog(
@@ -265,7 +262,7 @@ abstract class Utility {
     Function(bool)? isTimeOver,
   }) {
     Future<dynamic>.delayed(
-      Duration(seconds: duration == null ? 3 : duration),
+      Duration(seconds: duration ?? 3),
     ).then((dynamic value) {
       isTimeOver!(true);
     });

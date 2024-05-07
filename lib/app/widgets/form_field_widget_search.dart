@@ -29,7 +29,7 @@ import 'package:flutter/services.dart';
 ///               of the content.
 class FormFieldSearchWidget extends StatelessWidget {
   const FormFieldSearchWidget({
-    Key? key,
+    super.key,
     this.focusNode,
     this.autoFocus = false,
     this.textEditingController,
@@ -65,7 +65,7 @@ class FormFieldSearchWidget extends StatelessWidget {
     this.validator,
     this.textAlign,
     this.onSubmitted,
-  }) : super(key: key);
+  });
 
   final FocusNode? focusNode;
   final bool autoFocus;

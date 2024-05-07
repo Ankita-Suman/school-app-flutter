@@ -1,7 +1,5 @@
 // coverage:ignore-file
 import 'dart:io';
-
-import 'package:school_app/app/app.dart';
 import 'package:school_app/data/data.dart';
 import 'package:school_app/domain/domain.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -128,7 +126,6 @@ class ConnectHelper {
             'appleId': appleId,
             'userType': 0
           };
-    print(data);
     var res = await apiWrapper.makeRequest(DataConstants.socialAuth,
         Request.post, data, isLoading, {'Content-type': 'Application/json'});
     return res;
@@ -795,8 +792,7 @@ class ConnectHelper {
             'isSalon': isSalon,
             'isRebookedUsingId': isRebookedUsingId
           };
-    print(data);
-    print(data);
+
     var res = await apiWrapper.makeRequest(
         DataConstants.booking,
         isUpdate ? Request.put : Request.post,
@@ -871,7 +867,6 @@ class ConnectHelper {
         null,
         isLoading,
         {'Content-type': 'Application/json', 'Authorization': token});
-    print(res);
     return res;
   }
 
@@ -952,7 +947,6 @@ class ConnectHelper {
             'slotTime': selectedTime,
             'isSalon': isSalon,
           };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.booking,
         Request.put,
@@ -1055,7 +1049,6 @@ class ConnectHelper {
             'total': total,
             'couponDiscount': couponDiscount,
           };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.booking,
         Request.put,
@@ -1173,7 +1166,6 @@ class ConnectHelper {
             'reportReason': reportReason,
             'description': description,
           };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.reviewAboutYourReport,
         Request.post,
@@ -1319,7 +1311,6 @@ class ConnectHelper {
       'timeZone': dateTimeWithOffset,
       'updatedMembers': updatedMembers,
     };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.reschedule,
         Request.put,
@@ -1357,7 +1348,6 @@ class ConnectHelper {
       'queryRaisedBy': '0',
       'subject': subject
     };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.postQuery,
         Request.post,
@@ -1401,7 +1391,6 @@ class ConnectHelper {
             'id': id,
             'status': status,
           };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.acceptOrDecline,
         Request.put,
@@ -1444,7 +1433,6 @@ class ConnectHelper {
             'refundAmout': refundAmout,
             'cancellationCharge': cancellationCharge,
           };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.cancel,
         Request.put,
@@ -1476,7 +1464,6 @@ class ConnectHelper {
             'serviceProviderId': serviceProviderId,
             'servicesRating': servicesRating,
           };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.rateAndReview,
         Request.post,
@@ -1508,7 +1495,6 @@ class ConnectHelper {
             'serviceProviderId': serviceProviderId,
             'servicesRating': servicesRating,
           };
-    print(data);
     var res = await apiWrapper.makeRequest(
         DataConstants.rateAndReview,
         Request.post,

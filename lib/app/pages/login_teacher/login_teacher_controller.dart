@@ -1,12 +1,9 @@
-import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:school_app/app/app.dart';
-import 'package:school_app/app/pages/login_teacher/login_teacher.dart';
 import 'package:school_app/device/device.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 class LoginTeacherController extends GetxController
     with GetTickerProviderStateMixin {
@@ -32,6 +29,7 @@ class LoginTeacherController extends GetxController
 
   @override
   void onInit() {
+    //
     super.onInit();
   }
 

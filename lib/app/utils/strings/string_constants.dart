@@ -8,7 +8,13 @@ abstract class StringConstants {
   static String rememberMe = 'rememberMe'.tr;
   static String signIn = 'signIn'.tr;
   static String home = 'home'.tr;
+  static String registerYourSelf = 'registerYourSelf'.tr;
+  static String viewAll = 'viewAll'.tr;
+  static String viewProfile = 'viewProfile'.tr;
   static String homeWork = 'homeWork'.tr;
+  static String academics = 'academics'.tr;
+  static String others = 'others'.tr;
+  static String noticeBoard = 'noticeBoard'.tr;
   static String timeTable = 'timeTable'.tr;
   static String calender = 'calender'.tr;
   static String pleaseEnterValidEmail = 'pleaseEnterValidEmail'.tr;
