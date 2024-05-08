@@ -145,7 +145,7 @@ class LoginTeacherScreen extends StatelessWidget {
                                 text: StringConstants.signIn,
                                 textStyle: Styles.whiteBold16,
                                 buttonColor: ColorsValue.signInButtonColor,
-                                borderRadius: Dimens.ten,
+                                borderRadius: Dimens.five,
                                 onTap: (){},
                               ),
                             ],

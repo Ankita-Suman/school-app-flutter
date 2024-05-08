@@ -1,6 +1,7 @@
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
 import 'package:school_app/app/pages/choose_options/choose_options.dart';
+import 'package:school_app/app/pages/forgot_password/forgot_password.dart';
 import 'package:school_app/app/pages/home/home.dart';
 import 'package:school_app/app/pages/login_parent/login_parent.dart';
 import 'package:school_app/app/pages/login_student/login_student.dart';
@@ -18,7 +19,7 @@ part 'app_routes.dart';
 class AppPages {
   static var transitionDuration = const Duration(milliseconds: 300);
 
-  static const initial = Routes.home;
+  static const initial = Routes.forgotPassword;
 
   static final pages = [
     GetPage<SplashScreen>(
@@ -61,6 +62,13 @@ class AppPages {
       transitionDuration: transitionDuration,
       page: HomeScreen.new,
       binding: HomeBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ForgotPasswordScreen>(
+      name: _Paths.forgotPassword,
+      transitionDuration: transitionDuration,
+      page: ForgotPasswordScreen.new,
+      binding: ForgotPasswordBinding(),
       transition: Transition.cupertino,
     ),
    ];

@@ -17,6 +17,11 @@ abstract class StringConstants {
   static String noticeBoard = 'noticeBoard'.tr;
   static String timeTable = 'timeTable'.tr;
   static String calender = 'calender'.tr;
+  static String forgotPasswordText = 'forgotPasswordText'.tr;
+  static String enterMobileNumber = 'enterMobileNumber'.tr;
+  static String resetPassword = 'resetPassword'.tr;
+  static String checkYouEmail = 'checkYouEmail'.tr;
+  static String sendPassword = 'sendPassword'.tr;
   static String pleaseEnterValidEmail = 'pleaseEnterValidEmail'.tr;
   static String shouldBe6Characters = 'shouldBe6Characters'.tr;
   static String passwordRequired = 'passwordRequired'.tr;

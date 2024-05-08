@@ -31,6 +31,14 @@ static Color lightBlueBbg = const Color(
   lightBlueBg,
   );
 
+static Color blueBgClr = const Color(
+  blueBg,
+  );
+
+static Color greyBgClr = const Color(
+  greyBg,
+  );
+
   static const Color transparent = Colors.transparent;
 
 
@@ -432,6 +440,8 @@ static Color lightBlueBbg = const Color(
   static const int buttonColor = 0xff007CB6;
   static const int lightSkyBlueBg = 0xffEDF7FF;
   static const int lightBlueBg = 0xffB5E0FF;
+  static const int blueBg = 0xff1B1E28;
+  static const int greyBg = 0xff7D848D;
 
   static const int lightGreyColorWithOpacityHex35 = 0x59C9CCD1;
 
@@ -491,7 +501,6 @@ static Color lightBlueBbg = const Color(
   static const int addressBg = 0xffF7F6F9;
   static const int blackGrey = 0xff3B3B3B;
   static const int lightBlack = 0xff313131;
-  static const int greyBg = 0xffD3D3D3;
   static const int categoryGreyBorder = 0xffDEDEDE;
   static const int lightPurple = 0xffF4F2FF;
   static const int subGrey = 0xff747576;

@@ -31,6 +31,10 @@ abstract class AssetConstants {
   static const String icHomeNotification = 'assets/icons/ic_home_notification.svg';
   static const String icUserLink = 'assets/icons/ic_user_link.svg';
   static const String icCrossNotice = 'assets/icons/ic_cross_notice.svg';
+  static const String images = 'assets/icons/images.svg';
+  static const String icBack = 'assets/icons/ic_arrow_left.svg';
+  static const String icBackArrow = 'assets/icons/ic_back.svg';
+  static const String icOpenEmail = 'assets/icons/ic_open_email.svg';
 
   //Images
   static const String icAvatar = 'assets/images/avatar.png';

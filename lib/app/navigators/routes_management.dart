@@ -23,4 +23,9 @@ abstract class RouteManagement {
   static void goToHome() {
     Get.offAllNamed<void>(Routes.home);
   }
+  static void goToForgotPassword() {
+    Get.toNamed<void>(
+      Routes.forgotPassword,
+    );
+  }
 }

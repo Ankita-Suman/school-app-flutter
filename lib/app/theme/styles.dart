@@ -65,6 +65,25 @@ static TextStyle blue20 = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.skipBlueColor);
 
+  static TextStyle blueDark20 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twenty,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.blueBgClr);
+
+  static TextStyle blackDark18 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.eighteen,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.blackColor);
+
+ static TextStyle greyDark14 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+      color: ColorsValue.greyBgClr);
+
   static TextStyle lightBlueDark10 = TextStyle(
       fontFamily: 'Inter',
       fontSize: Dimens.ten,

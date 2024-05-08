@@ -587,20 +587,13 @@ class HomeScreen extends StatelessWidget {
                                                                     .start,
                                                                 children: [
                                                                   Container(
-                                                                      margin: const EdgeInsets
-                                                                          .only(
-                                                                          right: 10),
-                                                                      height: Dimens
-                                                                          .hundredEighty,
-                                                                      width: Dimens
-                                                                          .hundredNinty,
+                                                                      margin: const EdgeInsets.only(right: 10),
+                                                                      height: Dimens.hundredEighty,
+                                                                      width: Dimens.hundredNinty,
                                                                       decoration: BoxDecoration(
-                                                                          color: ColorsValue
-                                                                              .lightBlueBbg,
+                                                                          color: ColorsValue.lightBlueBbg,
                                                                           borderRadius:
-                                                                          const BorderRadius
-                                                                              .all(
-                                                                              Radius
+                                                                          const BorderRadius.all(Radius
                                                                                   .circular(
                                                                                   5))),
                                                                       child: Column(
@@ -632,38 +625,24 @@ class HomeScreen extends StatelessWidget {
                                                                           Dimens
                                                                               .boxHeight10,
                                                                           Padding(
-                                                                            padding: Dimens
-                                                                                .edgeInsets8,
+                                                                            padding: Dimens.edgeInsets8,
                                                                             child: Text(
                                                                                 'Lorem ipsum dolor sit amet consectetur. Posuere amet lorem enim ornare lacus euismod. Maecenas pharetra sed vitae dignissim feugiat.',
                                                                                 style: Styles
                                                                                     .darkBlue12),),
                                                                           Align(
-                                                                              alignment: Alignment
-                                                                                  .bottomCenter,
+                                                                              alignment: Alignment.bottomCenter,
                                                                               child: Container(
-                                                                                  padding: const EdgeInsets
-                                                                                      .only(
-                                                                                      top: 10),
-                                                                                  height: Dimens
-                                                                                      .thirty,
-                                                                                  width: Dimens
-                                                                                      .percentWidth(
-                                                                                      1),
+                                                                                  padding: const EdgeInsets.only(top: 10),
+                                                                                  height: Dimens.thirty,
+                                                                                  width: Dimens.percentWidth(1),
                                                                                   decoration: const BoxDecoration(
-                                                                                      color: ColorsValue
-                                                                                          .signInButtonColor,
+                                                                                      color: ColorsValue.signInButtonColor,
                                                                                       borderRadius:
-                                                                                      BorderRadius
-                                                                                          .only(
-                                                                                          bottomLeft: Radius
-                                                                                              .circular(
-                                                                                              5),
-                                                                                          bottomRight: Radius
-                                                                                              .circular(
-                                                                                              5))),
-                                                                                  child: Text(
-                                                                                      '')
+                                                                                      BorderRadius.only(
+                                                                                          bottomLeft: Radius.circular(5),
+                                                                                          bottomRight: Radius.circular(5))),
+                                                                                  child: Text('')
                                                                               )
                                                                           )
                                                                         ],

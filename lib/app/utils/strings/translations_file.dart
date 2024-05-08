@@ -18,6 +18,7 @@ class TranslationsFile extends Translations {
           'pleaseEnterEmail': 'Please enter email.',
           'password': 'Password',
           'forgotPassword': 'Forgot Password?',
+          'forgotPasswordText': 'Forgot Password',
           'rememberMe': 'Remember me',
           'signIn': 'SIGN IN',
           'home': 'Home',
@@ -32,6 +33,10 @@ class TranslationsFile extends Translations {
           'registerYourSelf': 'Register yourself on school portal',
           'passwordRequired': 'Password is required',
           'mobileNumberEmail': 'Mobile Number/Email',
+          'resetPassword': 'RESET PASSWORD',
+          'checkYouEmail': 'Check your email',
+          'sendPassword': 'We have send password recovery instruction to your email',
+          'enterMobileNumber': 'Enter your Mobile Number/Email account to reset  your password',
           'shouldBe6Characters':
           'The password must be at least 8 characters long with one uppercase letter, one lowercase letter, one digit and one special character. ',
         }
