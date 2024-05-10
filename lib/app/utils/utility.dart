@@ -33,6 +33,9 @@ abstract class Utility {
     Logger().i('${'appName'.tr}: $message');
   }
 
+  static bool isPhone(String input) =>
+      RegExp(r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
+          .hasMatch(input);
   /// Print info log.
   ///
   /// [message] : The message which needed to be print.

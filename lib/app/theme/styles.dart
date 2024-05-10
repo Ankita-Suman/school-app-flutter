@@ -41,6 +41,12 @@ static TextStyle blue20 = TextStyle(
       fontSize: Dimens.twenty,
       fontWeight: FontWeight.w700);
 
+static TextStyle blk10w400 = TextStyle(
+      color: ColorsValue.blackColor,
+      fontFamily: 'Inter',
+      fontSize: Dimens.ten,
+      fontWeight: FontWeight.w400);
+
   static TextStyle greyReg12 = TextStyle(
       fontFamily: 'Quicksand',
       fontSize: Dimens.twelve,
@@ -90,6 +96,18 @@ static TextStyle blue20 = TextStyle(
       fontWeight: FontWeight.w400,
       color: ColorsValue.lightBlueClrText);
 
+static TextStyle darkGrey16 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.sixteen,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.darkGreyBgClr);
+
+static TextStyle darkGrey20= TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twenty,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.darkGreyBgClr);
+
   static TextStyle darkBlueDark16 = TextStyle(
       fontFamily: 'Inter',
       fontSize: Dimens.sixteen,
@@ -118,6 +136,24 @@ static TextStyle lightSky12w400 = TextStyle(
       fontFamily: 'Inter',
       fontSize: Dimens.twelve,
       fontWeight: FontWeight.w400,
+      color: ColorsValue.lightSkyBlueB);
+
+static TextStyle greyBg14w400 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.greyBgClr);
+
+static TextStyle blk12 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w500,
+      color: ColorsValue.blackColor);
+
+  static TextStyle lightBlue12 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w600,
       color: ColorsValue.lightSkyBlueB);
 
   static TextStyle greyHintReg14 = TextStyle(
@@ -470,6 +506,12 @@ static TextStyle darkBlue12w700 = TextStyle(
       fontSize: Dimens.twelve,
       fontWeight: FontWeight.w400,
       color: ColorsValue.primaryColorText);
+
+ static TextStyle blue12 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.primaryColor);
 
   static TextStyle darkBlueLight14 = TextStyle(
       fontFamily: 'Inter',

@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:school_app/app/app.dart';
 import 'package:school_app/device/device.dart';
@@ -11,7 +12,7 @@ class LoginTeacherController extends GetxController
   bool onPasswordListening = false;
   bool isPasswordValid = false;
   bool isPasswordVisible = false;
-  bool isEmail = false;
+  //bool isEmail = false;
   bool isNumberValid = false;
   bool isPasswordReset = false;
   String emailId = '';
@@ -21,10 +22,11 @@ class LoginTeacherController extends GetxController
   String? emailErrorText;
   String? passwordErrors;
   var focusNode = FocusNode();
+  bool isEmail(String input) => EmailValidator.validate(input);
   TextEditingController passwordEditingController = TextEditingController();
   TextEditingController emailMobileEditingController = TextEditingController();
   FocusNode passwordFocusNode = FocusNode();
-  var keyValidationForm = GlobalKey<FormState>();
+  var keyValidationForm = GlobalKey<FormFieldState>;
   bool rememberMe = false;
 
   @override
@@ -36,13 +38,13 @@ class LoginTeacherController extends GetxController
   void checkIfNumberIsValid(String number) {
     if (number.isEmpty) {
       isNumberValid = false;
-      //numberErrorText = StringConstants.pleaseEnterPhoneNumber;
+      emailErrorText = StringConstants.pleaseEnterPhoneNumber;
     } else {
       isNumberValid = Utility.phoneValidator(number);
       if (Utility.phoneValidator(number)) {
-        numberErrorText = null;
+        emailErrorText = null;
       } else {
-        //   numberErrorText = isNumberValid ? null : StringConstants.pleaseEnterValidNumber;
+        emailErrorText = isNumberValid ? null : StringConstants.pleaseEnterValidNumber;
       }
     }
     phoneNumber = number;
@@ -90,22 +92,6 @@ class LoginTeacherController extends GetxController
   //   print(_keyHash);
   // }
 
-  void updateLoginType() {
-    if (isEmail) {
-      isEmail = false;
-
-      passwordEditingController.clear();
-      emailMobileEditingController.clear();
-    } else {
-      isEmail = true;
-
-      passwordEditingController.clear();
-      emailMobileEditingController.clear();
-    }
-
-    update();
-  }
-
   void checkEmailIsValid(String email) {
     if (email.isEmpty) {
       isEmailValid = false;
@@ -134,6 +120,18 @@ class LoginTeacherController extends GetxController
           DeviceConstants.password, passwordEditingController.text.toString());
     } else {
       deviceRepository.deleteAllSecuredValues();
+    }
+    update();
+  }
+
+  void updateTextField(String val) {
+    String pattern =
+        r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$';
+    RegExp regex = RegExp(pattern);
+    if(regex.hasMatch(val)){
+     checkIfNumberIsValid(val);
+    }else{
+     checkEmailIsValid(val);
     }
     update();
   }

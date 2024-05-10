@@ -23,6 +23,9 @@ abstract class RouteManagement {
   static void goToHome() {
     Get.offAllNamed<void>(Routes.home);
   }
+  static void goToOtpVerification() {
+    Get.toNamed<void>(Routes.otpVerification);
+  }
   static void goToForgotPassword() {
     Get.toNamed<void>(
       Routes.forgotPassword,

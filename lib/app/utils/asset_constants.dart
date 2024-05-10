@@ -35,10 +35,13 @@ abstract class AssetConstants {
   static const String icBack = 'assets/icons/ic_arrow_left.svg';
   static const String icBackArrow = 'assets/icons/ic_back.svg';
   static const String icOpenEmail = 'assets/icons/ic_open_email.svg';
+  static const String seekbar = 'assets/icons/ic_seekbar.svg';
+  static const String icClose = 'assets/icons/ic_close.svg';
 
   //Images
   static const String icAvatar = 'assets/images/avatar.png';
   static const String appLogo = 'assets/images/logo.png';
+  static const String icEvents = 'assets/images/ic_events.png';
   static const String icNoticeBoardBg = 'assets/images/ic_notice_board_bg.png';
   static const String imgSchool = 'assets/images/image_school.png';
   static const String iSchoolLogo = 'assets/images/ic_school_logo.png';

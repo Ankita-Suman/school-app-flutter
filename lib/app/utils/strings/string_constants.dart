@@ -22,6 +22,17 @@ abstract class StringConstants {
   static String resetPassword = 'resetPassword'.tr;
   static String checkYouEmail = 'checkYouEmail'.tr;
   static String sendPassword = 'sendPassword'.tr;
+  static String pleaseEnterPhoneNumber = 'pleaseEnterPhoneNumber'.tr;
+  static String pleaseEnterValidNumber = 'pleaseEnterValidNumber'.tr;
+  static String otpVerification = 'OTPVerification'.tr;
+  static String pleaseCheckEmail = 'pleaseCheckEmail'.tr;
+  static String verificationCode = 'verificationCode'.tr;
+  static String resendCode = 'resendCode'.tr;
+  static String resend = 'resend'.tr;
+  static String otpCode = 'otpCode'.tr;
+  static String submitAssignment = 'submitAssignment'.tr;
+  static String events = 'events'.tr;
+  static String didNotReceiveCode = 'didNotReceiveCode'.tr;
   static String pleaseEnterValidEmail = 'pleaseEnterValidEmail'.tr;
   static String shouldBe6Characters = 'shouldBe6Characters'.tr;
   static String passwordRequired = 'passwordRequired'.tr;

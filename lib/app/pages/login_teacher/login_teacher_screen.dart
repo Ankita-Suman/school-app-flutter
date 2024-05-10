@@ -66,7 +66,7 @@ class LoginTeacherScreen extends StatelessWidget {
                                 textEditingController:
                                     controller.emailMobileEditingController,
                                 onChange: (String val) {
-                                  controller.checkEmailIsValid(val);
+                                  controller.updateTextField(val);
                                 },
                               ),
                               Dimens.boxHeight20,
@@ -94,7 +94,7 @@ class LoginTeacherScreen extends StatelessWidget {
                                             width: Dimens.thirty,
                                             height: Dimens.ten,
                                             child: SvgPicture.asset(
-                                              AssetConstants.iconView,
+                                              AssetConstants.icClose,
                                             ),
                                           )
                                         : Container(
@@ -130,10 +130,13 @@ class LoginTeacherScreen extends StatelessWidget {
                                         Text(StringConstants.rememberMe,
                                             style: Styles.blackBold17)
                                       ]),
-                                  Text(
-                                        StringConstants.forgotPassword,
-                                        style: Styles.darkBlue14,
-                                      ),
+                                  InkWell(
+                                    onTap: RouteManagement.goToForgotPassword,
+                                    child: Text(
+                                      StringConstants.forgotPassword,
+                                      style: Styles.darkBlue14,
+                                    ),
+                                  ),
                                 ],
                               ),
                               Dimens.boxHeight80,
@@ -146,7 +149,15 @@ class LoginTeacherScreen extends StatelessWidget {
                                 textStyle: Styles.whiteBold16,
                                 buttonColor: ColorsValue.signInButtonColor,
                                 borderRadius: Dimens.five,
-                                onTap: (){},
+                                onTap: (){
+                                  if(controller.isEmailValid &&
+                                      controller.isPasswordValid){
+                                    RouteManagement.goToHome();
+                                  }else{
+                                    RouteManagement.goToHome();
+                                  }
+
+                                },
                               ),
                             ],
                           ),

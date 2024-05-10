@@ -1,14 +1,15 @@
-import 'package:flutter/cupertino.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:school_app/app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:dots_indicator/dots_indicator.dart';
 import 'home.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) =>
@@ -56,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                     0.95, // 75% of screen will be occupied
                 child: Drawer(
                   child: ListView(
-                    // Important: Remove any padding from the ListView.
+                    // physics: const NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.zero,
                     children: [
                       DrawerHeader(
@@ -122,82 +123,82 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Padding(
-                          padding: Dimens.edgeInsets10,
-                          child: Text(
-                            StringConstants.academics,
-                            style: Styles.darkBlueDark16,
-                          )),
-                      Dimens.boxHeight5,
-                      Container(
-                        padding: Dimens.edgeInsets5,
-                        child: GridView.builder(
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: controller.academicList.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 3.0,
-                              childAspectRatio: 1.1,
-                            ),
-                            itemBuilder: (BuildContext context, int index) =>
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                        controller.academicList[index].image),
-                                    Dimens.boxHeight15,
-                                    Text(
-                                      controller.academicList[index].name
-                                          .toString(),
-                                      style: Styles.darkBlueLight14,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                )),
+                          Padding(
+                              padding: Dimens.edgeInsets10,
+                              child: Text(
+                                StringConstants.academics,
+                                style: Styles.darkBlueDark16,
+                              )),
+                          Dimens.boxHeight5,
+                          Container(
+                            padding: Dimens.edgeInsets5,
+                            child: GridView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                itemCount: controller.academicList.length,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  mainAxisSpacing: 3.0,
+                                  childAspectRatio: 1.1,
+                                ),
+                                itemBuilder: (BuildContext context, int index) =>
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                            controller.academicList[index].image),
+                                        Dimens.boxHeight15,
+                                        Text(
+                                          controller.academicList[index].name
+                                              .toString(),
+                                          style: Styles.darkBlueLight14,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    )),
+                          ),
+                          Padding(
+                              padding: Dimens.edgeInsets10,
+                              child: Text(
+                                StringConstants.others,
+                                style: Styles.darkBlueDark16,
+                              )),
+                          Dimens.boxHeight5,
+                          Container(
+                            padding: Dimens.edgeInsets5,
+                            child: GridView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                itemCount: controller.othersList.length,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  mainAxisSpacing: 3.0,
+                                  childAspectRatio: 1.1,
+                                ),
+                                itemBuilder: (BuildContext context, int index) =>
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                            controller.othersList[index].image),
+                                        Dimens.boxHeight15,
+                                        Text(
+                                          controller.othersList[index].name
+                                              .toString(),
+                                          style: Styles.darkBlueLight14,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    )),
+                          ),
+                        ],
                       ),
-                      Padding(
-                          padding: Dimens.edgeInsets10,
-                          child: Text(
-                            StringConstants.others,
-                            style: Styles.darkBlueDark16,
-                          )),
-                      Dimens.boxHeight5,
-                      Container(
-                        padding: Dimens.edgeInsets5,
-                        child: GridView.builder(
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: controller.othersList.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 3.0,
-                              childAspectRatio: 1.1,
-                            ),
-                            itemBuilder: (BuildContext context, int index) =>
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                        controller.othersList[index].image),
-                                    Dimens.boxHeight15,
-                                    Text(
-                                      controller.othersList[index].name
-                                          .toString(),
-                                      style: Styles.darkBlueLight14,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                )),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               bottomNavigationBar: Container(
@@ -238,12 +239,14 @@ class HomeScreen extends StatelessWidget {
                         textStyle: Styles.skyBlueDark14,
                       ),
                     ],
+                    selectedIndex: controller.selectedIndex,
+                    onTabChange: (index) {
+                      controller.onSelectedTabChanged(index);
+                    },
                   ),
                 ),
               ),
-              body: GetBuilder<HomeController>(
-                  builder: (controller) =>
-                      Stack(
+              body: Stack(
                         children: <Widget>[
                           Container(
                             color: ColorsValue.primaryTabColor,
@@ -251,6 +254,7 @@ class HomeScreen extends StatelessWidget {
                             height: Dimens.percentHeight(0.9),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Padding(
                                     padding: Dimens.edgeInsets20_0_10_0,
@@ -288,11 +292,13 @@ class HomeScreen extends StatelessWidget {
                                           ],
                                         ),
                                         Image.asset(AssetConstants.icPhoto,
-                                            width: Dimens.eighty,
-                                            height: Dimens.eighty,
+                                            width: Dimens.ninty,
+                                            height: Dimens.ninty,
                                             fit: BoxFit.fill),
                                       ],
-                                    ))
+                                    )),
+                                SvgPicture.asset(AssetConstants.seekbar),
+                                Dimens.boxHeight10,
                               ],
                             ),
                           ),
@@ -304,7 +310,7 @@ class HomeScreen extends StatelessWidget {
                                   topLeft: Radius.circular(50)),
                               child: Container(
                                 width: Dimens.percentWidth(1),
-                                height: Dimens.percentHeight(0.55),
+                                height: Dimens.percentHeight(0.54),
                                 decoration: const BoxDecoration(
                                   color: Colors.white,
                                 ),
@@ -560,97 +566,185 @@ class HomeScreen extends StatelessWidget {
                                               padding: Dimens
                                                   .edgeInsets24_15_24_10,
                                               child: Column(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                                  mainAxisAlignment: MainAxisAlignment
+                                                      .start,
+                                                  crossAxisAlignment: CrossAxisAlignment
+                                                      .start,
                                                   children: [
-                                                    Text(StringConstants
-                                                        .homeWork,
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment
+                                                          .spaceBetween,
+                                                      children: [
+                                                        Text(StringConstants
+                                                            .events,
+                                                            style: Styles
+                                                                .blue20),
+                                                        Text('${controller.selectedSliderIndex}/10',
+                                                            style: Styles
+                                                                .blk10w400),
+                                                      ],
+                                                    ),
+                                                    Dimens.boxHeight10,
+                                                    CarouselSlider(
+                                                      options: CarouselOptions(
+                                                        initialPage: 0,
+                                                        autoPlay: true,
+                                                        aspectRatio: 2.0,
+                                                        height: Dimens.percentHeight(0.35),
+                                                        viewportFraction: 1,
+                                                        //autoPlayCurve: Curves.fastOutSlowIn,
+                                                        // enlargeCenterPage: true,
+                                                        autoPlayInterval:
+                                                        const Duration(seconds: 4),
+                                                        onPageChanged: (index, reason) {
+                                                          controller.onSliderChanged(index);
+                                                        },
+                                                      ),
+                                                      items: controller.eventsList
+                                                          .map<Widget>((i) =>
+                                                          Column(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Container(
+                                                                margin: const EdgeInsets.only(right: 10),
+                                                                height: Dimens.hundredFifty,
+                                                                width: MediaQuery.of(context).size.width,
+                                                                decoration: BoxDecoration(
+                                                                  image: DecorationImage(
+                                                                    image: AssetImage(i.image,
+                                                                    ),
+                                                                    fit: BoxFit.fill,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Dimens.boxHeight10,
+                                                              Text(i.name,
+                                                                  style: Styles.blk12),
+                                                              Dimens.boxHeight20,
+                                                              SizedBox(
+                                                                  width: MediaQuery.of(context).size.width,
+                                                                  child: Text(i.dec,
+                                                                      style: Styles.blue12)),
+                                                            ],
+                                                          )
+                                                      )
+                                                          .toList(),
+                                                    ),
+                                                    Dimens.boxHeight25,
+                                                    Align(
+                                                      alignment: Alignment.center,
+                                                      child: DotsIndicator(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      dotsCount: controller.eventsList.length,
+                                                      position: controller.selectedSliderIndex,
+                                                      decorator: DotsDecorator(
+                                                        color: Colors.grey,
+                                                        activeColor: ColorsValue.primaryColor,
+                                                        size: const Size.square(9.0),
+                                                        activeSize: const Size(18.0,9.0),
+                                                        activeShape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(5.0)),
+                                                      ),
+                                                    )
+                                                    )
+                                                  ]
+                                              )),
+                                          Dimens.boxHeight15,
+                                          Padding(
+                                              padding: Dimens.edgeInsets24_0_24_0,
+                                              child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(StringConstants.homeWork,
                                                         style: Styles.blue20),
-                                                    Dimens.boxHeight5,
+                                                    Dimens.boxHeight10,
                                                     SizedBox(
-                                                      height: Dimens
-                                                          .hundredEighty,
+                                                      height: Dimens.twoHundred,
                                                       child: ListView.builder(
                                                           shrinkWrap: true,
-                                                          scrollDirection:
-                                                          Axis.horizontal,
+                                                          scrollDirection: Axis.horizontal,
                                                           itemCount: 3,
                                                           itemBuilder:
-                                                              (context,
-                                                              index) =>
-                                                              Column(
-                                                                mainAxisAlignment: MainAxisAlignment
-                                                                    .start,
-                                                                crossAxisAlignment: CrossAxisAlignment
-                                                                    .start,
+                                                              (context, index) => Column(
+                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                                 children: [
                                                                   Container(
                                                                       margin: const EdgeInsets.only(right: 10),
-                                                                      height: Dimens.hundredEighty,
+                                                                      //height: Dimens.hundredNinty,
                                                                       width: Dimens.hundredNinty,
                                                                       decoration: BoxDecoration(
                                                                           color: ColorsValue.lightBlueBbg,
                                                                           borderRadius:
-                                                                          const BorderRadius.all(Radius
-                                                                                  .circular(
-                                                                                  5))),
+                                                                          const BorderRadius.all(
+                                                                              Radius.circular(5))),
                                                                       child: Column(
-                                                                        mainAxisAlignment: MainAxisAlignment
-                                                                            .start,
-                                                                        crossAxisAlignment: CrossAxisAlignment
-                                                                            .start,
+                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                        mainAxisSize: MainAxisSize.max,
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                                         children: [
-                                                                          Padding(
-                                                                            padding: Dimens
-                                                                                .edgeInsets8,
+                                                                          Padding(padding: Dimens.edgeInsets8,
                                                                             child: Row(
-                                                                              mainAxisAlignment: MainAxisAlignment
-                                                                                  .spaceBetween,
-                                                                              crossAxisAlignment: CrossAxisAlignment
-                                                                                  .start,
+                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
                                                                               children: [
-                                                                                Text(
-                                                                                    'Maths',
-                                                                                    style: Styles
-                                                                                        .darkBlue16w700),
-                                                                                Text(
-                                                                                    '23 July',
-                                                                                    style: Styles
-                                                                                        .darkBlue12w700),
+                                                                                Text('Maths',
+                                                                                    style: Styles.darkBlue16w700),
+                                                                                Text('23 July',
+                                                                                    style: Styles.darkBlue12w700),
                                                                               ],
                                                                             ),
                                                                           ),
-                                                                          Dimens
-                                                                              .boxHeight10,
+                                                                          Dimens.boxHeight10,
                                                                           Padding(
                                                                             padding: Dimens.edgeInsets8,
                                                                             child: Text(
                                                                                 'Lorem ipsum dolor sit amet consectetur. Posuere amet lorem enim ornare lacus euismod. Maecenas pharetra sed vitae dignissim feugiat.',
-                                                                                style: Styles
-                                                                                    .darkBlue12),),
-                                                                          Align(
+                                                                                style: Styles.darkBlue12),),
+                                                                            Align(
                                                                               alignment: Alignment.bottomCenter,
                                                                               child: Container(
-                                                                                  padding: const EdgeInsets.only(top: 10),
-                                                                                  height: Dimens.thirty,
+                                                                                  padding: const EdgeInsets.only(top: 7,bottom: 3),
+                                                                                  height: Dimens.thirtyFive,
                                                                                   width: Dimens.percentWidth(1),
                                                                                   decoration: const BoxDecoration(
                                                                                       color: ColorsValue.signInButtonColor,
-                                                                                      borderRadius:
-                                                                                      BorderRadius.only(
-                                                                                          bottomLeft: Radius.circular(5),
+                                                                                      borderRadius: BorderRadius.only(bottomLeft:
+                                                                                      Radius.circular(5),
                                                                                           bottomRight: Radius.circular(5))),
-                                                                                  child: Text('')
+                                                                                  child: Text(
+                                                                                      StringConstants.submitAssignment,
+                                                                                  style: Styles.lightBlue12,
+                                                                                  textAlign: TextAlign.center,)
                                                                               )
                                                                           )
+
                                                                         ],
                                                                       )
                                                                   ),
                                                                 ],
                                                               )),
                                                     ),
+                                                    Align(
+                                                      alignment: Alignment
+                                                          .bottomRight,
+                                                      child: FormSubmitWidget(
+                                                        buttonHeight: Dimens.thirty,
+                                                        buttonWidth: Dimens.seventy,
+                                                        text: StringConstants
+                                                            .viewAll,
+                                                        textStyle: Styles
+                                                            .lightSky12w400,
+                                                        buttonColor:
+                                                        ColorsValue
+                                                            .signInButtonColor,
+                                                        borderRadius: Dimens.fourty,
+                                                        onTap: () {},
+                                                      ),
+                                                    ),
+                                                    Dimens.boxHeight20,
                                                   ]))
                                         ],
                                       ),)
@@ -660,6 +754,5 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ],
                       )),
-            ),
       );
 }

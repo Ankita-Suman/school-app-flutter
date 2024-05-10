@@ -6,6 +6,7 @@ import 'package:school_app/app/pages/home/home.dart';
 import 'package:school_app/app/pages/login_parent/login_parent.dart';
 import 'package:school_app/app/pages/login_student/login_student.dart';
 import 'package:school_app/app/pages/login_teacher/login_teacher.dart';
+import 'package:school_app/app/pages/otp_verification/otp_verification.dart';
 
 part 'app_routes.dart';
 
@@ -19,7 +20,7 @@ part 'app_routes.dart';
 class AppPages {
   static var transitionDuration = const Duration(milliseconds: 300);
 
-  static const initial = Routes.forgotPassword;
+  static const initial = Routes.splash;
 
   static final pages = [
     GetPage<SplashScreen>(
@@ -69,6 +70,13 @@ class AppPages {
       transitionDuration: transitionDuration,
       page: ForgotPasswordScreen.new,
       binding: ForgotPasswordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<OtpVerificationScreen>(
+      name: _Paths.otpVerification,
+      transitionDuration: transitionDuration,
+      page: OtpVerificationScreen.new,
+      binding: OtpVerificationBinding(),
       transition: Transition.cupertino,
     ),
    ];

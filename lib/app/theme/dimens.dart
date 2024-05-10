@@ -955,10 +955,10 @@ static EdgeInsets edgeInsets0_5_0_0 = EdgeInsets.fromLTRB(
     two,
   );
 
-  static EdgeInsets edgeInsets0_0_15_0 = EdgeInsets.fromLTRB(
+  static EdgeInsets edgeInsets0_0_25_0 = EdgeInsets.fromLTRB(
     zero,
     zero,
-    fifteen,
+    twentyFive,
     zero,
   );
 

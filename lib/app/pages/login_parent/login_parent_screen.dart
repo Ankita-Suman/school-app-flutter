@@ -94,7 +94,7 @@ class LoginParentScreen extends StatelessWidget {
                                             width: Dimens.thirty,
                                             height: Dimens.ten,
                                             child: SvgPicture.asset(
-                                              AssetConstants.iconView,
+                                              AssetConstants.icClose,
                                             ),
                                           )
                                         : Container(
@@ -130,9 +130,12 @@ class LoginParentScreen extends StatelessWidget {
                                         Text(StringConstants.rememberMe,
                                             style: Styles.blackBold17)
                                       ]),
-                                  Text(
+                                  InkWell(
+                                    onTap: RouteManagement.goToForgotPassword,
+                                    child: Text(
                                         StringConstants.forgotPassword,
                                         style: Styles.darkBlue14,
+                                      ),
                                       ),
                                 ],
                               ),
@@ -149,7 +152,7 @@ class LoginParentScreen extends StatelessWidget {
                                 onTap: (){
                                   if(controller.isEmailValid &&
                                       controller.isPasswordValid){
-
+                                    RouteManagement.goToHome();
                                   }else{
                                     RouteManagement.goToHome();
                                   }

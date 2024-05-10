@@ -38,6 +38,9 @@ static Color blueBgClr = const Color(
 static Color greyBgClr = const Color(
   greyBg,
   );
+static Color darkGreyBgClr = const Color(
+  darkGreyBg,
+  );
 
   static const Color transparent = Colors.transparent;
 
@@ -442,6 +445,7 @@ static Color greyBgClr = const Color(
   static const int lightBlueBg = 0xffB5E0FF;
   static const int blueBg = 0xff1B1E28;
   static const int greyBg = 0xff7D848D;
+  static const int darkGreyBg = 0xff1B1E28;
 
   static const int lightGreyColorWithOpacityHex35 = 0x59C9CCD1;
 
