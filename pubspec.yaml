@@ -63,8 +63,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - assets/dummy/
-    - assets/video/
+#    - assets/dummy/
+#    - assets/video/
 
 
   fonts:

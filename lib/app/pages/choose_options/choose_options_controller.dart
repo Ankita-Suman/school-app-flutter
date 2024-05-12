@@ -6,7 +6,6 @@ class ChooseOptionsController extends GetxController {
 
   @override
   void onInit() {
-    //
     super.onInit();
   }
 }
