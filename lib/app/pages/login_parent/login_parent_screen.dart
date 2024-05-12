@@ -115,8 +115,8 @@ class LoginParentScreen extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         SizedBox(
-                                          width: 20,
-                                          height: 20,
+                                          width: 25,
+                                          height: 25,
                                           child: Checkbox(
                                             checkColor: Colors.white,
                                             activeColor: Colors.black,

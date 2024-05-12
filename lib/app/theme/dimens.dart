@@ -113,6 +113,7 @@ abstract class Dimens {
   static double twoHundredFive = 205.sp;
   static double twoHundredTen = 210.sp;
   static double twoHundredTwentyTwo = 222.sp;
+  static double twoHundredTwentyFive = 225.sp;
   static double twoHundredThirtySix = 236.sp;
   static double twoHundredFourty = 240.sp;
   static double twoHundredFifty = 250.sp;

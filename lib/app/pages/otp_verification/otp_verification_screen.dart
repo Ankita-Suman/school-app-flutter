@@ -117,45 +117,6 @@ class OtpVerificationScreen extends StatelessWidget {
       ),
     );
   }
-
-  Future openCheckEmailDialog(BuildContext context) {
-    return showDialog(
-         barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          Future.delayed(const Duration(seconds: 5), () {
-            Navigator.of(context).pop(true);
-          });
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.transparent,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(32.0))),
-            contentPadding: const EdgeInsets.only(top: 10.0),
-            content: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Dimens.boxHeight20,
-                    SvgPicture.asset(AssetConstants.icOpenEmail),
-                    Dimens.boxHeight30,
-                    Text(
-                      StringConstants.checkYouEmail,
-                      style: Styles.blackDark18,
-                    ),
-                    Dimens.boxHeight10,
-                    Text(
-                      StringConstants.sendPassword,
-                      style: Styles.greyDark14,
-                      textAlign: TextAlign.center,
-                    ),
-                    Dimens.boxHeight30,
-                  ],
-                ),
-          );
-        });
-  }
 }
 
 /// This is the basic usage of Pinput

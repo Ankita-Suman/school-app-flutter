@@ -126,15 +126,15 @@ class LoginStudentController extends GetxController
 
   void onRememberMeChanged(bool newValue) {
     rememberMe = newValue;
-    var deviceRepository = Get.find<DeviceRepository>();
-    if (rememberMe) {
-      deviceRepository.saveValueSecurely(
-          DeviceConstants.email, emailMobileEditingController.text.toString());
-      deviceRepository.saveValueSecurely(
-          DeviceConstants.password, passwordEditingController.text.toString());
-    } else {
-      deviceRepository.deleteAllSecuredValues();
-    }
+    // var deviceRepository = Get.find<DeviceRepository>();
+    // if (rememberMe) {
+    //   deviceRepository.saveValueSecurely(
+    //       DeviceConstants.email, emailMobileEditingController.text.toString());
+    //   deviceRepository.saveValueSecurely(
+    //       DeviceConstants.password, passwordEditingController.text.toString());
+    // } else {
+    //   deviceRepository.deleteAllSecuredValues();
+    // }
     update();
   }
 }

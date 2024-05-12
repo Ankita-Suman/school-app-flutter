@@ -30,6 +30,7 @@ abstract class StringConstants {
   static String resendCode = 'resendCode'.tr;
   static String resend = 'resend'.tr;
   static String otpCode = 'otpCode'.tr;
+  static String logoutFromDevice = 'logoutFromDevice'.tr;
   static String submitAssignment = 'submitAssignment'.tr;
   static String events = 'events'.tr;
   static String didNotReceiveCode = 'didNotReceiveCode'.tr;

@@ -56,17 +56,14 @@ class _MyAppState extends State<MyApp> {
         title: 'School App',
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
-        supportedLocales: TranslationsFile.listOfLocales,
-        locale: locale ?? const Locale('en'),
         getPages: AppPages.pages,
         theme: ThemeData(
-          fontFamily: 'Outfit',
+          fontFamily: 'Inter',
           scaffoldBackgroundColor: Colors.white,
           canvasColor: Colors.white,
         ),
         initialRoute: AppPages.initial,
-        translations: TranslationsFile(),
-      ),
+       ),
     );
   }
 }

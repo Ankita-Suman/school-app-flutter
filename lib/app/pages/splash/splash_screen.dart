@@ -6,8 +6,7 @@ class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => GetBuilder<SplashController>(
-        builder: (context) => Scaffold(
+  Widget build(BuildContext context) => Scaffold(
           backgroundColor: Colors.white,
           body: GetBuilder<SplashController>(
             builder: (controller) => Center(
@@ -15,18 +14,23 @@ class SplashScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset(AssetConstants.appLogo,
-                      width: Dimens.threeHundred,
-                      height: Dimens.twoHundredFifty,
-                      fit: BoxFit.cover),
-                  Image.asset(AssetConstants.imgSchool,
-                      width: Dimens.threeHundred,
-                      height: Dimens.hundredFifty,
-                      fit: BoxFit.cover)
+                  SizedBox(
+                    width: Dimens.threeHundred,
+                    height: Dimens.twoHundredFifty,
+                    child: const Image(
+                      image: AssetImage(AssetConstants.appLogo),
+                    ),
+                  ),
+                  SizedBox(
+                    width: Dimens.threeHundred,
+                    height: Dimens.hundredFifty,
+                    child: const Image(
+                      image: AssetImage(AssetConstants.imgSchool),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-        ),
       );
 }

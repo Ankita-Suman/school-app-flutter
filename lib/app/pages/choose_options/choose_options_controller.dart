@@ -9,8 +9,4 @@ class ChooseOptionsController extends GetxController {
     //
     super.onInit();
   }
-
-  /// method to navigate AuthScreen or direct to HomeView.
-  void navigate() async {
-  }
 }

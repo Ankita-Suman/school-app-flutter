@@ -7,8 +7,7 @@ class ChooseOptionsScreen extends StatelessWidget {
   const ChooseOptionsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => GetBuilder<ChooseOptionsController>(
-        builder: (context) => Scaffold(
+  Widget build(BuildContext context) => Scaffold(
           backgroundColor: Colors.white,
           body: GetBuilder<ChooseOptionsController>(
             builder: (controller) => Center(
@@ -27,10 +26,13 @@ class ChooseOptionsScreen extends StatelessWidget {
                     onTap: () {
                       RouteManagement.goToLoginTeacher();
                     },
-                    child: Image.asset(AssetConstants.icTeacher,
-                        width: Dimens.hundredFifty,
-                        height: Dimens.hundredFifty,
-                        fit: BoxFit.fill),
+                    child: SizedBox(
+                      width: Dimens.hundredFifty,
+                      height: Dimens.hundredFifty,
+                      child: const Image(
+                        image: AssetImage(AssetConstants.icTeacher),
+                      ),
+                    ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -40,19 +42,25 @@ class ChooseOptionsScreen extends StatelessWidget {
                         onTap: () {
                           RouteManagement.goToLoginStudent();
                         },
-                        child: Image.asset(AssetConstants.icStudent,
-                            width: Dimens.hundredFifty,
-                            height: Dimens.hundredFifty,
-                            fit: BoxFit.fill),
+                        child: SizedBox(
+                          width: Dimens.hundredFifty,
+                          height: Dimens.hundredFifty,
+                          child: const Image(
+                            image: AssetImage(AssetConstants.icStudent),
+                          ),
+                        ),
                       ),
                       InkWell(
                         onTap: () {
                           RouteManagement.goToLoginParent();
                         },
-                        child: Image.asset(AssetConstants.icParent,
-                            width: Dimens.hundredFifty,
-                            height: Dimens.hundredFifty,
-                            fit: BoxFit.fill),
+                        child:  SizedBox(
+                          width: Dimens.hundredFifty,
+                          height: Dimens.hundredFifty,
+                          child: const Image(
+                            image: AssetImage(AssetConstants.icParent),
+                          ),
+                        ),
                       ),
                     ],
                   )
@@ -60,6 +68,5 @@ class ChooseOptionsScreen extends StatelessWidget {
               ),
             ),
           ),
-        ),
       );
 }

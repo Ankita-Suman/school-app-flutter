@@ -12,13 +12,13 @@ abstract class RouteManagement {
   }
 
   static void goToLoginTeacher() {
-    Get.offAllNamed<void>(Routes.loginTeacher);
+    Get.toNamed<void>(Routes.loginTeacher);
   }
   static void goToLoginStudent() {
-    Get.offAllNamed<void>(Routes.loginStudent);
+    Get.toNamed<void>(Routes.loginStudent);
   }
   static void goToLoginParent() {
-    Get.offAllNamed<void>(Routes.loginParent);
+    Get.toNamed<void>(Routes.loginParent);
   }
   static void goToHome() {
     Get.offAllNamed<void>(Routes.home);
@@ -27,8 +27,6 @@ abstract class RouteManagement {
     Get.toNamed<void>(Routes.otpVerification);
   }
   static void goToForgotPassword() {
-    Get.toNamed<void>(
-      Routes.forgotPassword,
-    );
+    Get.toNamed<void>(Routes.forgotPassword);
   }
 }

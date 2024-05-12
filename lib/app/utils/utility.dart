@@ -298,7 +298,7 @@ abstract class Utility {
   }) async {
     await Get.dialog<void>(
       CupertinoAlertDialog(
-        content: Text('$message'),
+        content: Text('$message',style: Styles.blackEBold15,),
         actions: <Widget>[
           CupertinoDialogAction(
             isDestructiveAction: false,
