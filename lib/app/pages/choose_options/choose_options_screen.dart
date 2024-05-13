@@ -11,10 +11,8 @@ class ChooseOptionsScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           body: GetBuilder<ChooseOptionsController>(
             builder: (controller) => Container(
-
               color: Colors.transparent,
-              child:
-                  Center(
+              child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -24,48 +22,44 @@ class ChooseOptionsScreen extends StatelessWidget {
                         height: Dimens.hundred,
                         fit: BoxFit.fill),
                     SizedBox(
-                      height: Dimens.twentyFive,
+                      height: Dimens.twenty,
                     ),
                     InkWell(
                       onTap: () {
                         RouteManagement.goToLoginTeacher();
                       },
-                      child: SizedBox(
+                      child: Image.asset(AssetConstants.icTeacher,
                         width: Dimens.hundredFifty,
                         height: Dimens.hundredFifty,
-                        child: const Image(
-                          image: AssetImage(AssetConstants.icTeacher),
-                        ),
-                      ),
+                        fit: BoxFit.fill),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         InkWell(
                           onTap: () {
                             RouteManagement.goToLoginStudent();
                           },
-                          child: SizedBox(
-                            width: Dimens.hundredFifty,
-                            height: Dimens.hundredFifty,
-                            child: const Image(
-                              image: AssetImage(AssetConstants.icStudent),
-                            ),
-                          ),
+                          child: Padding(
+                            padding: Dimens.edgeInsets20,
+                            child: Image.asset(AssetConstants.icStudent,
+                                width: Dimens.hundredFifty,
+                                height: Dimens.hundredFifty)
+                            )
                         ),
+
                         InkWell(
                           onTap: () {
                             RouteManagement.goToLoginParent();
                           },
-                          child:  SizedBox(
-                            width: Dimens.hundredFifty,
-                            height: Dimens.hundredFifty,
-                            child: const Image(
-                              image: AssetImage(AssetConstants.icParent),
-                            ),
-                          ),
-                        ),
+                          child: Padding(
+                              padding: Dimens.edgeInsets20,
+                              child: Image.asset(AssetConstants.icParent,
+                                  width: Dimens.hundredFifty,
+                                  height: Dimens.hundredFifty)
+                         ),
+                        )
                       ],
                     )
                   ],

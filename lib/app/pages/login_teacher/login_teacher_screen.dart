@@ -30,6 +30,15 @@ class LoginTeacherScreen extends StatelessWidget {
                     fit: BoxFit.fill,
                   ),
                 ),
+                // child: Column(
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: [
+                //     Text(StringConstants.hiTeachers,
+                //       style: Styles.headerTxt40,),
+                //     Text(StringConstants.sigInTeachers,
+                //       style: Styles.headerTxt15,)
+                //   ],
+                // )
               ),
               Align(
                 alignment: Alignment.bottomCenter,

@@ -33,6 +33,8 @@ abstract class StringConstants {
   static String logoutFromDevice = 'logoutFromDevice'.tr;
   static String submitAssignment = 'submitAssignment'.tr;
   static String events = 'events'.tr;
+  static String hiTeachers = 'hiTeachers'.tr;
+  static String sigInTeachers = 'sigInTeachers'.tr;
   static String didNotReceiveCode = 'didNotReceiveCode'.tr;
   static String pleaseEnterValidEmail = 'pleaseEnterValidEmail'.tr;
   static String shouldBe6Characters = 'shouldBe6Characters'.tr;

@@ -33,6 +33,7 @@ dependencies:
   email_validator: ^2.1.17
   flutter_svg: ^2.0.0+1
   flutter_cupertino_date_picker_fork: ^1.0.7
+
   flutter_screenutil: ^5.6.0
   flutter_secure_storage: ^8.0.0
   flutter_otp_text_field: ^1.1.0+2
@@ -57,6 +58,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_native_splash: ^2.4.0
+flutter_native_splash:
+  android_gravity: fill
+  image: assets/images/splash.png
+  fullscreen: true
+  android: true
+  # Sizing of image
 
 flutter:
   uses-material-design: true

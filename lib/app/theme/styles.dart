@@ -156,6 +156,18 @@ static TextStyle blk12 = TextStyle(
       fontWeight: FontWeight.w600,
       color: ColorsValue.lightSkyBlueB);
 
+  static TextStyle headerTxt40 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fourty,
+      fontWeight: FontWeight.w700,
+      color: Colors.white);
+
+  static TextStyle headerTxt15 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fifteen,
+      fontWeight: FontWeight.w500,
+      color: Colors.white);
+
   static TextStyle greyHintReg14 = TextStyle(
       fontFamily: 'Quicksand',
       fontSize: Dimens.fourteen,

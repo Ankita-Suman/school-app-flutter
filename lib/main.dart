@@ -20,7 +20,6 @@ void main() async {
     Utility.printELog(error.toString());
   }
 }
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -56,6 +55,8 @@ class _MyAppState extends State<MyApp> {
         title: 'School App',
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
+        supportedLocales: TranslationsFile.listOfLocales,
+        locale: locale ?? const Locale('en'),
         getPages: AppPages.pages,
         theme: ThemeData(
           fontFamily: 'Inter',
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
           canvasColor: Colors.white,
         ),
         initialRoute: AppPages.initial,
+        translations: TranslationsFile(),
        ),
     );
   }

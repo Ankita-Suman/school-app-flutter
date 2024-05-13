@@ -44,6 +44,8 @@ class TranslationsFile extends Translations {
           'resend': 'Resend',
           'otpCode': 'OTP Code',
           'events': 'Events',
+          'hiTeachers': 'Hi! Teachers',
+          'sigInTeachers': 'Sign in and get started',
           'logoutFromDevice':'Are you sure you want to logout from App?',
           'submitAssignment': 'Submit Assignment',
           'didNotReceiveCode': 'Didn\'t receive the code? ',
