@@ -37,12 +37,14 @@ abstract class AssetConstants {
   static const String icOpenEmail = 'assets/icons/ic_open_email.svg';
   static const String seekbar = 'assets/icons/ic_seekbar.svg';
   static const String icClose = 'assets/icons/ic_close.svg';
+  static const String icAlarm = 'assets/icons/ic_alarm.svg';
 
   //Images
   static const String icAvatar = 'assets/images/avatar.png';
   static const String appLogo = 'assets/images/logo.png';
   static const String icEvents = 'assets/images/ic_events.png';
   static const String splash = 'assets/images/splash.png';
+  static const String imgSupport = 'assets/images/img_support.png';
   static const String splashscreen = 'assets/images/splashscreen.png';
   static const String icNoticeBoardBg = 'assets/images/ic_notice_board_bg.png';
   static const String imgSchool = 'assets/images/image_school.png';
@@ -54,6 +56,8 @@ abstract class AssetConstants {
   static const String icStudentHeader = 'assets/images/ic_student_header.png';
   static const String icParentHeader = 'assets/images/ic_parent_header.png';
   static const String icPhoto = 'assets/images/ic_photo.png';
+  static const String imgScience = 'assets/images/img_science.png';
+  static const String imgDummy = 'assets/images/img_dummy.png';
 
   // video
   static const String starFall = 'assets/video/star_fall.json';

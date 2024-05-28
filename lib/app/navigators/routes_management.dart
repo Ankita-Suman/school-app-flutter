@@ -29,4 +29,10 @@ abstract class RouteManagement {
   static void goToForgotPassword() {
     Get.toNamed<void>(Routes.forgotPassword);
   }
+  static void goToNotifications() {
+    Get.toNamed<void>(Routes.notifications);
+  }
+  static void goToEvents() {
+    Get.toNamed<void>(Routes.events);
+  }
 }

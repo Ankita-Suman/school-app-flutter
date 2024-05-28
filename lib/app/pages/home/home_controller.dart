@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
 import 'package:school_app/domain/domain.dart';
-
 import 'home.dart';
+import 'widgets/widgets.dart';
 
 class HomeController extends GetxController {
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -54,20 +54,20 @@ class HomeController extends GetxController {
     update();
   }
 
-  // Widget getItemWidget(int pos) {
-  //   switch (pos) {
-  //     case 0:
-  //       return HomeWidget();
-  //    // case 1:
-  //     //   return DiscoverWidget();
-  //     // case 2:
-  //     //   return AppointmentsWidget();
-  //     // case 3:
-  //     //   return FavouritesWidget();
-  //     // case 4:
-  //     //   return ProfileWidget();
-  //     default:
-  //       return HomeWidget();
-  //   }
- // }
+  Widget getItemWidget(int pos) {
+    switch (pos) {
+      case 0:
+        return const HomeWidget();
+     case 1:
+        return const HomeWorkWidget();
+      // case 2:
+      //   return AppointmentsWidget();
+      // case 3:
+      //   return FavouritesWidget();
+      // case 4:
+      //   return ProfileWidget();
+      default:
+        return const HomeWidget();
+    }
+ }
 }

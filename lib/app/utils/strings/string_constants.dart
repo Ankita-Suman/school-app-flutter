@@ -13,6 +13,7 @@ abstract class StringConstants {
   static String viewProfile = 'viewProfile'.tr;
   static String homeWork = 'homeWork'.tr;
   static String academics = 'academics'.tr;
+  static String notifications = 'notifications'.tr;
   static String others = 'others'.tr;
   static String noticeBoard = 'noticeBoard'.tr;
   static String timeTable = 'timeTable'.tr;

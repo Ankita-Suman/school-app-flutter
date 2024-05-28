@@ -150,6 +150,13 @@ static TextStyle blk12 = TextStyle(
       fontWeight: FontWeight.w500,
       color: ColorsValue.blackColor);
 
+static TextStyle blk12w400 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      height: 1,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.blackColor);
+
   static TextStyle lightBlue12 = TextStyle(
       fontFamily: 'Inter',
       fontSize: Dimens.twelve,
@@ -525,14 +532,37 @@ static TextStyle darkBlue12w700 = TextStyle(
       fontWeight: FontWeight.w400,
       color: ColorsValue.primaryColor);
 
+ static TextStyle blue12w500 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w500,
+      color: ColorsValue.primaryColor);
+
   static TextStyle darkBlueLight14 = TextStyle(
       fontFamily: 'Inter',
       fontSize: Dimens.fourteen,
       fontWeight: FontWeight.w400,
       color: ColorsValue.primaryColorText);
 
+  static TextStyle darkGry16 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.sixteen,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.greyDarkBgClr);
+
+ static TextStyle darkGry0 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.zero,
+      color: ColorsValue.greyDarkBgClr);
+
+  static TextStyle black14 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w500,
+      color: Colors.black);
+
   static TextStyle blackBold17 = TextStyle(
-      fontFamily: 'Poppins',
+      fontFamily: 'Inter',
       fontSize: Dimens.fourteen,
       fontWeight: FontWeight.w700,
       color: Colors.black);
@@ -1004,6 +1034,12 @@ static TextStyle darkBlue12w700 = TextStyle(
     fontWeight: FontWeight.w500,
     color: ColorsValue.whiteColor,
     fontSize: Dimens.eighteen,
+  );
+  static TextStyle white30B = TextStyle(
+    fontFamily: 'Quicksand',
+    fontWeight: FontWeight.w700,
+    color: ColorsValue.whiteColor,
+    fontSize: Dimens.thirty,
   );
 
   static TextStyle black13RegSpace = TextStyle(

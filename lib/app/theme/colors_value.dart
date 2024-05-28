@@ -38,6 +38,17 @@ static Color blueBgClr = const Color(
 static Color greyBgClr = const Color(
   greyBg,
   );
+static Color greyDarkBgClr = const Color(
+    greyDarkBg
+  );
+
+static Color lightSkyBgClr = const Color(
+    lightSkyBg
+  );
+
+static Color lightGryBgClr = const Color(
+    lightGryBg
+  );
 static Color darkGreyBgClr = const Color(
   darkGreyBg,
   );
@@ -445,7 +456,10 @@ static Color darkGreyBgClr = const Color(
   static const int lightBlueBg = 0xffB5E0FF;
   static const int blueBg = 0xff1B1E28;
   static const int greyBg = 0xff7D848D;
+  static const int greyDarkBg = 0xff6E7781;
   static const int darkGreyBg = 0xff1B1E28;
+  static const int lightSkyBg = 0xffEDF7FF;
+  static const int lightGryBg = 0xffA9A9A9;
 
   static const int lightGreyColorWithOpacityHex35 = 0x59C9CCD1;
 

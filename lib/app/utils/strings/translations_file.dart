@@ -46,6 +46,7 @@ class TranslationsFile extends Translations {
           'events': 'Events',
           'hiTeachers': 'Hi! Teachers',
           'sigInTeachers': 'Sign in and get started',
+          'notifications': 'Notifications',
           'logoutFromDevice':'Are you sure you want to logout from App?',
           'submitAssignment': 'Submit Assignment',
           'didNotReceiveCode': 'Didn\'t receive the code? ',

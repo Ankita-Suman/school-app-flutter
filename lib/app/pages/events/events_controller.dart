@@ -1,7 +1,7 @@
 
 import 'package:get/get.dart';
 
-class ChooseOptionsController extends GetxController {
+class EventsController extends GetxController {
   int currentIndex = 0;
 
   @override
