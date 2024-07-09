@@ -14,6 +14,7 @@ abstract class Routes {
   static const otpVerification = _Paths.otpVerification;
   static const notifications = _Paths.notifications;
   static const events = _Paths.events;
+  static const profile = _Paths.profile;
 
 }
 
@@ -28,5 +29,6 @@ abstract class _Paths {
   static const otpVerification = '/Otp-Verification-screen';
   static const notifications = '/Notifications-screen';
   static const events = '/Events-screen';
+  static const profile = '/Profile-screen';
 
 }

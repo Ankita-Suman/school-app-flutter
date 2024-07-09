@@ -9,6 +9,7 @@ import 'package:school_app/app/pages/login_student/login_student.dart';
 import 'package:school_app/app/pages/login_teacher/login_teacher.dart';
 import 'package:school_app/app/pages/notifications/notifications.dart';
 import 'package:school_app/app/pages/otp_verification/otp_verification.dart';
+import 'package:school_app/app/pages/profile/profile.dart';
 
 part 'app_routes.dart';
 
@@ -93,6 +94,13 @@ class AppPages {
       transitionDuration: transitionDuration,
       page: EventsScreen.new,
       binding: EventsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ProfileScreen>(
+      name: _Paths.profile,
+      transitionDuration: transitionDuration,
+      page: ProfileScreen.new,
+      binding: ProfileBinding(),
       transition: Transition.cupertino,
     ),
   ];

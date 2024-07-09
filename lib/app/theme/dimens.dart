@@ -1295,6 +1295,13 @@ static EdgeInsets edgeInsets5_0_20_20 = EdgeInsets.fromLTRB(
     zero,
   );
 
+  static EdgeInsets edgeInsets15_30_20_0 = EdgeInsets.fromLTRB(
+    fifteen,
+    thirty,
+    twenty,
+    zero,
+  );
+
   static EdgeInsets edgeInsets0_4_4_4 = EdgeInsets.fromLTRB(
     zero,
     four,
@@ -1715,6 +1722,12 @@ static EdgeInsets edgeInsets24_15_24_10 = EdgeInsets.fromLTRB(
     five,
     two,
   );
+  static EdgeInsets edgeInsets2_5_2_5 = EdgeInsets.fromLTRB(
+    two,
+    five,
+    two,
+    five,
+  );
   static EdgeInsets edgeInsets48_0_48_0 = EdgeInsets.fromLTRB(
     fourtyEight,
     zero,
@@ -1768,6 +1781,12 @@ static EdgeInsets edgeInsets24_15_24_10 = EdgeInsets.fromLTRB(
     five,
     ten,
     five,
+  );
+  static EdgeInsets edgeInsets10_5_10_0 = EdgeInsets.fromLTRB(
+    ten,
+    five,
+    ten,
+    zero,
   );
   static EdgeInsets edgeInsets0_0_5_0 = EdgeInsets.fromLTRB(
     zero,

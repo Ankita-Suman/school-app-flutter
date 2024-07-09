@@ -36,16 +36,22 @@ class HomeWidget extends StatelessWidget {
                          child: Padding(
                           padding: Dimens.edgeInsets0_5_0_0,
                           child: Align(
-                              alignment: Alignment.bottomRight,
+                              alignment:Alignment.bottomRight,
                               child: SvgPicture.asset(
                                   AssetConstants.icHomeNotification)),
                         ),
                         ),
                         Dimens.boxWidth5,
-                        Align(
+                        InkWell(
+                          onTap: (){
+                            RouteManagement.goToProfile();
+                          },
+                          child:  Align(
                             alignment: Alignment.bottomRight,
-                            child: SvgPicture.asset(
-                                AssetConstants.icUserLink)),
+                            child:SvgPicture.asset(
+                                AssetConstants.icUserLink)
+                          )
+                        ),
                         Dimens.boxHeight10,
                       ],
                     ),

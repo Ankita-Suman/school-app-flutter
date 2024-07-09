@@ -561,11 +561,59 @@ static TextStyle darkBlue12w700 = TextStyle(
       fontWeight: FontWeight.w500,
       color: Colors.black);
 
+  static TextStyle black12 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w500,
+      color: Colors.black);
+
+  static TextStyle grey12 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.tvGreyB);
+
+  static TextStyle darkGrey12 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.tvDarkGreyB);
+
+  static TextStyle black15 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fifteen,
+      fontWeight: FontWeight.w400,
+      color: Colors.black);
+
+  static TextStyle black20 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.twenty,
+      fontWeight: FontWeight.w400,
+      color: Colors.black);
+
+  static TextStyle black14w600 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w600,
+      color: Colors.black);
+
+  static TextStyle dark14 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.darkGryBgClr);
+
   static TextStyle blackBold17 = TextStyle(
       fontFamily: 'Inter',
       fontSize: Dimens.fourteen,
       fontWeight: FontWeight.w700,
       color: Colors.black);
+
+  static TextStyle greyBold14 = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.borderGryBgClr);
 
   static TextStyle greyMed12 = TextStyle(
       fontFamily: 'Quicksand',
@@ -930,11 +978,6 @@ static TextStyle darkBlue12w700 = TextStyle(
   static TextStyle green16 = TextStyle(
     color: Colors.green,
     fontSize: Dimens.sixteen,
-  );
-
-  static TextStyle black15 = TextStyle(
-    color: ColorsValue.blackColor,
-    fontSize: Dimens.fifteen,
   );
 
   static TextStyle lightRed12 = TextStyle(

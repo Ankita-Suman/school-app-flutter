@@ -38,6 +38,11 @@ abstract class AssetConstants {
   static const String seekbar = 'assets/icons/ic_seekbar.svg';
   static const String icClose = 'assets/icons/ic_close.svg';
   static const String icAlarm = 'assets/icons/ic_alarm.svg';
+  static const String icArrow = 'assets/icons/ic_arrow.svg';
+  static const String icParler = 'assets/icons/ic_parler.svg';
+  static const String icLock = 'assets/icons/ic_lock.svg';
+  static const String icDots = 'assets/icons/ic_dots.svg';
+  static const String icCamera = 'assets/icons/ic_camera.svg';
 
   //Images
   static const String icAvatar = 'assets/images/avatar.png';
@@ -58,6 +63,8 @@ abstract class AssetConstants {
   static const String icPhoto = 'assets/images/ic_photo.png';
   static const String imgScience = 'assets/images/img_science.png';
   static const String imgDummy = 'assets/images/img_dummy.png';
+  static const String icDummy = 'assets/images/ic_dummy.png';
+  static const String icProfile = 'assets/images/ic_profile.png';
 
   // video
   static const String starFall = 'assets/video/star_fall.json';

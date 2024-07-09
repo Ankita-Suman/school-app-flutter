@@ -35,4 +35,7 @@ abstract class RouteManagement {
   static void goToEvents() {
     Get.toNamed<void>(Routes.events);
   }
+  static void goToProfile() {
+    Get.toNamed<void>(Routes.profile);
+  }
 }
