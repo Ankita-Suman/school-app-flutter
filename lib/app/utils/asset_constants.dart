@@ -44,6 +44,7 @@ abstract class AssetConstants {
   static const String icDots = 'assets/icons/ic_dots.svg';
   static const String icCamera = 'assets/icons/ic_camera.svg';
 
+
   //Images
   static const String icAvatar = 'assets/images/avatar.png';
   static const String appLogo = 'assets/images/logo.png';

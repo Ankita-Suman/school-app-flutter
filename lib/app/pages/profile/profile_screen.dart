@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:school_app/app/app.dart';
 import 'package:flutter/material.dart';
@@ -805,7 +803,8 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               Dimens.boxHeight25,
                             ],
-                          )),
+                          )
+                      ),
                     ),
                   ),
                 ),
