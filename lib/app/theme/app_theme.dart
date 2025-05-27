@@ -81,7 +81,7 @@ ThemeData themeData(BuildContext context) => ThemeData(
       ),
       textSelectionTheme: const TextSelectionThemeData(
           cursorColor: Color.fromRGBO(23, 166, 221, 1)),
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelColor: Colors.black,
       ),
     );
@@ -159,7 +159,7 @@ ThemeData darkThemeData(BuildContext context) => ThemeData(
       ),
       scaffoldBackgroundColor: Colors.black,
       fontFamily: 'Poppins',
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelColor: Colors.white,
       ),
     );

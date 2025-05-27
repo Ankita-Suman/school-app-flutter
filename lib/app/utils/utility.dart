@@ -119,7 +119,7 @@ abstract class Utility {
 
   /// Returns true if the internet connection is available.
   static Future<bool> isNetworkAvailable() async =>
-      await InternetConnectionChecker().hasConnection;
+      await InternetConnectionChecker.instance.hasConnection;
 
   /// Print the details of the [response].
   static void printResponseDetails(Response? response) {
