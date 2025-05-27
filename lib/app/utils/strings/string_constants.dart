@@ -13,7 +13,10 @@ abstract class StringConstants {
   static String viewProfile = 'viewProfile'.tr;
   static String homeWork = 'homeWork'.tr;
   static String academics = 'academics'.tr;
+  static String notifications = 'notifications'.tr;
+  static String profile = 'profile'.tr;
   static String others = 'others'.tr;
+  static String information = 'information'.tr;
   static String noticeBoard = 'noticeBoard'.tr;
   static String timeTable = 'timeTable'.tr;
   static String calender = 'calender'.tr;
@@ -33,9 +36,29 @@ abstract class StringConstants {
   static String logoutFromDevice = 'logoutFromDevice'.tr;
   static String submitAssignment = 'submitAssignment'.tr;
   static String events = 'events'.tr;
+  static String hiTeachers = 'hiTeachers'.tr;
+  static String sigInTeachers = 'sigInTeachers'.tr;
   static String didNotReceiveCode = 'didNotReceiveCode'.tr;
   static String pleaseEnterValidEmail = 'pleaseEnterValidEmail'.tr;
   static String shouldBe6Characters = 'shouldBe6Characters'.tr;
   static String passwordRequired = 'passwordRequired'.tr;
   static String mobileNumberEmail = 'mobileNumberEmail'.tr;
+  static String attendance = 'attendance'.tr;
+  static String result = 'result'.tr;
+  static String fees = 'fees'.tr;
+  static String aadharNo = 'aadharNo'.tr;
+  static String academicYear = 'academicYear'.tr;
+  static String admissionClass = 'admissionClass'.tr;
+  static String admissionNo = 'admissionNo'.tr;
+  static String dateOfAdmission = 'dateOfAdmission'.tr;
+  static String dateOfBirth = 'dateOfBirth'.tr;
+  static String bloodGroup = 'bloodGroup'.tr;
+  static String phoneNo = 'phoneNo'.tr;
+  static String height = 'height'.tr;
+  static String weight = 'weight'.tr;
+  static String parentId = 'parentId'.tr;
+  static String motherName = 'motherName'.tr;
+  static String fatherName = 'fatherName'.tr;
+  static String permanentAddress = 'permanentAddress'.tr;
+
 }

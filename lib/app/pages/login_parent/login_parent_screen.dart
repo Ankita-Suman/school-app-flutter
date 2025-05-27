@@ -21,7 +21,7 @@ class LoginParentScreen extends StatelessWidget {
             children: <Widget>[
               Container(
                 padding: const EdgeInsets.only(top: 5),
-                height: Dimens.threeHundredFourty,
+                height: Dimens.threeHundredSeventyFive,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
@@ -39,7 +39,7 @@ class LoginParentScreen extends StatelessWidget {
                       topLeft: Radius.circular(50)),
                   child: Container(
                     width: Dimens.percentWidth(1),
-                    height: Dimens.percentHeight(0.6),
+                    height: Dimens.percentHeight(0.63),
                     decoration: const BoxDecoration(
                       color: Colors.white,
                     ),

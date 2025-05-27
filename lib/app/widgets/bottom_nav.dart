@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../app.dart';
 import '../pages/home/home_controller.dart';
-
 
 class BottomNavBarWidget extends StatelessWidget {
   const BottomNavBarWidget({super.key});
@@ -16,14 +14,14 @@ class BottomNavBarWidget extends StatelessWidget {
           color: ColorsValue.primaryTabColor,
           child: Padding(
             padding:
-            const EdgeInsets.symmetric(horizontal: 15.0, vertical: 18.0),
+            const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
             child: GNav(
               backgroundColor: ColorsValue.primaryTabColor,
               color: Colors.white,
               activeColor: ColorsValue.primaryTabColor,
               tabBackgroundColor: Colors.white,
               gap: 8,
-              padding: const EdgeInsets.all(14),
+              padding: Dimens.edgeInsets10_5_10_5,
               tabs: [
                 GButton(
                   iconSize: 28,

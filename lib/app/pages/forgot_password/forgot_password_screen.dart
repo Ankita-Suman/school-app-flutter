@@ -14,13 +14,18 @@ class ForgotPasswordScreen extends StatelessWidget {
       builder: (controller) => Scaffold(
         appBar: AppBar(
           backgroundColor: ColorsValue.primaryColor,
-          leading: SizedBox(
-              height: Dimens.ten,
-              width: Dimens.ten,
-              child: SvgPicture.asset(AssetConstants.icBackArrow,
-                  height: Dimens.ten,
-                  width: Dimens.ten,
-                  fit: BoxFit.scaleDown)),
+          leading:  GestureDetector(
+              onTap: (){
+                Get.back();
+                },
+              child:SizedBox(
+                    height: Dimens.ten,
+                    width: Dimens.ten,
+                    child: SvgPicture.asset(AssetConstants.icBackArrow,
+                        height: Dimens.ten,
+                        width: Dimens.ten,
+                        fit: BoxFit.scaleDown))
+        ),
         ),
         resizeToAvoidBottomInset: false,
         backgroundColor: ColorsValue.primaryColor,

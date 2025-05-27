@@ -14,13 +14,7 @@ class OtpVerificationScreen extends StatelessWidget {
       builder: (controller) => Scaffold(
         appBar: AppBar(
           backgroundColor: ColorsValue.primaryColor,
-          leading: SizedBox(
-              height: Dimens.ten,
-              width: Dimens.ten,
-              child: SvgPicture.asset(AssetConstants.icBackArrow,
-                  height: Dimens.ten,
-                  width: Dimens.ten,
-                  fit: BoxFit.scaleDown)),
+          leading: Dimens.box0,
         ),
         resizeToAvoidBottomInset: false,
         backgroundColor: ColorsValue.primaryColor,
@@ -93,11 +87,15 @@ class OtpVerificationScreen extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(StringConstants.resendCode,
-                                    style: Styles.greyBg14w400,),
+                                  InkWell(
+                                    onTap: (){
+                                      controller.enableResend ?controller.resendCode : null;
+                                    },
+                                    child: Text(StringConstants.resendCode,
+                                    style: Styles.greyBg14w400),),
 
                                   // Text('00:${NumberFormat("00").format(controller.counter)}',
-                                  Text('0:126',
+                                  Text(  '00: ${controller.secondsRemaining} ',
                                     style: Styles.greyBg14w400,),
                                 ],
                               )

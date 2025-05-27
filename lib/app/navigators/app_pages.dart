@@ -1,12 +1,15 @@
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
 import 'package:school_app/app/pages/choose_options/choose_options.dart';
+import 'package:school_app/app/pages/events/events.dart';
 import 'package:school_app/app/pages/forgot_password/forgot_password.dart';
 import 'package:school_app/app/pages/home/home.dart';
 import 'package:school_app/app/pages/login_parent/login_parent.dart';
 import 'package:school_app/app/pages/login_student/login_student.dart';
 import 'package:school_app/app/pages/login_teacher/login_teacher.dart';
+import 'package:school_app/app/pages/notifications/notifications.dart';
 import 'package:school_app/app/pages/otp_verification/otp_verification.dart';
+import 'package:school_app/app/pages/profile/profile.dart';
 
 part 'app_routes.dart';
 
@@ -20,7 +23,7 @@ part 'app_routes.dart';
 class AppPages {
   static var transitionDuration = const Duration(milliseconds: 300);
 
-  static const initial = Routes.splash;
+  static const initial = Routes.home;
 
   static final pages = [
     GetPage<SplashScreen>(
@@ -79,5 +82,26 @@ class AppPages {
       binding: OtpVerificationBinding(),
       transition: Transition.cupertino,
     ),
-   ];
+    GetPage<NotificationsScreen>(
+      name: _Paths.notifications,
+      transitionDuration: transitionDuration,
+      page: NotificationsScreen.new,
+      binding: NotificationsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<EventsScreen>(
+      name: _Paths.events,
+      transitionDuration: transitionDuration,
+      page: EventsScreen.new,
+      binding: EventsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ProfileScreen>(
+      name: _Paths.profile,
+      transitionDuration: transitionDuration,
+      page: ProfileScreen.new,
+      binding: ProfileBinding(),
+      transition: Transition.cupertino,
+    ),
+  ];
 }

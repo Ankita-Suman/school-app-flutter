@@ -38,19 +38,42 @@ static Color blueBgClr = const Color(
 static Color greyBgClr = const Color(
   greyBg,
   );
+static Color greyDarkBgClr = const Color(
+    greyDarkBg
+  );
+
+static Color lightSkyBgClr = const Color(
+    lightSkyBg
+  );
+
+static Color lightGryBgClr = const Color(
+    lightGryBg
+  );
 static Color darkGreyBgClr = const Color(
   darkGreyBg,
   );
 
+static Color darkGryBgClr = const Color(
+  darkGryBg,
+  );
+
+static Color borderGryBgClr = const Color(
+  borderGryBg,
+  );
+
   static const Color transparent = Colors.transparent;
-
-
 
   static const Color skipBlueColor = Color(
     skipBlue,
   );
   static const Color splashPurpleColor = Color(
     splashPurple,
+  );
+  static const Color tvGreyB = Color(
+    tvGrey,
+  );
+  static const Color tvDarkGreyB = Color(
+    tvDarkGrey,
   );
   static const Color signInButtonColor = Color(
     buttonColor,
@@ -364,8 +387,8 @@ static Color darkGreyBgClr = const Color(
   static Color darkGryColor = const Color(
     darkGryColorHe,
   );
-  static Color otpBordersColor = const Color(
-    otpBorders,
+  static const Color bordersColor =  Color(
+    borders,
   );
   static Color lightGrColor = Color(
     lightGrColorHex,
@@ -445,7 +468,15 @@ static Color darkGreyBgClr = const Color(
   static const int lightBlueBg = 0xffB5E0FF;
   static const int blueBg = 0xff1B1E28;
   static const int greyBg = 0xff7D848D;
+  static const int greyDarkBg = 0xff6E7781;
   static const int darkGreyBg = 0xff1B1E28;
+  static const int lightSkyBg = 0xffEDF7FF;
+  static const int lightGryBg = 0xffA9A9A9;
+  static const int darkGryBg = 0xff6E7781;
+  static const int borderGryBg = 0xffA9A9A9;
+  static const int borders = 0xffD9D9D9;
+  static const int tvGrey = 0xffA5A5A5;
+  static const int tvDarkGrey = 0xff323643;
 
   static const int lightGreyColorWithOpacityHex35 = 0x59C9CCD1;
 
@@ -550,7 +581,6 @@ static Color darkGreyBgClr = const Color(
   static const int blueTextClr = 0xff6371BF;
   static const int greenTextClr = 0xff80962B;
   static const int darkGryColorHe = 0xff777777;
-  static const int otpBorders = 0xffD9D9D9;
   static int lightGrColorHex = 0xff464646;
   static const int lightBlackColorHexa = 0xff3C3C3C;
   static const int lightGreyBlack = 0xff5D5D5D;

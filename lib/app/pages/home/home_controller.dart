@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
 import 'package:school_app/domain/domain.dart';
-
-import 'home.dart';
+import 'widgets/widgets.dart';
 
 class HomeController extends GetxController {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedSliderIndex = 0;
   int selectedIndex = 0;
+  DateTime date = DateTime.now();
+  late var formattedDate='';
   List<AcademicModel> academicList = [
     AcademicModel(name: "Live Class",image: AssetConstants.icLiveClass),
     AcademicModel(name: "Teacher",image: AssetConstants.icTeachers),
@@ -43,6 +45,13 @@ class HomeController extends GetxController {
 
   ];
 
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    formattedDate = DateFormat('d-MMM-yy').format(date);
+  }
+
   void onSliderChanged(int index) {
     selectedSliderIndex = index;
     update();
@@ -50,24 +59,29 @@ class HomeController extends GetxController {
 
   void onSelectedTabChanged(int index) {
     selectedIndex = index;
-    print('tabindex----${index}');
     update();
   }
 
-  // Widget getItemWidget(int pos) {
-  //   switch (pos) {
-  //     case 0:
-  //       return HomeWidget();
-  //    // case 1:
-  //     //   return DiscoverWidget();
-  //     // case 2:
-  //     //   return AppointmentsWidget();
-  //     // case 3:
-  //     //   return FavouritesWidget();
-  //     // case 4:
-  //     //   return ProfileWidget();
-  //     default:
-  //       return HomeWidget();
-  //   }
- // }
+  Widget getItemWidget(int pos) {
+    switch (pos) {
+      case 0:
+        return const HomeWidget();
+     case 1:
+        return const HomeWorkWidget();
+      case 2:
+        return const TimeTableWidget();
+      // case 3:
+      //   return FavouritesWidget();
+      // case 4:
+      //   return ProfileWidget();
+      default:
+        return const HomeWidget();
+    }
+ }
+
+  void setDate(DateTime selectedDate) {
+    date = selectedDate;
+    formattedDate = DateFormat('d-MMM-yy').format(selectedDate);
+    update();
+  }
 }

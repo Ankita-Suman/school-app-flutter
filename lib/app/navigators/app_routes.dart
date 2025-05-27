@@ -12,6 +12,9 @@ abstract class Routes {
   static const home = _Paths.home;
   static const forgotPassword = _Paths.forgotPassword;
   static const otpVerification = _Paths.otpVerification;
+  static const notifications = _Paths.notifications;
+  static const events = _Paths.events;
+  static const profile = _Paths.profile;
 
 }
 
@@ -24,5 +27,8 @@ abstract class _Paths {
   static const home = '/Home-screen';
   static const forgotPassword = '/Forgot-Password-screen';
   static const otpVerification = '/Otp-Verification-screen';
+  static const notifications = '/Notifications-screen';
+  static const events = '/Events-screen';
+  static const profile = '/Profile-screen';
 
 }
