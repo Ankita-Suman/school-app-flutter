@@ -27,6 +27,7 @@ dependencies:
   cached_network_image: ^3.2.3
   carousel_slider: ^5.0.0
   device_info_plus: ^11.4.0
+  dots_indicator: ^3.0.0
   dio: ^5.1.0
   dotted_border: ^3.0.1
   email_validator: ^3.0.0
@@ -45,6 +46,7 @@ dependencies:
   logger: ^2.5.0
   lottie: ^3.3.1
   loading_animation_widget: ^1.2.0+4
+  pinput: ^4.0.0
   url_launcher: ^6.1.7
   uuid: ^4.5.1
   video_player: ^2.5.1
