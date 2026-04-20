@@ -15,6 +15,7 @@ abstract class Routes {
   static const notifications = _Paths.notifications;
   static const events = _Paths.events;
   static const profile = _Paths.profile;
+  static const resetPassword = _Paths.resetPassword;
 
 }
 
@@ -30,5 +31,6 @@ abstract class _Paths {
   static const notifications = '/Notifications-screen';
   static const events = '/Events-screen';
   static const profile = '/Profile-screen';
+  static const resetPassword = '/Reset-Password-screen';
 
 }

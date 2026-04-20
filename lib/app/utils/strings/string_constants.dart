@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 abstract class StringConstants {
   static String appName = 'appName'.tr;
   static String pleaseEnterEmail = 'pleaseEnterEmail'.tr;
+  static String pleaseEnterBranchCode = 'pleaseEnterBranchCode'.tr;
   static String password = 'password'.tr;
   static String forgotPassword = 'forgotPassword'.tr;
   static String rememberMe = 'rememberMe'.tr;
@@ -21,10 +22,14 @@ abstract class StringConstants {
   static String timeTable = 'timeTable'.tr;
   static String calender = 'calender'.tr;
   static String forgotPasswordText = 'forgotPasswordText'.tr;
-  static String enterMobileNumber = 'enterMobileNumber'.tr;
+  static String enterForgotMsg = 'enterForgotMsg'.tr;
   static String resetPassword = 'resetPassword'.tr;
   static String checkYouEmail = 'checkYouEmail'.tr;
   static String sendPassword = 'sendPassword'.tr;
+  static String submit = 'submit'.tr;
+  static String verifyOtp = 'verifyOtp'.tr;
+  static String resetPasswordText = 'resetPasswordText'.tr;
+  static String confirmPassword = 'confirmPassword'.tr;
   static String pleaseEnterPhoneNumber = 'pleaseEnterPhoneNumber'.tr;
   static String pleaseEnterValidNumber = 'pleaseEnterValidNumber'.tr;
   static String otpVerification = 'OTPVerification'.tr;
@@ -42,7 +47,8 @@ abstract class StringConstants {
   static String pleaseEnterValidEmail = 'pleaseEnterValidEmail'.tr;
   static String shouldBe6Characters = 'shouldBe6Characters'.tr;
   static String passwordRequired = 'passwordRequired'.tr;
-  static String mobileNumberEmail = 'mobileNumberEmail'.tr;
+  static String usernameEmail = 'usernameEmail'.tr;
+  static String branchCode = 'branchCode'.tr;
   static String attendance = 'attendance'.tr;
   static String result = 'result'.tr;
   static String fees = 'fees'.tr;

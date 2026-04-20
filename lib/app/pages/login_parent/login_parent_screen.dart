@@ -54,7 +54,7 @@ class LoginParentScreen extends StatelessWidget {
                               FormFieldWidget(
                                 onTap: () async {},
                                 contentPadding: Dimens.edgeInsets0_10_8_10,
-                                labelText: StringConstants.mobileNumberEmail,
+                                labelText: StringConstants.usernameEmail,
                                 formStyle: Styles.darkBlue16,
                                 textInputAction: TextInputAction.next,
                                 labelStyle: Styles.blueDarkHintReg12,

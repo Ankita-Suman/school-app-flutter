@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:school_app/domain/domain.dart';
 
 import 'profile.dart';
 
@@ -6,8 +7,16 @@ import 'profile.dart';
 class ProfileBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(
-      ProfileController.new,
+    Get.put<ProfileController>(
+      ProfileController(
+        Get.put(
+          ProfilePresenter(
+            ProfileUseCases(
+              Get.find<Repository>(),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

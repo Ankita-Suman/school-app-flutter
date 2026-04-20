@@ -101,38 +101,43 @@ class ProfileScreen extends StatelessWidget {
                                   padding: Dimens.edgeInsets5,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      // FIX: Row mein Expanded add kiya
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center, // Center alignment
                                         children: [
-                                          Image.asset(AssetConstants.icProfile,
-                                              width: Dimens.eighty,
-                                              height: Dimens.eighty,
-                                              fit: BoxFit.fill),
-                                          Dimens.boxWidth10,
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Dimens.boxHeight2,
-                                              Text(
-                                                'Anmol Singh',
-                                                style: Styles.black20,
-                                              ),
-                                              Dimens.boxHeight5,
-                                              Text(
-                                                'Class II-B  |  Roll no: 04',
-                                                style: Styles.black15,
-                                              ),
-                                            ],
+                                          // Profile Image - Fixed size
+                                          Image.asset(
+                                            AssetConstants.icProfile,
+                                            width: Dimens.eighty,
+                                            height: Dimens.eighty,
+                                            fit: BoxFit.fill,
                                           ),
+                                          Dimens.boxWidth10,
+                                          // Middle Section - Expanded to take available space
+                                          Expanded(
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Dimens.boxHeight2,
+                                                Text(
+                                                  'Anmol Singh',
+                                                  style: Styles.black20,
+                                                  overflow: TextOverflow.ellipsis, // Add ellipsis for long text
+                                                ),
+                                                Dimens.boxHeight5,
+                                                Text(
+                                                  'Class II-B  |  Roll no: 04',
+                                                  style: Styles.black15,
+                                                  overflow: TextOverflow.ellipsis, // Add ellipsis for long text
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          // Camera Icon - Fixed position
                                           Padding(
                                             padding: Dimens.edgeInsets30_0_0_0,
                                             child: SvgPicture.asset(
@@ -146,28 +151,41 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               ),
                               Dimens.boxHeight10,
+                              // FIX 1: Quick Action Buttons Row - Overflow Fixed
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      StringConstants.information,
-                                      style: Styles.black12,
+                                    Expanded(
+                                      child: Text(
+                                        StringConstants.information,
+                                        style: Styles.black12,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    Text(
-                                      StringConstants.attendance,
-                                      style: Styles.black12,
+                                    Expanded(
+                                      child: Text(
+                                        StringConstants.attendance,
+                                        style: Styles.black12,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    Text(
-                                      StringConstants.result,
-                                      style: Styles.black12,
+                                    Expanded(
+                                      child: Text(
+                                        StringConstants.result,
+                                        style: Styles.black12,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    Text(
-                                      StringConstants.fees,
-                                      style: Styles.black12,
+                                    Expanded(
+                                      child: Text(
+                                        StringConstants.fees,
+                                        style: Styles.black12,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     )
                                   ],
                                 ),
@@ -178,116 +196,38 @@ class ProfileScreen extends StatelessWidget {
                                     thickness: 2,
                                     color: ColorsValue.bordersColor,
                                   )),
+                              // FIX 2: Aadhar No and Academic Year Row - Overflow Fixed
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.aadharNo,
-                                          style: Styles.grey12,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('1234 4325 4567 1234',
-                                                style: Styles.darkGrey12),
-                                            Padding(
-                                              padding: Dimens.edgeInsets8_2_8_2,
-                                              child: SvgPicture.asset(
-                                                  height: Dimens.twelve,
-                                                  width: Dimens.twelve,
-                                                  AssetConstants.icLock),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                            width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.academicYear,
-                                          style: Styles.grey12,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('2020-2021',
-                                                style: Styles.darkGrey12),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                            width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Dimens.boxHeight5,
-                              Padding(
-                                padding: Dimens.edgeInsets10_5_10_0,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.admissionClass,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.aadharNo,
+                                            style: Styles.grey12,
+                                          ),
+                                          Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.start,
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
+                                              Flexible(
+                                                child: Text('1234 4325 4567 1234',
+                                                    style: Styles.darkGrey12,
+                                                    overflow: TextOverflow.ellipsis),
+                                              ),
                                               Padding(
-                                                padding:
-                                                    Dimens.edgeInsets8_2_8_2,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icParler),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
+                                                padding: Dimens.edgeInsets8_2_8_2,
                                                 child: SvgPicture.asset(
                                                     height: Dimens.twelve,
                                                     width: Dimens.twelve,
@@ -295,337 +235,436 @@ class ProfileScreen extends StatelessWidget {
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        SizedBox(
-                                            width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.admissionNo,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('T00221',
-                                                  style: Styles.darkGrey12),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icLock),
-                                              ),
-                                            ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.academicYear,
+                                            style: Styles.grey12,
                                           ),
-                                        ),
-                                        SizedBox(
-                                            width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                          Text('2020-2021',
+                                              style: Styles.darkGrey12),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               Dimens.boxHeight5,
+                              // FIX 3: Admission Class and Admission No Row - Overflow Fixed
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.dateOfAdmission,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('01 Apr 2019',
-                                                  style: Styles.darkGrey12),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icLock),
-                                              ),
-                                            ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.admissionClass,
+                                            style: Styles.grey12,
                                           ),
-                                        ),
-                                        SizedBox(
+                                          SizedBox(
                                             width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                  Dimens.edgeInsets8_2_8_2,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icParler),
+                                                ),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.dateOfBirth,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('22 July 2017',
-                                                  style: Styles.darkGrey12),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icLock),
-                                              ),
-                                            ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.admissionNo,
+                                            style: Styles.grey12,
                                           ),
-                                        ),
-                                        SizedBox(
+                                          SizedBox(
                                             width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text('T00221',
+                                                    style: Styles.darkGrey12),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               Dimens.boxHeight5,
+                              // FIX 4: Date of Admission and Date of Birth Row - Overflow Fixed
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.bloodGroup,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('O+',
-                                                  style: Styles.darkGrey12),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icLock),
-                                              ),
-                                            ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.dateOfAdmission,
+                                            style: Styles.grey12,
                                           ),
-                                        ),
-                                        SizedBox(
+                                          SizedBox(
                                             width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text('01 Apr 2019',
+                                                    style: Styles.darkGrey12),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.phoneNo,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('0123456789',
-                                                  style: Styles.darkGrey12),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icLock),
-                                              ),
-                                            ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.dateOfBirth,
+                                            style: Styles.grey12,
                                           ),
-                                        ),
-                                        SizedBox(
+                                          SizedBox(
                                             width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text('22 July 2017',
+                                                    style: Styles.darkGrey12),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               Dimens.boxHeight5,
+                              // FIX 5: Blood Group and Phone No Row - Overflow Fixed
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.height,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('3.5',
-                                                  style: Styles.darkGrey12),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icLock),
-                                              ),
-                                            ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.bloodGroup,
+                                            style: Styles.grey12,
                                           ),
-                                        ),
-                                        SizedBox(
+                                          SizedBox(
                                             width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text('O+',
+                                                    style: Styles.darkGrey12),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.weight,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.hundredFiftyFive,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('25',
-                                                  style: Styles.darkGrey12),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: SvgPicture.asset(
-                                                    height: Dimens.twelve,
-                                                    width: Dimens.twelve,
-                                                    AssetConstants.icLock),
-                                              ),
-                                            ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.phoneNo,
+                                            style: Styles.grey12,
                                           ),
-                                        ),
-                                        SizedBox(
+                                          SizedBox(
                                             width: Dimens.hundredFiftyFive,
-                                            child: const Divider(
-                                              thickness: 1,
-                                              color: ColorsValue.bordersColor,
-                                            )),
-                                      ],
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text('0123456789',
+                                                    style: Styles.darkGrey12),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Dimens.boxHeight5,
+                              // FIX 6: Height and Weight Row - Overflow Fixed
+                              Padding(
+                                padding: Dimens.edgeInsets10_5_10_0,
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.height,
+                                            style: Styles.grey12,
+                                          ),
+                                          SizedBox(
+                                            width: Dimens.hundredFiftyFive,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text('3.5',
+                                                    style: Styles.darkGrey12),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.weight,
+                                            style: Styles.grey12,
+                                          ),
+                                          SizedBox(
+                                            width: Dimens.hundredFiftyFive,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text('25',
+                                                    style: Styles.darkGrey12),
+                                                Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: SvgPicture.asset(
+                                                      height: Dimens.twelve,
+                                                      width: Dimens.twelve,
+                                                      AssetConstants.icLock),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: Dimens.hundredFiftyFive,
+                                              child: const Divider(
+                                                thickness: 1,
+                                                color: ColorsValue.bordersColor,
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               Dimens.boxHeight20,
+                              // Parent Id Row - No change needed
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Column(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                      MainAxisAlignment.start,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           StringConstants.parentId,
@@ -635,15 +674,18 @@ class ProfileScreen extends StatelessWidget {
                                           width: Dimens.percentWidth(0.91),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
-                                              Text('parentboth84@gmail.com',
-                                                  style: Styles.darkGrey12),
+                                              Flexible(
+                                                child: Text('parentboth84@gmail.com',
+                                                    style: Styles.darkGrey12,
+                                                    overflow: TextOverflow.ellipsis),
+                                              ),
                                               Align(
                                                 alignment:
-                                                    Alignment.bottomRight,
+                                                Alignment.bottomRight,
                                                 child: SvgPicture.asset(
                                                     height: Dimens.twelve,
                                                     width: Dimens.twelve,
@@ -662,36 +704,35 @@ class ProfileScreen extends StatelessWidget {
                                 color: ColorsValue.bordersColor,
                               ),
                               Dimens.boxHeight5,
+                              // Mother Name Row
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.motherName,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.percentWidth(0.91),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.motherName,
+                                            style: Styles.grey12,
+                                          ),
+                                          Row(
                                             children: [
-                                              Text('Amit Singh',
-                                                  style: Styles.darkGrey12),
+                                              Flexible(
+                                                child: Text('Amit Singh',
+                                                    style: Styles.darkGrey12,
+                                                    overflow: TextOverflow.ellipsis),
+                                              ),
                                               Align(
                                                 alignment:
-                                                    Alignment.bottomRight,
+                                                Alignment.bottomRight,
                                                 child: SvgPicture.asset(
                                                     height: Dimens.twelve,
                                                     width: Dimens.twelve,
@@ -699,8 +740,8 @@ class ProfileScreen extends StatelessWidget {
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -710,36 +751,35 @@ class ProfileScreen extends StatelessWidget {
                                 color: ColorsValue.bordersColor,
                               ),
                               Dimens.boxHeight5,
+                              // Father Name Row
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.fatherName,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.percentWidth(0.91),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.fatherName,
+                                            style: Styles.grey12,
+                                          ),
+                                          Row(
                                             children: [
-                                              Text('Preeti Singh',
-                                                  style: Styles.darkGrey12),
+                                              Flexible(
+                                                child: Text('Preeti Singh',
+                                                    style: Styles.darkGrey12,
+                                                    overflow: TextOverflow.ellipsis),
+                                              ),
                                               Align(
                                                 alignment:
-                                                    Alignment.bottomRight,
+                                                Alignment.bottomRight,
                                                 child: SvgPicture.asset(
                                                     height: Dimens.twelve,
                                                     width: Dimens.twelve,
@@ -747,8 +787,8 @@ class ProfileScreen extends StatelessWidget {
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -758,36 +798,35 @@ class ProfileScreen extends StatelessWidget {
                                 color: ColorsValue.bordersColor,
                               ),
                               Dimens.boxHeight5,
+                              // Permanent Address Row
                               Padding(
                                 padding: Dimens.edgeInsets10_5_10_0,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          StringConstants.permanentAddress,
-                                          style: Styles.grey12,
-                                        ),
-                                        SizedBox(
-                                          width: Dimens.percentWidth(0.91),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            StringConstants.permanentAddress,
+                                            style: Styles.grey12,
+                                          ),
+                                          Row(
                                             children: [
-                                              Text('Ludhiana , Punjab',
-                                                  style: Styles.darkGrey12),
+                                              Flexible(
+                                                child: Text('Ludhiana , Punjab',
+                                                    style: Styles.darkGrey12,
+                                                    overflow: TextOverflow.ellipsis),
+                                              ),
                                               Align(
                                                 alignment:
-                                                    Alignment.bottomRight,
+                                                Alignment.bottomRight,
                                                 child: SvgPicture.asset(
                                                     height: Dimens.twelve,
                                                     width: Dimens.twelve,
@@ -795,8 +834,8 @@ class ProfileScreen extends StatelessWidget {
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),

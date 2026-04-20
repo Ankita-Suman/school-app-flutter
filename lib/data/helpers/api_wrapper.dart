@@ -17,7 +17,7 @@ class ApiWrapper {
   Future<ResponseModel> makeRequest(String url, Request request, dynamic data,
       bool isLoading, Map<String, String> headers) async {
     /// To see whether the network is available or not
-    if (await Utility.isNetworkAvailable()) {
+    // if (await Utility.isNetworkAvailable()) {
       switch (request) {
         /// Method to make the Get type request
         case Request.get:
@@ -189,17 +189,17 @@ class ApiWrapper {
     }
 
     /// If there is no network available then instead of print can show the no internet widget too
-    else {
-      if (Get.isDialogOpen!) {
-        Get.back<void>();
-      }
-      return ResponseModel(
-        data:
-            '{"message":"No internet, please enable mobile data or wi-fi in your phone settings and try again"}',
-        hasError: true,
-        errorCode: 1000,
-      );
-    }
+    // else {
+    //   if (Get.isDialogOpen!) {
+    //     Get.back<void>();
+    //   }
+    //   return ResponseModel(
+    //     data:
+    //         '{"message":"No internet, please enable mobile data or wi-fi in your phone settings and try again"}',
+    //     hasError: true,
+    //     errorCode: 1000,
+    //   );
+    // }
   }
 
   /// Method to return the API response based upon the status code of the server
@@ -248,4 +248,4 @@ class ApiWrapper {
             errorCode: response.statusCode);
     }
   }
-}
+

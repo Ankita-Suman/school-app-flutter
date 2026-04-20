@@ -12,6 +12,7 @@ abstract class DeviceConstants {
   static const String deviceToken = 'deviceToken';
   static const String profileData = 'profileData';
   static const String email = 'email';
+  static const String username = 'username';
   static const String password = 'password';
   static const String phoneNumber = 'phoneNumber';
   static const String facebook = 'facebook';
@@ -22,6 +23,10 @@ abstract class DeviceConstants {
   static const String location = 'location';
   static const String isPasswordReset = 'isPasswordReset';
   static const String token = 'token';
+  static const String otp = 'otp';
+  static const String resetToken = 'token';
+  static const String branchId = 'branchId';
+  static const String branchCode = 'branchCode';
   static const String isForgot = 'isForgot';
   static const String isSalon = 'isSalon';
   static const String type = 'type';

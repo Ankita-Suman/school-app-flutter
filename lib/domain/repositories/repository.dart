@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:school_app/app/app.dart';
 import 'package:school_app/data/data.dart';
 import 'package:school_app/device/device.dart';
 import 'package:school_app/domain/domain.dart';
-import 'package:get/get.dart';
+import 'package:school_app/domain/models/profile_response.dart';
+
+import '../models/forgot_password_model.dart';
 
 /// The main repository which will get the data from [DeviceRepository] or the
 /// [DataRepository].
@@ -146,125 +147,216 @@ class Repository {
     }
   }
 
-  Future<String?> uploadImage({
-    required bool isLoading,
-    required String signedUploadUrl,
-    required File image,
-  }) async {
-    try {
-      await _dataRepository.uploadImage(
-          isLoading: isLoading, signedUploadUrl: signedUploadUrl, image: image);
-      //if (!res.hasError) {
-      final uri = Uri.tryParse(signedUploadUrl);
-      if (uri == null) {
-        Utility.closeDialog();
-        await Utility.showAlertInfoDialog(
-            message: 'Could not parse S3 uploadURL',
-            title: 'Info',
-            onPress: () {
-              Get.back<dynamic>();
-            });
-      }
+  // Future<String?> uploadImage({
+  //   required bool isLoading,
+  //   required String signedUploadUrl,
+  //   required File image,
+  // }) async {
+  //   try {
+  //     await _dataRepository.uploadImage(
+  //         isLoading: isLoading, signedUploadUrl: signedUploadUrl, image: image);
+  //     //if (!res.hasError) {
+  //     final uri = Uri.tryParse(signedUploadUrl);
+  //     if (uri == null) {
+  //       Utility.closeDialog();
+  //       await Utility.showAlertInfoDialog(
+  //           message: 'Could not parse S3 uploadURL',
+  //           title: 'Info',
+  //           onPress: () {
+  //             Get.back<dynamic>();
+  //           });
+  //     }
+  //
+  //     return uri?.pathSegments.last;
+  //     // } else {
+  //     //   //Utility.showInfoDialog(res);
+  //     //   return null;
+  //     // }
+  //   } catch (e) {
+  //     await _deviceRepository.uploadImage(
+  //         isLoading: isLoading, signedUploadUrl: signedUploadUrl, image: image);
+  //     return null;
+  //   }
+  // }
 
-      return uri?.pathSegments.last;
-      // } else {
-      //   //Utility.showInfoDialog(res);
-      //   return null;
-      // }
-    } catch (e) {
-      await _deviceRepository.uploadImage(
-          isLoading: isLoading, signedUploadUrl: signedUploadUrl, image: image);
-      return null;
-    }
-  }
-
-  Future<ResponseModel?> emailOtp(
-      {required bool isLoading, required String email}) async {
-    var token =
-        await _deviceRepository.getSecuredValue(DeviceConstants.accessToken);
+  Future<LoginResponse?> loginApi(
+      {required bool isLoading, required String loginName,
+        required String password,
+        required String branchCode}) async {
     try {
-      var res = await _dataRepository.emailOtp(
-        isLoading: isLoading,
-        email: email,
-        token: token,
-      );
+      var res = await _dataRepository.loginApi(isLoading: isLoading, loginName: loginName, password: password, branchCode: branchCode, );
       if (!res.hasError) {
-        return res;
+        var data = loginResponseFromJson(res.data);
+        return data;
       } else {
-        if (res.errorCode == 520) {
-          await Utility.showAlertInfoDialog(
-              buttonText: 'Ok',
-              onPress: () {
-                // RouteManagement.goToInstructions();
-              },
-              title: 'Alert',
-              message:
-                  'You have exhausted the OTP limit. Please try again later');
-        } else {
-          Utility.showInfoDialog(res);
-        }
+        Utility.showInfoDialog(res);
         return null;
       }
     } catch (e) {
-      await _deviceRepository.emailOtp(
-        isLoading: isLoading,
-        email: email,
-        token: token,
-      );
+      await _deviceRepository.loginApi(isLoading: isLoading, loginName: loginName, password: password,branchCode: branchCode);
       return null;
     }
   }
 
-  Future<ResponseModel?> phoneOtp(
-      {required bool isLoading,
-      required String phone,
-      required String countryCode}) async {
-    var token =
-        await _deviceRepository.getSecuredValue(DeviceConstants.accessToken);
+  Future<ForgotPasswordResponse?> forgotPasswordAPI({
+    required bool isLoading,
+    required String branchCode,
+    required String login,
+  }) async {
     try {
-      var res = await _dataRepository.phoneOtp(
+      var res = await _dataRepository.forgotPasswordAPI(
         isLoading: isLoading,
-        phone: phone,
-        countryCode: countryCode,
-        token: token,
+        branchCode: branchCode,
+        login: login,
       );
       if (!res.hasError) {
-        return res;
+        var data = forgotPasswordResponseFromJson(res.data);
+        return data;
       } else {
-        if (res.errorCode == 520) {
-          await Utility.showAlertInfoDialog(
-              buttonText: 'Ok',
-              onPress: () {
-                // RouteManagement.goToInstructions();
-              },
-              title: 'Alert',
-              message:
-                  'You have exhausted the OTP limit. Please try again later');
-        } else {
-          Utility.showInfoDialog(res);
-        }
+        Utility.showInfoDialog(res);
         return null;
       }
     } catch (e) {
-      await _deviceRepository.phoneOtp(
+      await _deviceRepository.forgotPasswordAPI(
         isLoading: isLoading,
-        phone: phone,
-        countryCode: countryCode,
-        token: token,
+        branchCode: branchCode,
+        login: login,
       );
       return null;
     }
   }
 
-  Future<ResponseModel?> logout({
+  Future<ForgotPasswordResponse?> resendOtpAPI({
     required bool isLoading,
-    required String? deviceToken,
+    required String branchCode,
+    required String login,
+  }) async {
+    try {
+      var res = await _dataRepository.resendOtpAPI(
+        isLoading: isLoading,
+        branchCode: branchCode,
+        login: login,
+      );
+      if (!res.hasError) {
+        var data = forgotPasswordResponseFromJson(res.data);
+        return data;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.resendOtpAPI(
+        isLoading: isLoading,
+        branchCode: branchCode,
+        login: login,
+      );
+      return null;
+    }
+  }
+
+  Future<OtpVerifyResponse?> verifyOtpAPI({
+    required bool isLoading,
+    required String login,
+    required String branchCode,
+    required String otp,
+  }) async {
+    try {
+      var res = await _dataRepository.verifyOtpAPI(
+        isLoading: isLoading,
+        login: login,
+        branchCode: branchCode,
+        otp: otp,
+      );
+      if (!res.hasError) {
+        var data = otpVerifyResponseFromJson(res.data);
+        return data;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.verifyOtpAPI(
+        isLoading: isLoading,
+        login: login,
+        branchCode: branchCode,
+        otp: otp,
+      );
+      return null;
+    }
+  }
+
+ Future<ResetPasswordResponse?> resetPasswordAPI({
+   required bool isLoading,
+   required String login,
+   required String branchCode,
+   required String token,
+   required String newPassword,
+   required String passwordConfirmation,
+  }) async {
+    try {
+      var res = await _dataRepository.resetPasswordAPI(
+        isLoading: isLoading,
+        login: login,
+        branchCode: branchCode,
+        token: token,
+        newPassword: newPassword,
+        passwordConfirmation: passwordConfirmation,
+      );
+      if (!res.hasError) {
+        var data = resetResponseFromJson(res.data);
+        return data;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.resetPasswordAPI(
+        isLoading: isLoading,
+        login: login,
+        branchCode: branchCode,
+        token: token,
+        newPassword: newPassword,
+        passwordConfirmation: passwordConfirmation,
+      );
+      return null;
+    }
+  }
+
+  Future<ProfileResponse?> getProfileDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getProfileDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+      );
+      if (!res.hasError && res.data != null) {
+        return profileResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getProfileDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+      );
+      return null;
+    }
+  }
+
+  Future<ResponseModel?> logoutAPI({
+    required bool isLoading,
   }) async {
     var token =
         await _deviceRepository.getSecuredValue(DeviceConstants.accessToken);
     try {
-      var res = await _dataRepository.logout(
-          isLoading: isLoading, token: token, deviceToken: deviceToken);
+      var res = await _dataRepository.logoutAPI(
+          isLoading: isLoading, token: token);
       if (!res.hasError) {
         return res;
       } else {
@@ -273,7 +365,7 @@ class Repository {
       }
     } catch (e) {
       await _deviceRepository.logout(
-          isLoading: isLoading, token: token, deviceToken: deviceToken);
+          isLoading: isLoading, token: token, );
       return null;
     }
   }

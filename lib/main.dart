@@ -6,6 +6,11 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'app/app.dart';
+import 'data/helpers/connect_helper.dart';
+import 'data/repositories/data_repositories.dart';
+import 'device/repositories/device_repositories.dart';
+import 'domain/repositories/repository.dart';
+import 'domain/usecases/auth_use_cases.dart';
 
 late String? deviceToken;
 
@@ -14,12 +19,44 @@ void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     await Hive.initFlutter();
-    await GetStorage.init('appData');
+    await initServices();
+    await GetStorage.init(); // Initialize GetStorage
+    // Register repositories BEFORE running the app
+    Get.put(DeviceRepository()); // Register DeviceRepository
     runApp(const MyApp());
   } catch (error) {
     Utility.printELog(error.toString());
   }
 }
+
+/// Initialize the services before the app starts.
+Future<void> initServices() async {
+  Get.put(
+    AuthUseCases(
+      Get.put(
+        Repository(
+          Get.put(
+            DeviceRepository(),
+            permanent: true,
+          ),
+          Get.put(
+            DataRepository(
+              Get.put(
+                ConnectHelper(),
+                permanent: true,
+              ),
+            ),
+            permanent: true,
+          ),
+        ),
+        permanent: true,
+      ),
+    ),
+    permanent: true,
+  );
+ // await Get.putAsync(() => DbService().init());
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 

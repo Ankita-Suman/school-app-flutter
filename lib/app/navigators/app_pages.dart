@@ -10,6 +10,7 @@ import 'package:school_app/app/pages/login_teacher/login_teacher.dart';
 import 'package:school_app/app/pages/notifications/notifications.dart';
 import 'package:school_app/app/pages/otp_verification/otp_verification.dart';
 import 'package:school_app/app/pages/profile/profile.dart';
+import 'package:school_app/app/pages/reset_password/reset_password.dart';
 
 part 'app_routes.dart';
 
@@ -23,7 +24,7 @@ part 'app_routes.dart';
 class AppPages {
   static var transitionDuration = const Duration(milliseconds: 300);
 
-  static const initial = Routes.home;
+  static const initial = Routes.splash;
 
   static final pages = [
     GetPage<SplashScreen>(
@@ -96,11 +97,18 @@ class AppPages {
       binding: EventsBinding(),
       transition: Transition.cupertino,
     ),
-    GetPage<ProfileScreen>(
+    GetPage<StaffProfileScreen>(
       name: _Paths.profile,
       transitionDuration: transitionDuration,
-      page: ProfileScreen.new,
+      page: StaffProfileScreen.new,
       binding: ProfileBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ResetPasswordScreen>(
+      name: _Paths.resetPassword,
+      transitionDuration: transitionDuration,
+      page: ResetPasswordScreen.new,
+      binding: ResetPasswordBinding(),
       transition: Transition.cupertino,
     ),
   ];

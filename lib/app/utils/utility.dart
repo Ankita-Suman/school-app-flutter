@@ -11,7 +11,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker_fork/flutter_cupertino_date_picker_fork.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:logger/logger.dart';
@@ -118,8 +117,8 @@ abstract class Utility {
   }
 
   /// Returns true if the internet connection is available.
-  static Future<bool> isNetworkAvailable() async =>
-      await InternetConnectionChecker().hasConnection;
+  // static Future<bool> isNetworkAvailable() async =>
+  //     await InternetConnectionChecker().hasConnection;
 
   /// Print the details of the [response].
   static void printResponseDetails(Response? response) {
@@ -807,5 +806,7 @@ abstract class Utility {
     var result = dateTime.timeAgo(numericDates: false);
     return result;
   }
+
+  static isNetworkAvailable() {}
 
 }

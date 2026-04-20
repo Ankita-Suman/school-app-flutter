@@ -1,5 +1,6 @@
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
+import 'package:school_app/app/pages/login_student/login_student.dart';
 
 /// A chunk of routes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        taken in the application.
 ///
@@ -8,34 +9,52 @@ abstract class RouteManagement {
 
 
   static void goToChooseOptions() {
-    Get.offAllNamed<void>(Routes.chooseOptions);
+    Get.offAllNamed(Routes.chooseOptions);
+  }
+
+
+  static void goToHome() {
+    // Navigate to home screen (replace with your actual home route)
+    Get.offAllNamed(Routes.home); // or Routes.dashboard
   }
 
   static void goToLoginTeacher() {
-    Get.toNamed<void>(Routes.loginTeacher);
+    Get.toNamed(Routes.loginTeacher);
   }
-  static void goToLoginStudent() {
-    Get.toNamed<void>(Routes.loginStudent);
+
+  // static void goToLoginStudentWithParam({required String role}) {
+  //   Get.to(
+  //         () =>  LoginStudentScreen(),
+  //     arguments: {'fromScreen': role}, // Pass argument
+  //   );
+  // }
+
+  static void goToLoginStudentWithParam({String? role}) {
+    Get.offAllNamed(Routes.loginStudent, arguments: <String, dynamic>{
+      'formScreen': role,
+    });
   }
+
   static void goToLoginParent() {
-    Get.toNamed<void>(Routes.loginParent);
+    Get.toNamed(Routes.loginParent);
   }
-  static void goToHome() {
-    Get.offAllNamed<void>(Routes.home);
-  }
+
   static void goToOtpVerification() {
-    Get.toNamed<void>(Routes.otpVerification);
+    Get.toNamed(Routes.otpVerification);
   }
   static void goToForgotPassword() {
-    Get.toNamed<void>(Routes.forgotPassword);
+    Get.toNamed(Routes.forgotPassword);
+  }
+  static void goToResetPassword() {
+    Get.toNamed(Routes.resetPassword);
   }
   static void goToNotifications() {
-    Get.toNamed<void>(Routes.notifications);
+    Get.toNamed(Routes.notifications);
   }
   static void goToEvents() {
-    Get.toNamed<void>(Routes.events);
+    Get.toNamed(Routes.events);
   }
   static void goToProfile() {
-    Get.toNamed<void>(Routes.profile);
+    Get.toNamed(Routes.profile);
   }
 }

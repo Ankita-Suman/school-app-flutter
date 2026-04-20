@@ -5,14 +5,18 @@
 abstract class DataConstants {
   static const String defaultLang = 'en';
   static const String appBaseUrl =
-  // 'https://koxev34z1k.execute-api.ap-south-1.amazonaws.com/test'; //Testing Url
-  // 'https://0v4dy6r9r4.execute-api.ap-south-1.amazonaws.com/dev'; //Testing Url
-  'https://pokqpc6hj6.execute-api.ap-south-1.amazonaws.com/stage'; //Testing Url
+  'https://demo.aitsolutions.in'; //Testing Url
   static const String countryListing = '/api/v1/common/countries';
   static const String register = '/api/v1/user/register';
   static const String socialAuth = '/api/v1/social-auth';
-  static const String login = '/api/v1/user/login';
-  static const String verifyOtp = '/api/v1/user/userMobileVerifyOtp';
+  static const String login = '/api/branch/login';
+  static const String forgotPassword = '/api/branch/forgot-password';
+  static const String resendOtp = '/api/branch/resend-otp';
+  static const String verifyOtp = '/api/branch/verify-otp';
+  static const String resetPassword = '/api/branch/reset-password';
+  static const String getProfile = '/api';
+  static const String logout = '/api/logout';
+
   static const String verifyEmailOtp = '/api/v1/user/verify-otp';
   static const String completeProfile = '/api/v1/user/completeProfile';
   static const String updateProfile = '/api/v1/user/updateProfile';
@@ -20,13 +24,11 @@ abstract class DataConstants {
   static const String getSignedURL = '/api/v1/common/getSignedURL';
   static const String emailOtp = '/api/v1/user/secondaryEmailVerification';
   static const String phoneNumberOtp = '/api/v1/user/secondaryPhoneVerification';
-  static const String logout = '/api/v1/user/logout';
   static const String changePassword = '/api/v1/user/changePassword';
   static const String homeList = '/api/v1/category';
   static const String getEmailForgotOtp = '/api/v1/user/forgotPassword';
   static const String userAddresses = '/api/v1/userAddresses';
   static const String verifyForgetPasswordOtp = '/api/v1/user/verifyForgetPasswordOtp';
-  static const String resetPassword = '/api/v1/user/resetPassword';
   static const String resendForgotPasswordOtp = '/api/v1/user/resendForgotPasswordOtp';
   static const String listing = '/api/v1/user/home/listing';
   static const String categoriesListing = '/api/v1/user/home/categoriesListing';
