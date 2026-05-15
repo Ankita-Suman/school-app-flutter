@@ -26,7 +26,7 @@ class ChooseOptionsScreen extends StatelessWidget {
                         ),
                         InkWell(
                           onTap: () {
-                            RouteManagement.goToLoginStudentWithParam(role: 'teacher');
+                           // RouteManagement.goToLoginStudentWithParam(role: 'teacher');
                             //RouteManagement.goToLoginParent();
                           },
                           child: Image.asset(AssetConstants.icTeacher,
@@ -40,14 +40,14 @@ class ChooseOptionsScreen extends StatelessWidget {
                           children: [
                             InkWell(
                                 onTap: () {
-                                  RouteManagement.goToLoginStudentWithParam(role: 'student');
+                              //    RouteManagement.goToLoginStudentWithParam(role: 'student');
                                 },
                                 child: Image.asset(AssetConstants.icStudent,
                                     width: Dimens.hundredFifty,
                                     height: Dimens.hundredFifty)),
                             InkWell(
                                 onTap: () {
-                                  RouteManagement.goToLoginStudentWithParam(role: 'parent');
+                                //  RouteManagement.goToLoginStudentWithParam(role: 'parent');
                                 },
                                 child: Image.asset(AssetConstants.icParent,
                                     width: Dimens.hundredFifty,

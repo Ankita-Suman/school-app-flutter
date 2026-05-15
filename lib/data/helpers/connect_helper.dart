@@ -159,16 +159,93 @@ class ConnectHelper {
   Future<ResponseModel> getProfileDetailsAPI({
     required bool isLoading,
     required String token,
-    required String branchId,
+    required String branchId, required String studentId,
   }) async {
     var headers = {
       'Content-type': 'Application/json',
       'Authorization': 'Bearer $token',
     };
     String branch_id = branchId;
-    String url = '${DataConstants.getProfile}/$branch_id/profile';
+    String url = '${DataConstants.getProfile}/$branch_id/student/$studentId/profile';
     var res = await apiWrapper.makeRequest(url, Request.get, null, isLoading, headers);
     print("✅ Profile url---: ${url}");
+    return res;
+  }
+
+  Future<ResponseModel> getFeesDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/fees/student/dashboard?student_id=$studentId';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ Fees Dashboard URL: $url");
+    return res;
+  }
+  Future<ResponseModel> getAllEvents({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/student/dashboard/all-events?student_id=$studentId';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ events Dashboard URL: $url");
+    return res;
+  }
+
+  Future<ResponseModel> getInvoiceDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String invoiceId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/fees/invoice/$invoiceId';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ invoice Dashboard URL: $url");
     return res;
   }
 

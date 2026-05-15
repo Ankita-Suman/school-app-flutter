@@ -146,9 +146,31 @@ class DeviceRepository extends DomainRepository {
     @override
     Future<ResponseModel> getProfileDetailsAPI({required bool isLoading,
       required String token,
-      required String branchId,
+      required String branchId, required String studentId,
     }) {
       throw UnimplementedError();
+  }
+ @override
+    Future<ResponseModel> getFeesDetailsAPI({required bool isLoading,
+      required String token,
+      required String branchId, required String studentId,
+    }) {
+      throw UnimplementedError();
+  }
+  @override
+    Future<ResponseModel> getAllEvents({required bool isLoading,
+      required String token,
+      required String branchId, required String studentId,
+    }) {
+      throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getInvoiceDetailsAPI({required bool isLoading,
+    required String token,
+    required String invoiceId, required String branchId,
+  }) {
+    throw UnimplementedError();
   }
 
   @override

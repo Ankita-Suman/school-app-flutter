@@ -11,7 +11,7 @@ class ProfileBinding extends Bindings {
       ProfileController(
         Get.put(
           ProfilePresenter(
-            ProfileUseCases(
+            HomeUseCases(
               Get.find<Repository>(),
             ),
           ),

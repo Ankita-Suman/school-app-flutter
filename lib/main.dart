@@ -18,6 +18,7 @@ late String? deviceToken;
 void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     await Hive.initFlutter();
     await initServices();
     await GetStorage.init(); // Initialize GetStorage

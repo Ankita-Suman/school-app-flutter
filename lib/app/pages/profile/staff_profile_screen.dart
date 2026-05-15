@@ -89,7 +89,7 @@ class StaffProfileScreen extends StatelessWidget {
                           const Text('No profile data available'),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => controller.getProfileDetails(),
+                            onPressed: () => (){},
                             child: const Text('Retry'),
                           ),
                         ],
@@ -117,15 +117,15 @@ class StaffProfileScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      controller.get('name'),
-                                      style: Styles.black20,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      controller.get('role'),
-                                      style: Styles.grey12,
-                                    ),
+                                    // Text(
+                                    //   controller.get('name'),
+                                    //   style: Styles.black20,
+                                    // ),
+                                    // const SizedBox(height: 4),
+                                    // Text(
+                                    //   controller.get('role'),
+                                    //   style: Styles.grey12,
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -134,9 +134,9 @@ class StaffProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         // Details
-                        _infoRow('Email', controller.get('email')),
+                        //_infoRow('Email', controller.get('email')),
                         const Divider(),
-                        _infoRow('Role', controller.get('role')),
+                       // _infoRow('Role', controller.get('role')),
                         const Divider(),
                         const SizedBox(height: 20),
                         // Logout
@@ -153,7 +153,7 @@ class StaffProfileScreen extends StatelessWidget {
                                 TextButton(
                                   onPressed: () {
                                     Get.back();
-                                    controller.logoutAPI(isLoading: true);
+                                   // controller.logoutAPI(isLoading: true);
                                   },
                                   child: const Text(
                                     'Logout',

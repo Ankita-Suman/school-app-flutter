@@ -271,11 +271,54 @@ class DataRepository extends DomainRepository {
   @override
   Future<ResponseModel> getProfileDetailsAPI({required bool isLoading,
     required String token,
-    required String branchId,
+    required String branchId, required String studentId,
   }) async {
     var res = await connectHelper.getProfileDetailsAPI(
       isLoading: isLoading,
       token: token,
+      branchId: branchId,
+      studentId: studentId,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getFeesDetailsAPI({required bool isLoading,
+    required String token,
+    required String branchId, required String studentId,
+  }) async {
+    var res = await connectHelper.getFeesDetailsAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getAllEvents({required bool isLoading,
+    required String token,
+    required String branchId, required String studentId,
+  }) async {
+    var res = await connectHelper.getAllEvents(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+    );
+    return res;
+  }
+
+ @override
+  Future<ResponseModel> getInvoiceDetailsAPI({required bool isLoading,
+    required String token,
+    required String invoiceId, required String branchId,
+  }) async {
+    var res = await connectHelper.getInvoiceDetailsAPI(
+      isLoading: isLoading,
+      token: token,
+      invoiceId: invoiceId,
       branchId: branchId,
     );
     return res;

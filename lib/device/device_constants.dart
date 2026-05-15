@@ -13,6 +13,7 @@ abstract class DeviceConstants {
   static const String profileData = 'profileData';
   static const String email = 'email';
   static const String username = 'username';
+  static const String studentId = 'studentId';
   static const String password = 'password';
   static const String phoneNumber = 'phoneNumber';
   static const String facebook = 'facebook';

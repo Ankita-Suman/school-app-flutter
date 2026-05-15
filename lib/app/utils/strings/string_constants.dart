@@ -20,6 +20,7 @@ abstract class StringConstants {
   static String information = 'information'.tr;
   static String noticeBoard = 'noticeBoard'.tr;
   static String timeTable = 'timeTable'.tr;
+  static String studentProfile = 'studentProfile'.tr;
   static String calender = 'calender'.tr;
   static String forgotPasswordText = 'forgotPasswordText'.tr;
   static String enterForgotMsg = 'enterForgotMsg'.tr;

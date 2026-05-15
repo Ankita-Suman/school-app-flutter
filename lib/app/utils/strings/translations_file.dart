@@ -74,6 +74,7 @@ class TranslationsFile extends Translations {
           'parentId': 'Parent Mail ID',
           'motherName': 'Mother Name',
           'fatherName': 'Father Name',
+          'studentProfile': 'Student  Profile',
           'permanentAddress': 'Permanent Address.',
           'didNotReceiveCode': 'Didn\'t receive the code? ',
           'sendPassword': 'We have send password recovery instruction to your email',

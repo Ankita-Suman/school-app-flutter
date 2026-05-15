@@ -1,16 +1,27 @@
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
+import 'package:school_app/app/pages/change_password/change_password.dart';
+import 'package:school_app/app/pages/change_password_successfully/change_password_successfully.dart';
 import 'package:school_app/app/pages/choose_options/choose_options.dart';
+import 'package:school_app/app/pages/dashboard/dashboard.dart';
 import 'package:school_app/app/pages/events/events.dart';
+import 'package:school_app/app/pages/fees_details/fees_details.dart';
 import 'package:school_app/app/pages/forgot_password/forgot_password.dart';
 import 'package:school_app/app/pages/home/home.dart';
+import 'package:school_app/app/pages/invoice/invoice.dart';
+import 'package:school_app/app/pages/login/login.dart';
 import 'package:school_app/app/pages/login_parent/login_parent.dart';
 import 'package:school_app/app/pages/login_student/login_student.dart';
 import 'package:school_app/app/pages/login_teacher/login_teacher.dart';
+import 'package:school_app/app/pages/new_forgot_password/new_forgot_password.dart';
+import 'package:school_app/app/pages/new_otp_verification/new_otp_verification.dart';
+import 'package:school_app/app/pages/notice_board/notice_board.dart';
 import 'package:school_app/app/pages/notifications/notifications.dart';
 import 'package:school_app/app/pages/otp_verification/otp_verification.dart';
 import 'package:school_app/app/pages/profile/profile.dart';
 import 'package:school_app/app/pages/reset_password/reset_password.dart';
+
+import '../pages/dashboard/dashboard_screen.dart';
 
 part 'app_routes.dart';
 
@@ -24,7 +35,7 @@ part 'app_routes.dart';
 class AppPages {
   static var transitionDuration = const Duration(milliseconds: 300);
 
-  static const initial = Routes.splash;
+  static const initial = Routes.home;
 
   static final pages = [
     GetPage<SplashScreen>(
@@ -62,11 +73,11 @@ class AppPages {
       binding: LoginParentBinding(),
       transition: Transition.cupertino,
     ),
-    GetPage<HomeScreen>(
+    GetPage<DashboardScreen>(
       name: _Paths.home,
       transitionDuration: transitionDuration,
-      page: HomeScreen.new,
-      binding: HomeBinding(),
+      page: DashboardScreen.new,
+      binding: DashboardBinding(),
       transition: Transition.cupertino,
     ),
     GetPage<ForgotPasswordScreen>(
@@ -109,6 +120,62 @@ class AppPages {
       transitionDuration: transitionDuration,
       page: ResetPasswordScreen.new,
       binding: ResetPasswordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<LoginScreen>(
+      name: _Paths.login,
+      transitionDuration: transitionDuration,
+      page: LoginScreen.new,
+      binding: LoginBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<NewForgotPasswordScreen>(
+      name: _Paths.newForgotPassword,
+      transitionDuration: transitionDuration,
+      page: NewForgotPasswordScreen.new,
+      binding: NewForgotPasswordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<NewOtpVerificationScreen>(
+      name: _Paths.newOtpVerification,
+      transitionDuration: transitionDuration,
+      page: NewOtpVerificationScreen.new,
+      binding: NewOtpVerificationBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ChangePasswordScreen>(
+      name: _Paths.changePassword,
+      transitionDuration: transitionDuration,
+      page: ChangePasswordScreen.new,
+      binding: ChangePasswordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ChangePasswordSuccessfullyScreen>(
+      name: _Paths.changePasswordSuccessfully,
+      transitionDuration: transitionDuration,
+      page: ChangePasswordSuccessfullyScreen.new,
+      binding: ChangePasswordSuccessfullyBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<FeesDetailsScreen>(
+      name: _Paths.feesDetails,
+      transitionDuration: transitionDuration,
+      page: FeesDetailsScreen.new,
+      binding: FeesDetailsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<InvoiceScreen>(
+      name: _Paths.invoice,
+      transitionDuration: transitionDuration,
+      page: InvoiceScreen.new,
+      binding: InvoiceBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<NoticeBoardScreen>(
+      name: _Paths.noticeBoard,
+      transitionDuration: transitionDuration,
+      page: NoticeBoardScreen.new,
+      binding: NoticeBoardBinding(),
       transition: Transition.cupertino,
     ),
   ];

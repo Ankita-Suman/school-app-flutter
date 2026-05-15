@@ -3,8 +3,10 @@ import 'package:school_app/app/app.dart';
 import 'package:school_app/data/data.dart';
 import 'package:school_app/device/device.dart';
 import 'package:school_app/domain/domain.dart';
+import 'package:school_app/domain/models/invoice_response.dart';
 import 'package:school_app/domain/models/profile_response.dart';
 
+import '../models/events_response.dart';
 import '../models/forgot_password_model.dart';
 
 /// The main repository which will get the data from [DeviceRepository] or the
@@ -325,13 +327,14 @@ class Repository {
   Future<ProfileResponse?> getProfileDetailsAPI({
     required bool isLoading,
     required String token,
-    required String branchId,
+    required String branchId, required String studentId,
   }) async {
     try {
       var res = await _dataRepository.getProfileDetailsAPI(
         isLoading: isLoading,
         token: token,
         branchId: branchId,
+        studentId: studentId,
       );
       if (!res.hasError && res.data != null) {
         return profileResponseFromJson(res.data);
@@ -343,6 +346,94 @@ class Repository {
       await _deviceRepository.getProfileDetailsAPI(
         isLoading: isLoading,
         token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+      return null;
+    }
+  }
+
+  Future<FeeResponseModel?> getFeesDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId, required String studentId,
+  }) async {
+    try {
+      var res = await _dataRepository.getFeesDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+      if (!res.hasError && res.data != null) {
+        return feeResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getFeesDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+      return null;
+    }
+  }
+
+ Future<EventsResponseModel?> getAllEvents({
+    required bool isLoading,
+    required String token,
+    required String branchId, required String studentId,
+  }) async {
+    try {
+      var res = await _dataRepository.getAllEvents(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+      if (!res.hasError && res.data != null) {
+        return eventsResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getAllEvents(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+      return null;
+    }
+  }
+
+  Future<InvoiceResponseModel?> getInvoiceDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String invoiceId, required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getInvoiceDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        invoiceId: invoiceId,
+        branchId: branchId,
+      );
+      if (!res.hasError && res.data != null) {
+        return invoiceResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getInvoiceDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        invoiceId: invoiceId,
         branchId: branchId,
       );
       return null;
