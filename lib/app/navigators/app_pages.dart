@@ -1,5 +1,7 @@
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
+import 'package:school_app/app/pages/add_leave/add_leave.dart';
+import 'package:school_app/app/pages/apply_leave/apply_leave.dart';
 import 'package:school_app/app/pages/change_password/change_password.dart';
 import 'package:school_app/app/pages/change_password_successfully/change_password_successfully.dart';
 import 'package:school_app/app/pages/choose_options/choose_options.dart';
@@ -18,8 +20,12 @@ import 'package:school_app/app/pages/new_otp_verification/new_otp_verification.d
 import 'package:school_app/app/pages/notice_board/notice_board.dart';
 import 'package:school_app/app/pages/notifications/notifications.dart';
 import 'package:school_app/app/pages/otp_verification/otp_verification.dart';
+import 'package:school_app/app/pages/payment/payment.dart';
 import 'package:school_app/app/pages/profile/profile.dart';
 import 'package:school_app/app/pages/reset_password/reset_password.dart';
+import 'package:school_app/app/pages/team_live_classes/team_live_classes.dart';
+import 'package:school_app/app/pages/upcoming_events/upcoming_events.dart';
+import 'package:school_app/app/pages/zoom_live_classes/zoom_live_classes.dart';
 
 import '../pages/dashboard/dashboard_screen.dart';
 
@@ -35,7 +41,7 @@ part 'app_routes.dart';
 class AppPages {
   static var transitionDuration = const Duration(milliseconds: 300);
 
-  static const initial = Routes.home;
+  static const initial = Routes.splash ;
 
   static final pages = [
     GetPage<SplashScreen>(
@@ -176,6 +182,48 @@ class AppPages {
       transitionDuration: transitionDuration,
       page: NoticeBoardScreen.new,
       binding: NoticeBoardBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<UpcomingEventsScreen>(
+      name: _Paths.upcomingEvents,
+      transitionDuration: transitionDuration,
+      page: UpcomingEventsScreen.new,
+      binding: UpcomingEventsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ZoomLiveClassesScreen>(
+      name: _Paths.zoomLiveClasses,
+      transitionDuration: transitionDuration,
+      page: ZoomLiveClassesScreen.new,
+      binding: ZoomLiveClassesBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<TeamLiveClassesScreen>(
+      name: _Paths.teamLiveClasses,
+      transitionDuration: transitionDuration,
+      page: TeamLiveClassesScreen.new,
+      binding: TeamLiveClassesBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ApplyLeaveScreen>(
+      name: _Paths.applyLeave,
+      transitionDuration: transitionDuration,
+      page: ApplyLeaveScreen.new,
+      binding: ApplyLeaveBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<AddLeaveScreen>(
+      name: _Paths.addLeave,
+      transitionDuration: transitionDuration,
+      page: AddLeaveScreen.new,
+      binding: AddLeaveBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<PaymentScreen>(
+      name: _Paths.payment,
+      transitionDuration: transitionDuration,
+      page: PaymentScreen.new,
+      binding: PaymentBinding(),
       transition: Transition.cupertino,
     ),
   ];

@@ -112,6 +112,17 @@ abstract class AssetConstants {
   static const String icRate = 'assets/icons/ic_rate.svg';
   static const String icOtps = 'assets/icons/otps.svg';
   static const String icKeys = 'assets/icons/ic_key.svg';
+  static const String icAni = 'assets/icons/ani.svg';
+  static const String icLocations = 'assets/icons/locations.svg';
+  static const String icVideo = 'assets/icons/ic_video.svg';
+  static const String icTeam= 'assets/icons/team.svg';
+  static const String noDataFound= 'assets/icons/nodata.svg';
+  static const String icUpload= 'assets/icons/upload.svg';
+  static const String icMenus= 'assets/icons/menu.svg';
+  static const String icVisa= 'assets/icons/visa.svg';
+  static const String icAddCard= 'assets/icons/addc.svg';
+  static const String icUpi= 'assets/icons/upi.svg';
+
 
 
 
@@ -141,6 +152,7 @@ abstract class AssetConstants {
   static const String icDummy = 'assets/images/ic_dummy.png';
   static const String icProfile = 'assets/images/ic_profile.png';
   static const String icBg = 'assets/images/bg.png';
+  static const String iclogo = 'assets/images/lg.png';
 
   // video
   static const String starFall = 'assets/video/star_fall.json';

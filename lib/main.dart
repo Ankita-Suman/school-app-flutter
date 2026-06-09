@@ -14,23 +14,40 @@ import 'domain/usecases/auth_use_cases.dart';
 
 late String? deviceToken;
 
-/// Main function to initialize the app
 void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+
+    // ✅ FULL SCREEN MODE - Hides navigation bar completely
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.immersiveSticky,
+      overlays: [], // Empty list = no navigation bar, no status bar
+    );
+
+    // ✅ Set status bar and navigation bar styles
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
+    );
+
     await Hive.initFlutter();
     await initServices();
-    await GetStorage.init(); // Initialize GetStorage
-    // Register repositories BEFORE running the app
-    Get.put(DeviceRepository()); // Register DeviceRepository
+    await GetStorage.init();
+
+    Get.put(DeviceRepository());
+
     runApp(const MyApp());
   } catch (error) {
     Utility.printELog(error.toString());
   }
 }
 
-/// Initialize the services before the app starts.
 Future<void> initServices() async {
   Get.put(
     AuthUseCases(
@@ -55,37 +72,19 @@ Future<void> initServices() async {
     ),
     permanent: true,
   );
- // await Get.putAsync(() => DbService().init());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  Timer? timer;
-
-  Locale? locale;
-
-  @override
-  void initState() {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-        statusBarColor: ColorsValue.transparent,
-        systemNavigationBarColor: Colors.black,
-        statusBarBrightness: Brightness.dark,
-        statusBarIconBrightness: Brightness.dark));
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Set preferred orientations
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
@@ -94,7 +93,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
         supportedLocales: TranslationsFile.listOfLocales,
-        locale: locale ?? const Locale('en'),
+        locale: const Locale('en'),
         getPages: AppPages.pages,
         theme: ThemeData(
           fontFamily: 'Inter',
@@ -103,11 +102,7 @@ class _MyAppState extends State<MyApp> {
         ),
         initialRoute: AppPages.initial,
         translations: TranslationsFile(),
-       ),
+      ),
     );
   }
 }
-
-
-
-

@@ -39,14 +39,14 @@ class ProfileWidget extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Get.back();
-                                },
-                                child: SvgPicture.asset(
-                                  AssetConstants.icBackBg,
-                                ),
-                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     Get.back();
+                              //   },
+                              //   child: SvgPicture.asset(
+                              //     AssetConstants.icBackBg,
+                              //   ),
+                              // ),
                               const SizedBox(width: 16),
                               Text(StringConstants.studentProfile,
                                   style: Styles.whiteBold),
@@ -304,6 +304,7 @@ class ProfileWidget extends StatelessWidget {
 }
 
 // ========== PERSONAL TAB ==========
+// ========== PERSONAL TAB ==========
 class PersonalTab extends StatelessWidget {
   const PersonalTab({super.key});
 
@@ -382,6 +383,11 @@ class PersonalTab extends StatelessWidget {
           ),
 
           const SizedBox(height: 20),
+
+          // ✅ Logout Container
+          _buildLogoutContainer(controller),
+
+          const SizedBox(height: 20), // Bottom spacing
         ],
       ),
     );
@@ -403,6 +409,75 @@ class PersonalTab extends StatelessWidget {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return months[month - 1];
+  }
+
+  // ✅ New Logout Container Method
+  Widget _buildLogoutContainer(DashboardController controller) {
+    return GestureDetector(
+      onTap: () {
+        // Add your logout functionality here
+        Get.dialog(
+          AlertDialog(
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Add your logout logic here
+                  Get.back(); // Close dialog
+                   controller.logoutAPI(isLoading: true);
+                },
+                child: const Text('Logout', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: ColorsValue.cardBorderColor,
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.delete_outline,
+              color: Colors.red.shade700,
+              size: 20,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'LOGOUT',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.red.shade700,
+                fontFamily: GoogleFonts.sora().fontFamily,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildDetailsContainer({
@@ -585,7 +660,6 @@ class PersonalTab extends StatelessWidget {
     );
   }
 }
-
 // ========== PARENTS TAB ==========
 class ParentsTab extends StatelessWidget {
   const ParentsTab({super.key});

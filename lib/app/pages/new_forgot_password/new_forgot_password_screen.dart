@@ -40,7 +40,7 @@ class NewForgotPasswordScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Back Button
-                        SizedBox(height: screenHeight * 0.015),
+                        SizedBox(height: screenHeight * 0.010),
                         GestureDetector(
                           onTap: () {
                             Get.back();

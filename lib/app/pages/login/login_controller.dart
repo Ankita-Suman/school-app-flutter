@@ -1,12 +1,7 @@
-// controllers/login_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../data/helpers/connect_helper.dart';
 import '../../../device/device_constants.dart';
 import '../../../device/repositories/device_repositories.dart';
-import '../../../domain/repositories/domain_repository.dart';
-import '../../../domain/repositories/repository.dart';
-import '../../../domain/usecases/login_usecases.dart';
 import '../../navigators/routes_management.dart';
 import 'login_presenter.dart';
 
@@ -19,29 +14,29 @@ class LoginController extends GetxController {
   var selectedTab = 0.obs;
 
   // Branch Code
-  TextEditingController branchCodeController = TextEditingController();
-  FocusNode branchCodeFocusNode = FocusNode();
+  TextEditingController? branchCodeController;
+  FocusNode? branchCodeFocusNode;
   var isBranchCodeFocused = false.obs;
   var branchCodeError = ''.obs;
   var isBranchCodeValid = false.obs;
-  bool _branchCodeErrorShown = false; // Track if error already shown
+  bool _branchCodeErrorShown = false;
 
   // Email
-  TextEditingController emailController = TextEditingController();
-  FocusNode emailFocusNode = FocusNode();
+  TextEditingController? emailController;
+  FocusNode? emailFocusNode;
   var isEmailFocused = false.obs;
   var emailError = ''.obs;
   var isEmailValid = false.obs;
-  bool _emailErrorShown = false; // Track if error already shown
+  bool _emailErrorShown = false;
 
   // Password
-  TextEditingController passwordController = TextEditingController();
-  FocusNode passwordFocusNode = FocusNode();
+  TextEditingController? passwordController;
+  FocusNode? passwordFocusNode;
   var isPasswordFocused = false.obs;
   var isPasswordVisible = false.obs;
   var passwordError = ''.obs;
   var isPasswordValid = false.obs;
-  bool _passwordErrorShown = false; // Track if error already shown
+  bool _passwordErrorShown = false;
 
   // Form Validity
   var isFormValid = false.obs;
@@ -58,7 +53,6 @@ class LoginController extends GetxController {
 
   var keyValidationForm = GlobalKey<FormState>();
 
-  // Observable variables for header
   final headerText = ''.obs;
   final fromScreen = ''.obs;
   final headerImage = ''.obs;
@@ -67,42 +61,53 @@ class LoginController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Add listeners for focus changes
-    branchCodeFocusNode.addListener(() {
-      isBranchCodeFocused.value = branchCodeFocusNode.hasFocus;
-      // When focus leaves, validate and show error
-      if (!branchCodeFocusNode.hasFocus && branchCodeController.text.isNotEmpty) {
-        validateBranchCode(branchCodeController.text, showSnackbar: false);
-      }
-    });
+    // Initialize controllers
+    branchCodeController = TextEditingController();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+    branchCodeFocusNode = FocusNode();
+    emailFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
 
-    emailFocusNode.addListener(() {
-      isEmailFocused.value = emailFocusNode.hasFocus;
-      // When focus leaves, validate and show error
-      if (!emailFocusNode.hasFocus && emailController.text.isNotEmpty) {
-        validateEmail(emailController.text, showSnackbar: false);
-      }
-    });
+    // Add listeners with null safety
+    branchCodeFocusNode?.addListener(_onBranchCodeFocusChange);
+    emailFocusNode?.addListener(_onEmailFocusChange);
+    passwordFocusNode?.addListener(_onPasswordFocusChange);
 
-    passwordFocusNode.addListener(() {
-      isPasswordFocused.value = passwordFocusNode.hasFocus;
-      // When focus leaves, validate and show error
-      if (!passwordFocusNode.hasFocus && passwordController.text.isNotEmpty) {
-        validatePassword(passwordController.text, showSnackbar: false);
-      }
-    });
+    branchCodeController?.addListener(_checkFormValidity);
+    emailController?.addListener(_checkFormValidity);
+    passwordController?.addListener(_checkFormValidity);
+  }
 
-    // Add listeners for text changes to validate form in real-time
-    branchCodeController.addListener(_checkFormValidity);
-    emailController.addListener(_checkFormValidity);
-    passwordController.addListener(_checkFormValidity);
+  void _onBranchCodeFocusChange() {
+    if (branchCodeFocusNode == null) return;
+    isBranchCodeFocused.value = branchCodeFocusNode!.hasFocus;
+    if (!branchCodeFocusNode!.hasFocus && branchCodeController?.text.isNotEmpty == true) {
+      validateBranchCode(branchCodeController!.text, showSnackbar: false);
+    }
+  }
+
+  void _onEmailFocusChange() {
+    if (emailFocusNode == null) return;
+    isEmailFocused.value = emailFocusNode!.hasFocus;
+    if (!emailFocusNode!.hasFocus && emailController?.text.isNotEmpty == true) {
+      validateEmail(emailController!.text, showSnackbar: false);
+    }
+  }
+
+  void _onPasswordFocusChange() {
+    if (passwordFocusNode == null) return;
+    isPasswordFocused.value = passwordFocusNode!.hasFocus;
+    if (!passwordFocusNode!.hasFocus && passwordController?.text.isNotEmpty == true) {
+      validatePassword(passwordController!.text, showSnackbar: false);
+    }
   }
 
   void _checkFormValidity() {
-    isFormValid.value = isEmailValid.value && isPasswordValid.value && isBranchCodeValid.value;
+    isFormValid.value =
+        isEmailValid.value && isPasswordValid.value && isBranchCodeValid.value;
   }
 
-  // Validation Methods
   void validateBranchCode(String value, {bool showSnackbar = true}) {
     if (value.isEmpty) {
       isBranchCodeValid.value = false;
@@ -131,7 +136,6 @@ class LoginController extends GetxController {
       return;
     }
 
-    // Check if it's a valid email (with @ symbol)
     if (value.contains('@')) {
       if (_isValidEmail(value)) {
         isEmailValid.value = true;
@@ -149,7 +153,6 @@ class LoginController extends GetxController {
       return;
     }
 
-    // Check if it's a valid phone number (10 digits)
     if (value.length == 10 && RegExp(r'^[0-9]+$').hasMatch(value)) {
       isEmailValid.value = true;
       emailError.value = '';
@@ -158,7 +161,6 @@ class LoginController extends GetxController {
       return;
     }
 
-    // Check phone number length
     if (RegExp(r'^[0-9]+$').hasMatch(value) && value.length < 10) {
       isEmailValid.value = false;
       emailError.value = 'Mobile number must be 10 digits';
@@ -170,7 +172,6 @@ class LoginController extends GetxController {
       return;
     }
 
-    // Check for valid username
     if (value.length >= 3 && RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(value)) {
       isEmailValid.value = true;
       emailError.value = '';
@@ -179,7 +180,6 @@ class LoginController extends GetxController {
       return;
     }
 
-    // If none of the above conditions match
     isEmailValid.value = false;
     emailError.value = 'Please enter valid email, phone number';
     if (showSnackbar && !_emailErrorShown) {
@@ -210,7 +210,8 @@ class LoginController extends GetxController {
   }
 
   bool _isValidEmail(String email) {
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        .hasMatch(email);
   }
 
   void showErrorSnackbar(String message) {
@@ -241,18 +242,15 @@ class LoginController extends GetxController {
     );
   }
 
-  // Login with validation
   void loginWithValidation() {
-    String branchCode = branchCodeController.text.trim();
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
+    String branchCode = branchCodeController?.text.trim() ?? '';
+    String email = emailController?.text.trim() ?? '';
+    String password = passwordController?.text.trim() ?? '';
 
-    // Reset error shown flags
     _branchCodeErrorShown = false;
     _emailErrorShown = false;
     _passwordErrorShown = false;
 
-    // Validate Branch Code
     if (branchCode.isEmpty) {
       showErrorSnackbar('Please enter branch code');
       return;
@@ -262,33 +260,27 @@ class LoginController extends GetxController {
       return;
     }
 
-    // Validate Email
     if (email.isEmpty) {
       showErrorSnackbar('Please enter email or mobile number');
       return;
     }
 
-    // Check email format
     if (email.contains('@')) {
       if (!_isValidEmail(email)) {
         showErrorSnackbar('Please enter valid email address');
         return;
       }
-    }
-    // Check phone number
-    else if (RegExp(r'^[0-9]+$').hasMatch(email)) {
+    } else if (RegExp(r'^[0-9]+$').hasMatch(email)) {
       if (email.length != 10) {
         showErrorSnackbar('Mobile number must be 10 digits');
         return;
       }
-    }
-    // Check username
-    else if (email.length < 3 || !RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(email)) {
+    } else if (email.length < 3 ||
+        !RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(email)) {
       showErrorSnackbar('Please enter valid email or mobile number');
       return;
     }
 
-    // Validate Password
     if (password.isEmpty) {
       showErrorSnackbar('Please enter password');
       return;
@@ -298,15 +290,13 @@ class LoginController extends GetxController {
       return;
     }
 
-    // If all validations pass
     loginAPI();
   }
 
-  // API Login Method
   Future<void> loginAPI() async {
-    String loginName = emailController.text.trim();
-    String branchCode = branchCodeController.text.trim();
-    String password = passwordController.text.trim();
+    String loginName = emailController?.text.trim() ?? '';
+    String branchCode = branchCodeController?.text.trim() ?? '';
+    String password = passwordController?.text.trim() ?? '';
 
     var res = await loginStudentPresenter.loginAPI(
       isLoading: true,
@@ -319,37 +309,33 @@ class LoginController extends GetxController {
 
     if (res != null && res.status == true) {
       print("✅ Login successful");
-      print("Status: ${res.status}");
-      print("Message: ${res.message}");
-      print("Token: ${res.data?.token}");
-      print("User: ${res.data?.user.username}");
-      print("email: ${res.data?.user.email}");
-      print("branchId: ${res.data?.branchId}");
-      print("branchCode: ${res.data?.branchCode}");
 
       var deviceRepository = Get.find<DeviceRepository>();
-      deviceRepository.saveValueSecurely(DeviceConstants.token, '${res.data?.token}');
-      deviceRepository.saveValueSecurely(DeviceConstants.branchId, '${res.data?.branchId}');
-      deviceRepository.saveValueSecurely(DeviceConstants.branchCode, '${res.data?.branchCode}');
-      deviceRepository.saveValueSecurely(DeviceConstants.email, '${res.data?.user.email}');
-      deviceRepository.saveValueSecurely(DeviceConstants.username, '${res.data?.user.username}');
-      deviceRepository.saveValueSecurely(DeviceConstants.studentId, '${res.data?.user.studentId}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.token, '${res.data?.token}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.branchId, '${res.data?.branchId}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.branchCode, '${res.data?.branchCode}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.email, '${res.data?.user.email}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.username, '${res.data?.user.username}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.studentId, '${res.data?.user.studentId}');
 
       RouteManagement.goToHome();
     }
   }
 
-  // Toggle password visibility
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  // Change tab
   void changeTab(int index) {
     selectedTab.value = index;
   }
 
-  // Clear error methods
   void clearEmailError() {
     if (emailError.value.isNotEmpty) {
       emailError.value = '';
@@ -374,14 +360,27 @@ class LoginController extends GetxController {
     }
   }
 
+  // login_controller.dart
+
   @override
   void onClose() {
-    branchCodeController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    branchCodeFocusNode.dispose();
-    emailFocusNode.dispose();
-    passwordFocusNode.dispose();
+    // ✅ Don't dispose the controllers, just remove listeners
+    // Keep controllers alive for reuse
+
+    // Remove listeners only
+    if (branchCodeFocusNode != null) {
+      branchCodeFocusNode!.removeListener(_onBranchCodeFocusChange);
+    }
+    if (emailFocusNode != null) {
+      emailFocusNode!.removeListener(_onEmailFocusChange);
+    }
+    if (passwordFocusNode != null) {
+      passwordFocusNode!.removeListener(_onPasswordFocusChange);
+    }
+
+    // DON'T dispose controllers here
+    // branchCodeController?.dispose(); // ❌ Remove this
+
     super.onClose();
   }
 }

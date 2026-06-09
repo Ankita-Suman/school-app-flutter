@@ -36,7 +36,7 @@ class DeviceRepository extends DomainRepository {
 
   /// Delete the box
   @override
-  void deleteBox() async {
+  Future<void> deleteBox() async {
     await GetStorage('appData').remove(DeviceConstants.showLogin);
   }
 
@@ -89,8 +89,8 @@ class DeviceRepository extends DomainRepository {
 
   /// Delete data from secure storage
   @override
-  void deleteSecuredValue(String key) {
-    _flutterSecureStorage.delete(key: key);
+  Future<void> deleteSecuredValue(String key) async {
+    await _flutterSecureStorage.delete(key: key);
   }
 
   /// Delete all data from secure storage

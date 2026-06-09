@@ -478,6 +478,9 @@ static Color borderGryBgClr = const Color(
   static const Color navIconColor = Color(
     navColor,
   );
+  static const Color redClrs = Color(
+    redClr,
+  );
   static const Color blcColors = Color(
     blcColor,
   );
@@ -515,6 +518,9 @@ static const Color txtGrClrs = Color(
   static const Color txtGreenClrs = Color(
     txtGreenClr,
   );
+  static const Color txtRdClrs = Color(
+    txtRdClr,
+  );
   static const Color txtOrangeClrs = Color(
     txtOrangeClrss,
   );
@@ -526,6 +532,9 @@ static const Color txtGrClrs = Color(
   );
   static const Color unSelectedClr = Color(
     unSelectedColor,
+  );
+  static const Color blueColorss = Color(
+    blueColors,
   );
   static const Color cardBorderSkyClr = Color(
     cardBorderSky,
@@ -660,6 +669,7 @@ static const Color txtGrClrs = Color(
   static const int lightPurpleClr = 0xff7C3AED;
   static const int darkFillBlue = 0xff378ADD;
   static const int navColor = 0xff124A82;
+  static const int redClr = 0xffEF4444;
   static const int blcColor = 0xff0D1B2A;
   static const int navSelectedColor = 0xffE6F1FB;
   static const int navBgColor = 0xffEFF6FF;
@@ -672,10 +682,12 @@ static const Color txtGrClrs = Color(
   static const int txtBlueClr = 0xff124A82;
   static const int txtGrClr = 0xff0D9488;
   static const int txtGreenClr = 0xff059669;
+  static const int txtRdClr = 0xffFF7F7F;
   static const int txtOrangeClrss = 0xffF97316;
   static const int txtDarkOrangeClr = 0xffB91C1C;
   static const int txtRedClr = 0xffDC2626;
   static const int unSelectedColor = 0xff383838;
+  static const int blueColors = 0xff2D8CFF;
   static const int cardBorderSky = 0xffF4F8FD;
   static const int lightOrangeClrs = 0xffFDE68A;
   static const int lightBgOrangeClrs = 0xffFFFBEB;

@@ -24,6 +24,12 @@ abstract class Routes {
   static const feesDetails = _Paths.feesDetails;
   static const invoice = _Paths.invoice;
   static const noticeBoard = _Paths.noticeBoard;
+  static const upcomingEvents = _Paths.upcomingEvents;
+  static const zoomLiveClasses = _Paths.zoomLiveClasses;
+  static const teamLiveClasses = _Paths.teamLiveClasses;
+  static const applyLeave = _Paths.applyLeave;
+  static const addLeave = _Paths.addLeave;
+  static const payment = _Paths.payment;
 
 }
 
@@ -48,5 +54,11 @@ abstract class _Paths {
   static const feesDetails = '/Fees_details-screen';
   static const invoice = '/Invoice-screen';
   static const noticeBoard = '/Notice-Board-screen';
+  static const upcomingEvents = '/Upcoming-Events-screen';
+  static const zoomLiveClasses = '/Zoom-Live-Classes-screen';
+  static const teamLiveClasses = '/Team-Live-Classes-screen';
+  static const applyLeave = '/Apply_Leave-screen';
+  static const addLeave = '/Add_Leave-screen';
+  static const payment = '/Payment-screen';
 
 }

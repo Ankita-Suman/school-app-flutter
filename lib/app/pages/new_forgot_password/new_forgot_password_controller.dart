@@ -1,4 +1,3 @@
-// controllers/new_forgot_password_controller.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -126,7 +125,6 @@ class NewForgotPasswordController extends GetxController {
     }
 
     // ✅ REMOVED: Username validation - only email or phone number allowed
-    // For any other input that's not email or 10-digit phone number
     isEmailValid.value = false;
     emailError.value = 'Please enter valid email or 10-digit mobile number';
     if (showSnackbar && !_emailErrorShown) {
@@ -280,7 +278,8 @@ class NewForgotPasswordController extends GetxController {
   }
 
   Future<void> openCheckEmailDialog(String message) async {
-    await Get.dialog(
+    // Show dialog
+    Get.dialog(
       barrierDismissible: false,
       AlertDialog(
         backgroundColor: Colors.white,
@@ -313,11 +312,16 @@ class NewForgotPasswordController extends GetxController {
       ),
     );
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (Get.context != null) {
-        RouteManagement.goToNewOtpVerification();
-      }
-    });
+    // ✅ Wait for 2 seconds then close dialog and navigate
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Close dialog if still open
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+
+    // Navigate to OTP screen
+    RouteManagement.goToNewOtpVerification();
   }
 
   @override

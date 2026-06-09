@@ -8,6 +8,7 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print("Splash Screen - Token: ");
     checkLoginStatus();
   }
 
@@ -25,11 +26,11 @@ class SplashController extends GetxController {
       if (token != null && token.isNotEmpty) {
         RouteManagement.goToHome();
       } else {
-        RouteManagement.goToChooseOptions();
+        RouteManagement.goToLogin();
       }
     } catch (e) {
       // If error occurs, navigate to login screen
-      RouteManagement.goToChooseOptions();
+     RouteManagement.goToLogin();
     }
   }
 }

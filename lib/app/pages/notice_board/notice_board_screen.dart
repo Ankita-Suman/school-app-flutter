@@ -29,17 +29,10 @@ class NoticeBoardScreen extends StatelessWidget {
       'color': Colors.green,
     },
     {
-      'type': 'WORKSHOP',
-      'date': '15 Jul',
-      'description': 'AI & Robotics Workshop on 15 July 2024',
-      'deadline': 'Limited seats. Register before 10 July.',
-      'color': Colors.purple,
-    },
-    {
-      'type': 'SPORTS',
+      'type': 'PTM',
       'date': '20 Aug',
-      'description': 'Annual Sports Day on 20 August 2024',
-      'deadline': 'Register your name by 15 August.',
+      'description': 'Parent–Teacher Meeting — 14 May',
+      'deadline': 'Book your slot on portal from 1 Apr.',
       'color': Colors.red,
     },
   ];
@@ -49,20 +42,20 @@ class NoticeBoardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize filtered list
     filteredEventsList.value = upcomingEventsList;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // SVG Background with full width and static height
+          // SVG Background
           SizedBox(
             width: double.infinity,
-            height: 150,
+            height: 170,
             child: SvgPicture.asset(
               AssetConstants.icBlueBg,
               width: double.infinity,
-              height: 150,
+              height: 170,
               fit: BoxFit.fill,
             ),
           ),
@@ -74,9 +67,8 @@ class NoticeBoardScreen extends StatelessWidget {
                 // Fixed Header Section
                 Column(
                   children: [
-                    const SizedBox(height: 25),
-
                     // Header Section
+                    SizedBox(height:15),
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -95,49 +87,55 @@ class NoticeBoardScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 10),
 
                     // Search Field
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: TextField(
-                        controller: searchController,
-                        onChanged: (value) {
-                          if (value.isEmpty) {
-                            filteredEventsList.value = upcomingEventsList;
-                          } else {
-                            filteredEventsList.value = upcomingEventsList.where((event) {
-                              return event['type'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                                  event['description'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                                  event['deadline'].toString().toLowerCase().contains(value.toLowerCase());
-                            }).toList();
-                          }
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Search notices...',
-                          hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.search, color: Colors.white),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 1,
                           ),
                         ),
-                        style: const TextStyle(color: Colors.white),
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: (value) {
+                            if (value.isEmpty) {
+                              filteredEventsList.value = upcomingEventsList;
+                            } else {
+                              filteredEventsList.value = upcomingEventsList.where((event) {
+                                return event['type'].toString().toLowerCase().contains(value.toLowerCase()) ||
+                                    event['description'].toString().toLowerCase().contains(value.toLowerCase()) ||
+                                    event['deadline'].toString().toLowerCase().contains(value.toLowerCase());
+                              }).toList();
+                            }
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Search notices...',
+                            hintStyle: Styles.darkBlueW500,
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Colors.grey.shade500,
+                              size: 20,
+                            ),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                          ),
+                          style: Styles.whiteBold14600
+                        ),
                       ),
                     ),
 
+                    const SizedBox(height: 30),
                   ],
                 ),
-
 
                 // Notice List
                 Expanded(
@@ -148,7 +146,7 @@ class NoticeBoardScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.notifications_none,
+                            Icons.priority_high,
                             size: 64,
                             color: Colors.grey.shade400,
                           ),
@@ -167,7 +165,7 @@ class NoticeBoardScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       itemCount: filteredEventsList.length,
                       itemBuilder: (context, index) {
-                        return _buildEventCard(filteredEventsList[index]);
+                        return _buildEventCard(filteredEventsList[index],index);
                       },
                     ),
                   ),
@@ -180,11 +178,16 @@ class NoticeBoardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEventCard(Map<String, dynamic> event) {
+  Widget _buildEventCard(Map<String, dynamic> event, int index) {
+    // Get light shade color based on event color
+    Color getLightShade(Color color) {
+      return color.withOpacity(0.10); // 15% opacity for light shade
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: getLightShade(event['color']), // ✅ Light shade background
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: (event['color'] as Color).withOpacity(0.3),
@@ -192,11 +195,14 @@ class NoticeBoardScreen extends StatelessWidget {
         ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Left Vertical Colored Line
           Container(
             width: 4,
-            height: 70,
+            height: 100,
+            margin: const EdgeInsets.only(bottom: 5, top: 5),
             decoration: BoxDecoration(
               color: event['color'],
               borderRadius: const BorderRadius.only(
@@ -205,42 +211,56 @@ class NoticeBoardScreen extends StatelessWidget {
               ),
             ),
           ),
+          Container(
+            width: 20,
+            height: 20,
+            margin: const EdgeInsets.only(left: 12, top: 25),
+            decoration: BoxDecoration(
+              color: (event['color'] as Color).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              event['type'] == 'URGENT' ? Icons.priority_high :
+              event['type'] == 'ACADEMIC' ? Icons.school :
+              event['type'] == 'Holiday' ? Icons.beach_access :
+              Icons.person,
+              color: event['color'],
+              size: 20,
+            ),
+          ),
           // Content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+
                       Text(
                         event['type'],
-                        style: TextStyle(
-                          color: event['color'],
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: index==0?Styles.orangeBold700:index==1?
+                        Styles.blueBold70009:index==2?Styles.greenBold70009:Styles.rdBold70009
                       ),
                       Text(
                         event['date'],
-                        style: const TextStyle(fontSize: 10, color: Colors.grey),
+                        style: Styles.darkBlkW60010,
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
                     event['description'],
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Styles.darkBlackW700
                   ),
                   const SizedBox(height: 4),
                   Text(
                     event['deadline'],
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      style: Styles.darkBlkW400
                   ),
                 ],
               ),

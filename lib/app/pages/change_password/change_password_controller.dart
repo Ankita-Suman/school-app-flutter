@@ -275,7 +275,7 @@ class ChangePasswordController extends GetxController {
         showSuccessSnackbar('Password reset successfully! Please login with your new password.');
 
         await Future.delayed(const Duration(seconds: 2));
-        RouteManagement.goToLogin();
+        RouteManagement.goToChangePasswordSuccessfully();
       } else {
         showErrorSnackbar(res?.message ?? 'Failed to reset password. Please try again.');
       }

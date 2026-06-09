@@ -153,7 +153,7 @@ class StaffProfileScreen extends StatelessWidget {
                                 TextButton(
                                   onPressed: () {
                                     Get.back();
-                                   // controller.logoutAPI(isLoading: true);
+         //                           controller.logoutAPI(isLoading: true);
                                   },
                                   child: const Text(
                                     'Logout',

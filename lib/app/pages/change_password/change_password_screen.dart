@@ -39,7 +39,7 @@ class ChangePasswordScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: screenHeight * 0.015),
+                        SizedBox(height: screenHeight * 0.010),
                         GestureDetector(
                           onTap: () {
                             controller.clearForm();

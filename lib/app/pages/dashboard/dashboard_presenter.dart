@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../domain/models/events_response.dart';
 import '../../../domain/models/fees_response.dart';
 import '../../../domain/models/profile_response.dart';
+import '../../../domain/models/response_model.dart';
 import '../../../domain/usecases/home_usecases.dart';
 
 class DashboardPresenter extends GetxController {
@@ -48,4 +49,9 @@ class DashboardPresenter extends GetxController {
       studentId: studentId,
     );
   }
+
+Future<ResponseModel?> logoutAPI({
+  required bool isLoading,
+}) async =>
+    await homeUseCases.logoutAPI(isLoading: isLoading);
 }

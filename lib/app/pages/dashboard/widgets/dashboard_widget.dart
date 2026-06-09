@@ -2,9 +2,12 @@
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:school_app/app/app.dart';
+import '../../notice_board/notice_board_screen.dart';
+import '../../upcoming_events/upcoming_events_screen.dart';
 import '../dashboard_controller.dart';
 
 class DashboardHomeScreen extends StatelessWidget {
@@ -12,6 +15,14 @@ class DashboardHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DashboardController controller = Get.find<DashboardController>();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+    );
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
       body: SafeArea(
@@ -52,12 +63,14 @@ class DashboardHomeScreen extends StatelessWidget {
                                       color: ColorsValue.darkFillBlueColor,
                                       shape: BoxShape.circle,
                                     ),
-                                    child:  Center(
+                                    child: Obx(() => Center(
                                       child: Text(
-                                        'AS',
-                                        style: Styles.whiteBold
+                                        controller.profileData.value?.personal?.name?.isNotEmpty == true
+                                            ? controller.profileData.value!.personal!.name![0].toUpperCase()
+                                            : 'AS',
+                                        style: Styles.whiteBold,
                                       ),
-                                    ),
+                                    )),
                                   ),
                                 ),
                                 Positioned(
@@ -86,18 +99,18 @@ class DashboardHomeScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                     Text(
-                                      'Good morning 🌞',
-                                      style: Styles.whiteW60010
-                                    ),
-                                     Text(
-                                      'Olivier Thomas',
-                                      style:Styles.whiteBold
-                                    ),
                                     Text(
-                                      'Class 9-A · EN/2024/O124',
-                                      style: Styles.whiteW400011
+                                      'Good morning 🌞',
+                                      style: Styles.whiteW60010,
                                     ),
+                                    Obx(() => Text(
+                                      controller.profileData.value?.personal?.name ?? 'Olivier Thomas',
+                                      style: Styles.whiteBold,
+                                    )),
+                                    Obx(() => Text(
+                                      'Class ${controller.profileData.value?.personal?.classInfo?.name ?? '1'} – ${controller.profileData.value?.personal?.section?.name ?? 'A'} - Session ${controller.profileData.value?.other?.academic?.session ?? '2025 – 26'}',
+                                      style: Styles.whiteW400011,
+                                    )),
                                   ],
                                 ),
                               ),
@@ -121,7 +134,7 @@ class DashboardHomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         // Credit Score Card
-                        const CreditScoreCard(),
+                        CreditScoreCard(),
                       ],
                     ),
                   ),
@@ -134,6 +147,7 @@ class DashboardHomeScreen extends StatelessWidget {
             Expanded(
               child: AnnouncementsTabs(),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -147,6 +161,7 @@ class CreditScoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DashboardController controller = Get.find<DashboardController>();
     return Row(
       children: [
         // Credit Score Circle
@@ -185,7 +200,7 @@ class CreditScoreCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '85',
+                              '${controller.profileData.value?.other?.grade?.averagePercentage ?? 0}',
                             style: Styles.whiteBold
                           ),
                           Text(
@@ -229,7 +244,7 @@ class CreditScoreCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '92%',
+                            '${controller.profileData.value?.other.attendance?.percentage ?? 0}%',
                           style: Styles.whiteBold15
                         ),
                         Text(
@@ -264,7 +279,7 @@ class CreditScoreCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'A+',
+                            controller.profileData.value?.other?.grade?.grade ?? 'N/A',
                             style: Styles.whiteBold
                         ),
                         Text(
@@ -288,7 +303,8 @@ class CreditScoreCard extends StatelessWidget {
 class AnnouncementsTabs extends StatelessWidget {
   AnnouncementsTabs({super.key});
 
-  final List<Map<String, dynamic>> upcomingEventsList = [
+  // Static data for Announcements Tab
+  final List<Map<String, dynamic>> announcementsList = [
     {
       'type': 'URGENT',
       'date': '28 Jun',
@@ -312,44 +328,36 @@ class AnnouncementsTabs extends StatelessWidget {
     },
   ];
 
-  final List<Map<String, dynamic>> carouselAnnouncements = const [
-    {
-      'image': 'assets/images/bg.png',
-      'title': 'Summer Camp 2025',
-      'subtitle': 'Register before 30 May',
-      'align': 'left',
-    },
-    {
-      'image': 'assets/images/bg.png',
-      'title': 'Math Olympiad',
-      'subtitle': '3 July 2024 | Open for Classes 6-10',
-      'align': 'right',
-    },
-    {
-      'image': 'assets/images/bg.png',
-      'title': 'Drawing Competition',
-      'subtitle': '28 June 2024 | Register now',
-      'align': 'left',
-    },
-    {
-      'image': 'assets/images/bg.png',
-      'title': 'Parent-Teacher Meet',
-      'subtitle': '5 June 2024 | 10 AM onwards',
-      'align': 'right',
-    },
-    {
-      'image': 'assets/images/bg.png',
-      'title': 'Science Exhibition',
-      'subtitle': '15 July 2024',
-      'align': 'left',
-    },
-  ];
-
   int _currentIndex = 0;
   final CarouselController _carouselController = CarouselController();
 
+
+  String _formatEventDate(String? date) {
+    if (date == null || date.isEmpty) return 'Event Date';
+    try {
+      final parts = date.split('-');
+      if (parts.length == 3) {
+        // parts[0] = year (2025), parts[1] = month (06), parts[2] = day (28)
+        final year = parts[0];
+        final month = int.parse(parts[1]);
+        final day = parts[2];
+        return '$day ${_getMonthName(month)} $year';
+      }
+      return date;
+    } catch (e) {
+      return date ?? 'Event Date';
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[month - 1];
+  }
+
   @override
   Widget build(BuildContext context) {
+    final DashboardController controller = Get.find<DashboardController>();
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -368,45 +376,60 @@ class AnnouncementsTabs extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Fixed Tab Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: TabBar(
-                      tabs: [
-                        Tab(text: 'Announcements'),
-                        Tab(text: 'Upcoming Events'),
-                      ],
-                      labelColor: ColorsValue.navIconColor,
-                      unselectedLabelColor: ColorsValue.unSelectedClr,
-                      labelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                      unselectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                      indicatorColor: ColorsValue.navIconColor,
-                      indicatorWeight: 3,
+            // ✅ Tab Bar with See All on Top Right
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // See All Button on Top Right
+                Padding(
+                  padding: const EdgeInsets.only(right: 12, top: 5),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Builder(
+                      builder: (context) {
+                        final TabController tabController = DefaultTabController.of(context);
+                        return TextButton(
+                          onPressed: () {
+                            if (tabController.index == 0) {
+                              RouteManagement.goToNoticeBored();
+                            } else {
+                              RouteManagement.goToUpcomingEvents();
+                            }
+                          },
+                          child: const Text(
+                            'See All →',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: ColorsValue.navIconColor,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'See All →',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: ColorsValue.navIconColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                // Tab Bar
+                 TabBar(
+                  tabs: const [
+                    Tab(text: 'Announcements'),
+                    Tab(text: 'Upcoming Events'),
+                  ],
+                  labelColor: ColorsValue.navIconColor,
+                  unselectedLabelColor: ColorsValue.unSelectedClr,
+                  labelStyle: Styles.darkBlueW700,
+                  unselectedLabelStyle: Styles.darkBlackW700,
+                  indicatorColor: ColorsValue.navIconColor,
+                  indicatorWeight: 3,
+                ),
+              ],
             ),
 
-            // Scrollable TabBarView
+            // TabBarView (Same as before)
             Expanded(
               child: TabBarView(
                 children: [
-                  // First Tab - Announcements (Events List + E-Learning Hub)
+                  // First Tab - Announcements (Static)
                   SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
@@ -415,11 +438,10 @@ class AnnouncementsTabs extends StatelessWidget {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           padding: const EdgeInsets.all(12),
-                          itemCount: upcomingEventsList.length,
-                          itemBuilder: (context, index) => _buildEventCard(upcomingEventsList[index]),
+                          itemCount: announcementsList.length,
+                          itemBuilder: (context, index) => _buildEventCard(announcementsList[index], index),
                         ),
                         const SizedBox(height: 16),
-                        // E-Learning Hub in First Tab
                         const ELearningHub(),
                         const SizedBox(height: 10),
                         const Academics(),
@@ -428,15 +450,13 @@ class AnnouncementsTabs extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Second Tab - Upcoming Events (Carousel + E-Learning Hub)
+                  // Second Tab - Upcoming Events
                   SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
                       children: [
-                        // Carousel Slider
-                        _buildCarouselSlider(),
+                        Obx(() => _buildCarouselSlider(controller)),
                         const SizedBox(height: 16),
-                        // E-Learning Hub in Second Tab
                         const ELearningHub(),
                         const SizedBox(height: 10),
                         const Academics(),
@@ -454,103 +474,190 @@ class AnnouncementsTabs extends StatelessWidget {
     );
   }
 
-  Widget _buildCarouselSlider() {
-    return Column(
-      children: [
-        CarouselSlider(
-          items: carouselAnnouncements.map((item) {
-            return Builder(
-              builder: (BuildContext context) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: AssetImage(item['image']),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Container(
+  Widget _buildCarouselSlider(DashboardController controller) {
+    final events = controller.eventsData.value?.data?.events ?? [];
+
+    if (events.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Reset index if needed
+    if (_currentIndex >= events.length) {
+      _currentIndex = 0;
+    }
+
+    return Container(
+      margin: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: ColorsValue.navBgColors,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          CarouselSlider(
+            items: events.map((event) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                    margin: const EdgeInsets.all(10),
+                    width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(12),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.black.withOpacity(0.4),
-                          Colors.black.withOpacity(0.1),
-                        ],
+                      border: Border.all(color: Colors.grey.shade200, width: 1),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/bg.png'),
+                        fit: BoxFit.cover,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.black.withOpacity(0.4),
+                            Colors.black.withOpacity(0.1),
+                          ],
+                        ),
+                      ),
                       child: Column(
-                        crossAxisAlignment: item['align'] == 'left'
-                            ? CrossAxisAlignment.start
-                            : CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            item['title'],
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item['subtitle'],
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white70,
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.9),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Text(
+                                    _formatEventDate(event.eventDate),
+                                    style: Styles.darkBlcW70010,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.3),
+                                    border: Border.all(color: Colors.grey.shade500, width: 1),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Text(
+                                    event.eventType?.toUpperCase() ?? 'EVENT',
+                                    style: Styles.whiteW70010W,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
+                  );
+                },
+              );
+            }).toList(),
+            options: CarouselOptions(
+              height: 200,
+              autoPlay: true,
+              enlargeCenterPage: true,
+              viewportFraction: 1.0,
+              onPageChanged: (index, reason) {
+                _currentIndex = index;
               },
-            );
-          }).toList(),
-          options: CarouselOptions(
-            height: 150,
-            autoPlay: true,
-            enlargeCenterPage: true,
-            viewportFraction: 0.9,
-            onPageChanged: (index, reason) {
-              _currentIndex = index;
-            },
+            ),
+            carouselController: _carouselController,
           ),
-          carouselController: _carouselController,
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: carouselAnnouncements.asMap().entries.map((entry) {
-            return Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _currentIndex == entry.key
-                    ? Colors.blue
-                    : Colors.grey.shade300,
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+
+          // Title and Subtitle
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  events[_currentIndex].title ?? 'Upcoming Event',
+                  style: Styles.darkBlkW70014,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  events[_currentIndex].description ?? 'Join us for this event',
+                  style: Styles.darkGryW40011,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    SvgPicture.asset(AssetConstants.icLocations),
+                    const SizedBox(width: 5),
+                    Text(
+                      events[_currentIndex].location ?? 'School Premises',
+                      style: Styles.darkBlkW400,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Dots Indicator
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: events.asMap().entries.map((entry) {
+              return Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentIndex == entry.key ? Colors.blue : Colors.grey.shade300,
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 10),
+        ],
+      ),
     );
   }
+  Widget _buildEventCard(Map<String, dynamic> event, int index) {
+    // Get light shade color based on event color
+    Color getLightShade(Color color) {
+      return color.withOpacity(0.10); // 15% opacity for light shade
+    }
 
-  Widget _buildEventCard(Map<String, dynamic> event) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: getLightShade(event['color']), // ✅ Light shade background
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: (event['color'] as Color).withOpacity(0.3),
@@ -558,11 +665,14 @@ class AnnouncementsTabs extends StatelessWidget {
         ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Left Vertical Colored Line
           Container(
             width: 4,
-            height: 70,
+            height: 100,
+            margin: const EdgeInsets.only(bottom: 5, top: 5),
             decoration: BoxDecoration(
               color: event['color'],
               borderRadius: const BorderRadius.only(
@@ -571,42 +681,56 @@ class AnnouncementsTabs extends StatelessWidget {
               ),
             ),
           ),
+          Container(
+            width: 20,
+            height: 20,
+            margin: const EdgeInsets.only(left: 12, top: 25),
+            decoration: BoxDecoration(
+              color: (event['color'] as Color).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              event['type'] == 'URGENT' ? Icons.priority_high :
+              event['type'] == 'ACADEMIC' ? Icons.school :
+              event['type'] == 'Holiday' ? Icons.beach_access :
+              Icons.person,
+              color: event['color'],
+              size: 20,
+            ),
+          ),
           // Content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+
                       Text(
-                        event['type'],
-                        style: TextStyle(
-                          color: event['color'],
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          event['type'],
+                          style: index==0?Styles.orangeBold700:index==1?
+                          Styles.blueBold70009:index==2?Styles.greenBold70009:Styles.rdBold70009
                       ),
                       Text(
                         event['date'],
-                        style: const TextStyle(fontSize: 10, color: Colors.grey),
+                        style: Styles.darkBlkW60010,
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    event['description'],
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+                      event['description'],
+                      style: Styles.darkBlackW700
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    event['deadline'],
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      event['deadline'],
+                      style: Styles.darkBlkW400
                   ),
                 ],
               ),
@@ -616,20 +740,22 @@ class AnnouncementsTabs extends StatelessWidget {
       ),
     );
   }
+
 }
+
 // E-Learning Hub Widget - 2 Rows with 4 items each (Appears in both tabs)
 class ELearningHub extends StatelessWidget {
   const ELearningHub({super.key});
 
   final List<Map<String, dynamic>> menuItems = const [
     {'icon': AssetConstants.icWork, 'label': 'Home Work'},
-    {'icon': AssetConstants.icTask, 'label': 'Daily Time'},
-    {'icon': AssetConstants.icLsn, 'label': 'Library Hour'},
-    {'icon': AssetConstants.icPc, 'label': 'Online Library'},
+    {'icon': AssetConstants.icTask, 'label': 'Daily Task'},
+    {'icon': AssetConstants.icLsn, 'label': 'Lesson Plan'},
+    {'icon': AssetConstants.icPc, 'label': 'Online Exam'},
     {'icon': AssetConstants.icDown, 'label': 'Downloads'},
-    {'icon': AssetConstants.icZoom, 'label': 'School Library'},
-    {'icon': AssetConstants.icMeet, 'label': 'Download Library'},
-    {'icon': AssetConstants.icClass, 'label': 'Return Library'},
+    {'icon': AssetConstants.icZoom, 'label': 'Zoom Classes'},
+    {'icon': AssetConstants.icMeet, 'label': 'Gmeet Classes'},
+    {'icon': AssetConstants.icClass, 'label': 'Team Classes'},
   ];
 
   @override
@@ -663,7 +789,7 @@ class ELearningHub extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.7,
+              childAspectRatio: 0.9, // Changed to 0.9 for better fit
               crossAxisSpacing: 6,
               mainAxisSpacing: 14,
             ),
@@ -673,6 +799,7 @@ class ELearningHub extends StatelessWidget {
               return _buildMenuItem(
                 svgIcon: item['icon'] as String,
                 label: item['label'] as String,
+                index: index,
               );
             },
           ),
@@ -684,41 +811,79 @@ class ELearningHub extends StatelessWidget {
   Widget _buildMenuItem({
     required String svgIcon,
     required String label,
+    required int index,
   }) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        switch (index) {
+          case 0:
+          // RouteManagement.goToHomework();
+            break;
+          case 1:
+          // RouteManagement.goToDailyTime();
+            break;
+          case 2:
+          // RouteManagement.goToLibraryHour();
+            break;
+          case 3:
+          // RouteManagement.goToOnlineLibrary();
+            break;
+          case 4:
+          // RouteManagement.goToDownloads();
+            break;
+          case 5:
+            RouteManagement.goToZoomLiveClasses();
+            break;
+          case 6:
+          // RouteManagement.goToDownloadLibrary();
+            break;
+          case 7:
+            RouteManagement.goToTeamLiveClasses();
+            break;
+          default:
+            Get.snackbar('Info', 'Coming Soon');
+        }
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4), // Reduced vertical padding
         decoration: BoxDecoration(
           color: ColorsValue.cardBorderSkyClr,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              svgIcon,
-              height: 28,
-              width: 28,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: Styles.darkBlkW600013,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 2),
+                SvgPicture.asset(
+                  svgIcon,
+                  height: 18, // Further reduced
+                  width: 18,  // Further reduced
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 2), // Reduced spacing
+                Flexible(
+                  child: Text(
+                    label,
+                    style: Styles.darkBlkW600013?.copyWith(
+                      fontSize: 9, // Optimal font size
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
-}
-
-// E-Learning Hub Widget - 2 Rows with 4 items each (Appears in both tabs)
+}// E-Learning Hub Widget - 2 Rows with 4 items each (Appears in both tabs)
 class Academics extends StatelessWidget {
   const Academics({super.key});
 
@@ -764,7 +929,7 @@ class Academics extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.7,
+              childAspectRatio: 0.9, // Changed to 0.9 for square shape with better fit
               crossAxisSpacing: 6,
               mainAxisSpacing: 14,
             ),
@@ -774,6 +939,7 @@ class Academics extends StatelessWidget {
               return _buildMenuItem(
                 svgIcon: item['icon'] as String,
                 label: item['label'] as String,
+                index: index,
               );
             },
           ),
@@ -785,40 +951,77 @@ class Academics extends StatelessWidget {
   Widget _buildMenuItem({
     required String svgIcon,
     required String label,
+    required int index,
   }) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        switch (index) {
+          case 0:
+          // RouteManagement.goToHomework();
+            break;
+          case 1:
+          // RouteManagement.goToDailyTime();
+            break;
+          case 2:
+          // RouteManagement.goToLibraryHour();
+            break;
+          case 3:
+          // RouteManagement.goToOnlineLibrary();
+            break;
+          case 4:
+          // RouteManagement.goToDownloads();
+            break;
+          case 5:
+          // RouteManagement.goToZoomLiveClasses();
+            break;
+          case 6:
+          // RouteManagement.goToDownloadLibrary();
+            break;
+          case 7:
+          // RouteManagement.goToTeamLiveClasses();
+            break;
+          default:
+            Get.snackbar('Info', 'Coming Soon');
+        }
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4), // Reduced padding
         decoration: BoxDecoration(
           color: ColorsValue.cardBorderSkyClr,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              svgIcon,
-              height: 28,
-              width: 28,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: Styles.darkBlkW600013,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  svgIcon,
+                  height: 18, // Reduced from 28
+                  width: 18,  // Reduced from 28
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 2), // Reduced from 8
+                Flexible(
+                  child: Text(
+                    label,
+                    style: Styles.darkBlkW600013?.copyWith(
+                      fontSize: 9, // Smaller text size for better fit
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
-
 // E-Learning Hub Widget - 2 Rows with 4 items each (Appears in both tabs)
 class Others extends StatelessWidget {
   const Others({super.key});
@@ -863,7 +1066,7 @@ class Others extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.7,
+              childAspectRatio: 0.9, // Changed to 0.9 for square shape with better fit
               crossAxisSpacing: 6,
               mainAxisSpacing: 14,
             ),
@@ -873,9 +1076,11 @@ class Others extends StatelessWidget {
               return _buildMenuItem(
                 svgIcon: item['icon'] as String,
                 label: item['label'] as String,
+                index: index,
               );
             },
           ),
+          const SizedBox(height:5),
         ],
       ),
     );
@@ -884,34 +1089,66 @@ class Others extends StatelessWidget {
   Widget _buildMenuItem({
     required String svgIcon,
     required String label,
+    required int index,
   }) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        switch (index) {
+          case 0:
+          // RouteManagement.goToHomework();
+            break;
+          case 1:
+            RouteManagement.goToApplyLeave();
+            break;
+          case 2:
+          // RouteManagement.goToLibraryHour();
+            break;
+          case 3:
+          // RouteManagement.goToOnlineLibrary();
+            break;
+          case 4:
+          // RouteManagement.goToDownloads();
+            break;
+          case 5:
+          // RouteManagement.goToZoomLiveClasses();
+            break;
+          default:
+            Get.snackbar('Info', 'Coming Soon');
+        }
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4), // Reduced padding
         decoration: BoxDecoration(
           color: ColorsValue.cardBorderSkyClr,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              svgIcon,
-              height: 28,
-              width: 28,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: Styles.darkBlkW600013,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  svgIcon,
+                  height: 18, // Reduced from 28
+                  width: 18,  // Reduced from 28
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 2), // Reduced from 8
+                Flexible(
+                  child: Text(
+                    label,
+                    style: Styles.darkBlkW600013?.copyWith(
+                      fontSize: 9, // Smaller text size for better fit
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

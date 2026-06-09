@@ -30,6 +30,9 @@ abstract class RouteManagement {
   static void goToLoginTeacher() {
     Get.toNamed(Routes.loginTeacher);
   }
+  static void goToPayment() {
+    Get.toNamed(Routes.payment);
+  }
 
   // static void goToLoginStudentWithParam({required String role}) {
   //   Get.to(
@@ -57,6 +60,24 @@ abstract class RouteManagement {
   }
   static void goToNewForgotPassword() {
     Get.toNamed(Routes.newForgotPassword);
+  }
+  static void goToNoticeBored() {
+    Get.toNamed(Routes.noticeBoard);
+  }
+  static void goToUpcomingEvents() {
+    Get.toNamed(Routes.upcomingEvents);
+  }
+  static void goToZoomLiveClasses() {
+    Get.toNamed(Routes.zoomLiveClasses);
+  }
+  static void goToTeamLiveClasses() {
+    Get.toNamed(Routes.teamLiveClasses);
+  }
+  static void goToApplyLeave() {
+    Get.toNamed(Routes.applyLeave);
+  }
+  static void goToAddLeave() {
+    Get.toNamed(Routes.addLeave);
   }
   static void goToNewOtpVerification() {
     Get.toNamed(Routes.newOtpVerification);

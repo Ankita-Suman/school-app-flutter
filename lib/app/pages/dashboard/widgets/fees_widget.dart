@@ -17,6 +17,7 @@ class FeesDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DashboardController controller = Get.find<DashboardController>();
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: Obx(() {
@@ -25,12 +26,17 @@ class FeesDetailsScreen extends StatelessWidget {
 
         return Stack(
           children: [
-            // SVG Background with specific height
-            SvgPicture.asset(
-              AssetConstants.icBlueBg,
-              width: MediaQuery.of(context).size.width,
-              height: 210,
-              fit: BoxFit.fill,
+            // Fixed: SVG Background with proper width
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SvgPicture.asset(
+                AssetConstants.icBlueBg,
+                width: screenWidth, // Use full screen width
+                height: 210,
+                fit: BoxFit.cover, // Changed from fill to cover for better scaling
+              ),
             ),
 
             // Content
@@ -47,14 +53,14 @@ class FeesDetailsScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Get.back();
-                                },
-                                child: SvgPicture.asset(
-                                  AssetConstants.icBackBg,
-                                ),
-                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     Get.back();
+                              //   },
+                              //   child: SvgPicture.asset(
+                              //     AssetConstants.icBackBg,
+                              //   ),
+                              // ),
                               const SizedBox(width: 8),
                               Text('Fees Details', style: Styles.whiteBold),
                             ]),
@@ -92,6 +98,7 @@ class FeesDetailsScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+                                const SizedBox(width: 10),
                               ],
                             ),
                           ],
@@ -190,123 +197,123 @@ class FeesDetailsScreen extends StatelessWidget {
 
                   // Scrollable Content (Grand Total + Expandable List)
                   Expanded(
-                    child:  Container(
-        margin: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-        BoxShadow(
-        color: Colors.black.withOpacity(0.08),
-        blurRadius: 15,
-        offset: const Offset(0, 4),
-        ),
-        BoxShadow(
-        color: Colors.black.withOpacity(0.04),
-        blurRadius: 5,
-        offset: const Offset(0, 2),
-        ),
-        ],
-        ),
-        child:SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        children: [
-                          // Grand Total Overview Section
-                          Padding(
-                            padding: Dimens.edgeInsets10,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 15),
-                                Text('GRAND TOTAL OVERVIEW', style: Styles.darkBlackW70012),
-                                const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(child: Text('AMOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                    Expanded(child: Text('DISCOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                    Expanded(child: Text('FINE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                    Expanded(child: Text('PAID', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                    Expanded(child: Text('BALANCE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                  ],
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
-                                  child: Row(
+                    child: Container(
+                      margin: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 15,
+                            offset: const Offset(0, 4),
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          children: [
+                            // Grand Total Overview Section
+                            Padding(
+                              padding: Dimens.edgeInsets10,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 15),
+                                  Text('GRAND TOTAL OVERVIEW', style: Styles.darkBlackW70012),
+                                  const SizedBox(height: 16),
+                                  Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Expanded(
-                                        child: Text(
-                                          '₹${feeData?.grandTotal?.amount ?? 0}',
-                                          textAlign: TextAlign.center,
-                                          style: Styles.darkBlcW70013,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          '₹${feeData?.grandTotal?.discount ?? 0}',
-                                          textAlign: TextAlign.center,
-                                          style: Styles.darkGreenW70013,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          '₹${feeData?.grandTotal?.fine ?? 0}',
-                                          textAlign: TextAlign.center,
-                                          style: Styles.darkOrangeW70013,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          '₹${feeData?.grandTotal?.paid ?? 0}',
-                                          textAlign: TextAlign.center,
-                                          style: Styles.darkGreenW70013,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          '₹${feeData?.grandTotal?.balance ?? 0}',
-                                          textAlign: TextAlign.center,
-                                          style: Styles.darkRedW70013,
-                                        ),
-                                      ),
+                                      Expanded(child: Text('AMOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
+                                      Expanded(child: Text('DISCOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
+                                      Expanded(child: Text('FINE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
+                                      Expanded(child: Text('PAID', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
+                                      Expanded(child: Text('BALANCE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
                                     ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Expandable List - Pass invoices data
-                          if (feeData?.invoices != null && feeData!.invoices!.isNotEmpty)
-                            ExpandableFeesList(
-                              invoices: feeData.invoices!,
-                            )
-                          else
-                            Container(
-                              margin: const EdgeInsets.all(16),
-                              padding: const EdgeInsets.all(32),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade300),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            '₹${feeData?.grandTotal?.amount ?? 0}',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkBlcW70013,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            '₹${feeData?.grandTotal?.discount ?? 0}',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkGreenW70013,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            '₹${feeData?.grandTotal?.fine ?? 0}',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkOrangeW70013,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            '₹${feeData?.grandTotal?.paid ?? 0}',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkGreenW70013,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            '₹${feeData?.grandTotal?.balance ?? 0}',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkRedW70013,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: const Center(
-                                child: Text(
-                                  'No invoice data available',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
                             ),
 
-                          const SizedBox(height: 20),
-                        ],
+                            // Expandable List - Pass invoices data
+                            if (feeData?.invoices != null && feeData!.invoices!.isNotEmpty)
+                              ExpandableFeesList(
+                                invoices: feeData.invoices!,
+                              )
+                            else
+                              Container(
+                                margin: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(32),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey.shade300),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'No invoice data available',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  )],
+                ],
               ),
             ),
           ],
@@ -316,7 +323,7 @@ class FeesDetailsScreen extends StatelessWidget {
   }
 }
 
-// ExpandableFeesList with API data integration
+// ExpandableFeesList with API data integration (unchanged - only background fix above)
 class ExpandableFeesList extends StatefulWidget {
   final List<Invoice> invoices;
   const ExpandableFeesList({super.key, required this.invoices});
@@ -400,7 +407,6 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
               // Main Container - Background changes based on expand state
               Container(
                 color: isExpanded ? ColorsValue.lightBgPinkClr : Colors.white,
-
                 child: Column(
                   children: [
                     // Main Row
@@ -580,7 +586,7 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   flex: 3,
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Handle pay now
+                                      RouteManagement.goToPayment();
                                     },
                                     child: Container(
                                       height: 70,
@@ -655,7 +661,6 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                               ],
                             ),
                           ),
-
                           const SizedBox(height: 10),
                         ],
                       ),

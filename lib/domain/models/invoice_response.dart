@@ -38,6 +38,7 @@ class InvoiceData {
   final List<FeeItem>? feeItems;
   final Summary? summary;
   final List<PaymentHistory>? paymentHistory;
+  final String? downloadUrl; // ✅ Added download_url field
   final String? warning;
 
   InvoiceData({
@@ -46,6 +47,7 @@ class InvoiceData {
     this.feeItems,
     this.summary,
     this.paymentHistory,
+    this.downloadUrl, // ✅ Added
     this.warning,
   });
 
@@ -60,6 +62,7 @@ class InvoiceData {
       paymentHistory: json['payment_history'] != null
           ? (json['payment_history'] as List).map((e) => PaymentHistory.fromJson(e as Map<String, dynamic>)).toList()
           : [],
+      downloadUrl: json['download_url'] as String?, // ✅ Added
       warning: json['warning'] as String?,
     );
   }
@@ -71,9 +74,13 @@ class InvoiceData {
       'fee_items': feeItems?.map((e) => e.toJson()).toList(),
       'summary': summary?.toJson(),
       'payment_history': paymentHistory?.map((e) => e.toJson()).toList(),
+      'download_url': downloadUrl, // ✅ Added
       'warning': warning,
     };
   }
+
+  // ✅ Helper getter to check if download URL exists
+  bool get hasDownloadUrl => downloadUrl != null && downloadUrl!.isNotEmpty;
 }
 
 class Invoice {
@@ -195,6 +202,16 @@ class StudentInfo {
   String get fullName => name ?? '';
   String get classWithSection => '${className ?? ''} ${section ?? ''}'.trim();
   String get fullAddress => 'Roll No: ${rollNumber ?? 'N/A'} | Admission: ${admissionNumber ?? 'N/A'}';
+
+  // ✅ Helper to get initials
+  String get initials {
+    if (name == null || name!.isEmpty) return 'S';
+    final names = name!.split(' ');
+    if (names.length >= 2) {
+      return '${names[0][0]}${names[1][0]}'.toUpperCase();
+    }
+    return name![0].toUpperCase();
+  }
 }
 
 class FeeItem {
@@ -247,9 +264,10 @@ class FeeItem {
   // Helper getters
   bool get isLateFine => feeType?.toUpperCase() == 'LATE_FINE';
   bool get isGeneral => feeType?.toUpperCase() == 'GENERAL';
-  bool get isFullyPaid => pendingAmount == 0;
-  bool get isUnpaid => paidAmount == 0;
+  bool get isFullyPaid => (pendingAmount ?? 0) == 0;
+  bool get isUnpaid => (paidAmount ?? 0) == 0;
   bool get hasWaiver => (waiverAmount ?? 0) > 0;
+  bool get hasPending => (pendingAmount ?? 0) > 0;
 
   String get formattedBaseAmount => '₹${baseAmount ?? 0}';
   String get formattedFinalAmount => '₹${finalAmount ?? 0}';
@@ -302,6 +320,10 @@ class Summary {
   bool get hasDiscount => (discountAmount ?? 0) > 0;
   bool get isFullyPaid => (pendingAmount ?? 0) == 0;
   double get paymentPercentage => (paidAmount ?? 0) / (netAmount ?? 1);
+
+  int get totalAmount => grossAmount ?? 0;
+  int get totalPaid => paidAmount ?? 0;
+  int get totalPending => pendingAmount ?? 0;
 }
 
 class PaymentHistory {
@@ -351,6 +373,8 @@ class PaymentHistory {
   bool get isOnline => collectionMode?.toUpperCase() == 'ONLINE';
   bool get isCheque => collectionMode?.toUpperCase() == 'CHEQUE';
 
+  bool get hasReceiptUrl => receiptDownloadUrl != null && receiptDownloadUrl!.isNotEmpty;
+
   Color get modeColor {
     if (isCash) return Colors.green;
     if (isOnline) return Colors.blue;
@@ -379,6 +403,10 @@ extension NumberFormattingExt on int {
       return '${(this / 1000).toStringAsFixed(1)}K';
     }
     return toString();
+  }
+
+  String get toCurrency {
+    return '₹${toString()}';
   }
 }
 
