@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:school_app/data/data.dart';
 import 'package:school_app/device/device.dart';
 import 'package:school_app/domain/domain.dart';
@@ -63,60 +62,90 @@ class DeviceRepository extends DomainRepository {
   bool getBoolValue(String key) =>
       _getBox().get(key, defaultValue: false) as bool;
 
-  /// Get data from secure storage
+  /// ✅ FIXED: Get data from secure storage - Returns null if not found
   @override
   Future<String> getSecuredValue(String key) async {
     try {
-      var value =
-          await _flutterSecureStorage.read(key: key, iOptions: _getIOSOption());
+      String? value = await _flutterSecureStorage.read(key: key);
+
       if (value == null || value.isEmpty) {
-        value = '';
+        value = GetStorage().read(key);
+        print("📖 Read from GetStorage: $key = ${value != null ? 'FOUND' : 'NULL'}");
+        if (value == null) return '';
+      } else {
+        print("📖 Read from SecureStorage: $key = FOUND");
       }
-      return value;
-    } catch (error) {
+
+      return value ?? '';  // ✅ Return empty string if null
+    } catch (e) {
+      print("❌ Error reading $key: $e");
       return '';
     }
-  }
-
-  /// Save data in secure storage
+  }  /// ✅ FIXED: Save data in secure storage (also save in GetStorage as backup)
   @override
-  Future<void>   saveValueSecurely(String key, String value) async {
-    await _flutterSecureStorage.write(
-        key: key, value: value, iOptions: _getIOSOption());
-  }
+  Future<void> saveValueSecurely(String key, String value) async {
+    try {
+      print("🔐 Saving: $key = $value");
+      await _flutterSecureStorage.write(key: key, value: value);
 
+      // ✅ Also save in GetStorage as backup
+      await GetStorage().write(key, value);
+
+      print("✅ Saved successfully: $key");
+    } catch (e) {
+      print("❌ Error saving $key: $e");
+    }
+  }
   IOSOptions _getIOSOption() => const IOSOptions(accountName: 'ePod');
 
   /// Delete data from secure storage
   @override
   Future<void> deleteSecuredValue(String key) async {
-    await _flutterSecureStorage.delete(key: key);
+    try {
+      await _flutterSecureStorage.delete(key: key);
+      final GetStorage box = GetStorage();
+      await box.remove(key);
+      print("🗑️ Deleted: $key");
+    } catch (error) {
+      print("❌ Error deleting $key: $error");
+    }
   }
 
   /// Delete all data from secure storage
   @override
   Future<void> deleteAllSecuredValues() async {
-    await _flutterSecureStorage.deleteAll();
+    try {
+      await _flutterSecureStorage.deleteAll();
+      final GetStorage box = GetStorage();
+      await box.erase();
+      print("🗑️ Deleted all secured values");
+    } catch (error) {
+      print("❌ Error deleting all: $error");
+    }
   }
 
   @override
-  Future<ResponseModel> loginApi(
-      {required bool isLoading,
-        required String loginName,
-        required String branchCode,
-        required String password}) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<ResponseModel> forgotPasswordAPI({required bool isLoading,
+  Future<ResponseModel> loginApi({
+    required bool isLoading,
+    required String loginName,
     required String branchCode,
-    required String login}) {
+    required String password,
+  }) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<ResponseModel> verifyOtpAPI({required bool isLoading,
+  Future<ResponseModel> forgotPasswordAPI({
+    required bool isLoading,
+    required String branchCode,
+    required String login,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> verifyOtpAPI({
+    required bool isLoading,
     required String branchCode,
     required String login,
     required String otp,
@@ -125,7 +154,8 @@ class DeviceRepository extends DomainRepository {
   }
 
   @override
-  Future<ResponseModel> resetPasswordAPI({  required bool isLoading,
+  Future<ResponseModel> resetPasswordAPI({
+    required bool isLoading,
     required String login,
     required String branchCode,
     required String token,
@@ -136,47 +166,59 @@ class DeviceRepository extends DomainRepository {
   }
 
   @override
-  Future<ResponseModel> resendOtpAPI({required bool isLoading,
+  Future<ResponseModel> resendOtpAPI({
+    required bool isLoading,
     required String login,
     required String branchCode,
   }) {
     throw UnimplementedError();
   }
 
-    @override
-    Future<ResponseModel> getProfileDetailsAPI({required bool isLoading,
-      required String token,
-      required String branchId, required String studentId,
-    }) {
-      throw UnimplementedError();
-  }
- @override
-    Future<ResponseModel> getFeesDetailsAPI({required bool isLoading,
-      required String token,
-      required String branchId, required String studentId,
-    }) {
-      throw UnimplementedError();
-  }
   @override
-    Future<ResponseModel> getAllEvents({required bool isLoading,
-      required String token,
-      required String branchId, required String studentId,
-    }) {
-      throw UnimplementedError();
-  }
-
-  @override
-  Future<ResponseModel> getInvoiceDetailsAPI({required bool isLoading,
+  Future<ResponseModel> getProfileDetailsAPI({
+    required bool isLoading,
     required String token,
-    required String invoiceId, required String branchId,
+    required String branchId,
+    required String studentId,
   }) {
     throw UnimplementedError();
   }
 
   @override
-    Future<ResponseModel> logout({required bool isLoading,
-      required String token,
-    }) {
-      throw UnimplementedError();
+  Future<ResponseModel> getFeesDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getAllEvents({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getInvoiceDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String invoiceId,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> logout({
+    required bool isLoading,
+    required String token,
+  }) {
+    throw UnimplementedError();
   }
 }

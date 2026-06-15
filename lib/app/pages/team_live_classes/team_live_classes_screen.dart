@@ -6,7 +6,7 @@ import '../../app.dart';
 class TeamLiveClassesScreen extends StatelessWidget {
   TeamLiveClassesScreen({super.key});
 
-  final List<Map<String, dynamic>> liveClassesList = [
+  final List<Map<String, dynamic>> teamClassesList = [
     {
       'subject': 'English — Grammar',
       'teacherName': 'Amit Verma',
@@ -23,38 +23,33 @@ class TeamLiveClassesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions for responsive layout
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final isTablet = screenWidth > 600;
-    final isSmallPhone = screenWidth < 360;
+
+    // ✅ Fixed background height based on screen size
+    final backgroundHeight = screenHeight < 700 ? 150.0 : 170.0;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Responsive SVG Background
-          SizedBox(
-            width: screenWidth,
-            height: isTablet ? 200 : (isSmallPhone ? 150 : 170),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
             child: SvgPicture.asset(
               AssetConstants.icBlueBg,
-              width: screenWidth,
-              height: isTablet ? 200 : (isSmallPhone ? 150 : 170),
-              fit: BoxFit.fill,
+              width: double.infinity,
+              height: backgroundHeight,
+              fit: BoxFit.cover,
             ),
           ),
-
-          // Content
           SafeArea(
             child: Column(
               children: [
-                // Fixed Header Section
                 Column(
                   children: [
-                    SizedBox(height: isTablet ? 20 : 15),
                     Padding(
-                      padding: EdgeInsets.all(isTablet ? 20 : 16),
+                      padding: const EdgeInsets.all(16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -62,35 +57,31 @@ class TeamLiveClassesScreen extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => Get.back(),
-                                child: SvgPicture.asset(
-                                  AssetConstants.icBackBg,
-                                  // width: isTablet ? 28 : 24,
-                                  // height: isTablet ? 28 : 24,
+                                child:  SvgPicture.asset(
+                                    AssetConstants.icBackBg,
                                 ),
                               ),
-                              SizedBox(width: isTablet ? 12 : 8),
+                              const SizedBox(width: 8),
                               Text('Teams Live Classes', style: Styles.whiteBold),
                             ],
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: isTablet ? 8 : 5),
 
-                    // Online Sessions Widget
-                    _buildOnlineSessionsWidget(isTablet, isSmallPhone),
+                    _buildOnlineSessionsWidget(),
 
-                    SizedBox(height: isTablet ? 20 : 16),
+                    // ✅ Fixed spacing
+                    const SizedBox(height: 15),
                   ],
                 ),
 
-                // Live Classes List
                 Expanded(
                   child: ListView.builder(
-                    padding: EdgeInsets.all(isTablet ? 20 : 16),
-                    itemCount: liveClassesList.length,
+                    padding: const EdgeInsets.all(12),
+                    itemCount: teamClassesList.length,
                     itemBuilder: (context, index) {
-                      return _buildLiveClassCard(liveClassesList[index], isTablet, isSmallPhone);
+                      return _buildLiveClassCard(teamClassesList[index]);
                     },
                   ),
                 ),
@@ -102,29 +93,18 @@ class TeamLiveClassesScreen extends StatelessWidget {
     );
   }
 
-  // Online Sessions Widget - Responsive
-  Widget _buildOnlineSessionsWidget(bool isTablet, bool isSmallPhone) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 16),
+  Widget _buildOnlineSessionsWidget() {
+    return  Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          SvgPicture.asset(
-            AssetConstants.icTeam,
-            // width: isTablet ? 28 : 24,
-            // height: isTablet ? 28 : 24,
-          ),
-          SizedBox(width: isTablet ? 12 : 8),
+          SvgPicture.asset(AssetConstants.icTeam),
+          SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'MS Teams Classes',
-                style: Styles.whiteBold,
-              ),
-              Text(
-                'Join scheduled lectures',
-                style: Styles.whiteW60010,
-              ),
+              Text('MS Teams Classes', style: Styles.whiteBold),
+              Text('Join scheduled lectures', style: Styles.whiteW60010),
             ],
           ),
         ],
@@ -132,42 +112,39 @@ class TeamLiveClassesScreen extends StatelessWidget {
     );
   }
 
-  // Live Class Card - Responsive with original styles
-  Widget _buildLiveClassCard(Map<String, dynamic> classData, bool isTablet, bool isSmallPhone) {
+  Widget _buildLiveClassCard(Map<String, dynamic> classData) {
     return Container(
-      margin: EdgeInsets.only(bottom: isTablet ? 20 : 16),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: ColorsValue.cardBorderSkyClr,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 5),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // White Container with Top Radius
             Container(
-              padding: EdgeInsets.all(isTablet ? 20 : 16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(14),
+                  topRight: Radius.circular(14),
                 ),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Subject Name
                   Expanded(
                     child: Text(
                       classData['subject'],
@@ -175,57 +152,44 @@ class TeamLiveClassesScreen extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(width: isTablet ? 12 : 8),
-                  // LIVE Container
+                  const SizedBox(width: 8),
                   Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isTablet ? 16 : 12,
-                      vertical: isTablet ? 6 : 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: ColorsValue.redClrs,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Row(
+                    child:  Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
-                          width: isTablet ? 9 : 7,
-                          height: isTablet ? 9 : 7,
-                          decoration: const BoxDecoration(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),
                         ),
-                        SizedBox(width: isTablet ? 8 : 5),
-                        Text(
-                          'LIVE',
-                          style: Styles.whiteW70009,
-                        ),
+                        SizedBox(width: 4),
+                        Text('LIVE', style: Styles.whiteW70009),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-
-            // Divider
             Divider(height: 1, thickness: 1, color: ColorsValue.blueColorss.withOpacity(0.3)),
-
-            // Bottom Section
             Container(
-              padding: EdgeInsets.all(isTablet ? 20 : 16),
+              padding: const EdgeInsets.all(12),
               color: Colors.white,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // Teacher Info Row
                   Row(
                     children: [
-                      // Teacher Initial Circle
                       Container(
-                        width: isTablet ? 50 : 40,
-                        height: isTablet ? 50 : 40,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.blue.shade100,
@@ -233,15 +197,15 @@ class TeamLiveClassesScreen extends StatelessWidget {
                         child: Center(
                           child: Text(
                             classData['teacherInitial'],
-                            style: TextStyle(
-                              fontSize: isTablet ? 18 : 14,
+                            style: const TextStyle(
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue.shade700,
+                              color: Colors.blue,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: isTablet ? 16 : 12),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,58 +216,30 @@ class TeamLiveClassesScreen extends StatelessWidget {
                               style: Styles.darkBlackW700,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              'Teacher',
-                              style: Styles.darkGryW400,
-                            ),
+                             Text('Teacher', style: Styles.darkGryW400),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: isTablet ? 16 : 12),
+                  const SizedBox(height: 10),
                   Divider(height: 1, thickness: 1, color: ColorsValue.blueColorss.withOpacity(0.3)),
-                  SizedBox(height: isTablet ? 16 : 12),
-                  // Time Section
-                  Column(
+                  const SizedBox(height: 10),
+                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        'Time',
-                        style: Styles.darkGryW600,
-                      ),
-                      SizedBox(height: isTablet ? 8 : 4),
+                      Text('Time', style: Styles.darkGryW600),
+                      SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(
-                            Icons.access_time,
-                            size: isTablet ? 22 : 18,
-                            color: Colors.grey.shade600,
-                          ),
-                          SizedBox(width: isTablet ? 12 : 8),
+                          Icon(Icons.access_time, size: 16, color: Colors.grey),
+                          SizedBox(width: 8),
                           Expanded(
-                            child: Text(
-                              classData['time'],
-                              style: Styles.darkBlkW70013,
-                            ),
+                            child: Text('01:00 PM – 02:00 PM', style: Styles.darkBlkW70013),
                           ),
-                          SizedBox(width: isTablet ? 16 : 12),
-                          // Join Teams Button
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 24 : 20,
-                              vertical: isTablet ? 10 : 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: ColorsValue.navIconColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'Join Teams',
-                              style: Styles.whiteW70012,
-                            ),
-                          ),
+                          SizedBox(width: 10),
+                          JoinTeamsButton(),
                         ],
                       ),
                     ],
@@ -313,6 +249,25 @@ class TeamLiveClassesScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class JoinTeamsButton extends StatelessWidget {
+  const JoinTeamsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: ColorsValue.navIconColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child:  Text(
+        'Join Teams',
+        style: Styles.whiteW70012,
       ),
     );
   }

@@ -15,6 +15,7 @@ class InvoiceScreen extends StatelessWidget {
     final InvoiceController controller = Get.put(InvoiceController(Get.find()));
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final backgroundHeight = screenHeight * 0.26; // 28% of screen height
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -51,14 +52,14 @@ class InvoiceScreen extends StatelessWidget {
         // Data hai toh screen show karo
         return Stack(
           children: [
-            // Fixed: SVG Background with proper responsive sizing
+            // ✅ Responsive SVG Background - FIXED
             Positioned(
               top: 0,
               left: 0,
               right: 0,
               child: Container(
-                width: screenWidth,
-                height: 220, // Increased height for better coverage
+                width: double.infinity,
+                height: backgroundHeight,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -71,12 +72,12 @@ class InvoiceScreen extends StatelessWidget {
                 ),
                 child: SvgPicture.asset(
                   AssetConstants.icBlueBg,
-                  width: screenWidth,
-                  height: 220,
-                  fit: BoxFit.cover, // Changed to cover for better scaling
+                  width: double.infinity,
+                  height: backgroundHeight,
+                  fit: BoxFit.cover,
                   placeholderBuilder: (context) => Container(
-                    width: screenWidth,
-                    height: 220,
+                    width: double.infinity,
+                    height: backgroundHeight,
                     color: Colors.blue.shade800,
                   ),
                 ),
@@ -87,7 +88,6 @@ class InvoiceScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      const SizedBox(height: 25),
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: Row(
@@ -97,17 +97,10 @@ class InvoiceScreen extends StatelessWidget {
                               children: [
                                 GestureDetector(
                                   onTap: () => Get.back(),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: SvgPicture.asset(
+                                  child: SvgPicture.asset(
                                       AssetConstants.icBackBg,
-                                      height: 20,
-                                      width: 20,
-                                    ),
+                                      // height: 20,
+                                      // width: 20,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -201,6 +194,9 @@ class InvoiceScreen extends StatelessWidget {
                           ],
                         ),
                       ),
+
+                      // Dynamic spacing
+                      SizedBox(height: backgroundHeight * 0.08),
                     ],
                   ),
                   Expanded(
@@ -222,7 +218,7 @@ class InvoiceScreen extends StatelessWidget {
   }
 }
 
-// InvoiceCard class - Responsive fixes
+// InvoiceCard class - No changes to styles
 class InvoiceCard extends StatelessWidget {
   final InvoiceData invoice;
   const InvoiceCard({super.key, required this.invoice});
@@ -459,7 +455,7 @@ class InvoiceCard extends StatelessWidget {
   }
 }
 
-// ReceiptHistoryCard - Responsive fixes
+// ReceiptHistoryCard - No changes to styles
 class ReceiptHistoryCard extends StatelessWidget {
   final List<PaymentHistory> paymentHistory;
   const ReceiptHistoryCard({super.key, required this.paymentHistory});

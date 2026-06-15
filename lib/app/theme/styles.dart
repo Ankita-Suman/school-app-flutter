@@ -578,6 +578,12 @@ static TextStyle blueBold70009 = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.darkBlueClr);
 
+static TextStyle blueBold70010 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.ten,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.darkBlueClr);
+
 static TextStyle greenBold70009 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.nine,

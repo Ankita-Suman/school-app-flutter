@@ -33,7 +33,6 @@ class DashboardController extends GetxController {
     const MoreWidget(),
   ];
 
-  var isLoading = false.obs;
   var profileData = Rxn<ProfileData>();
   var feeData = Rxn<FeeResponseModel>();
   var eventsData = Rxn<EventsResponseModel>();
@@ -48,101 +47,84 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Load cached data first (for immediate display)
-    loadCachedData();
-    // First time: Profile without loader, Events with loader
+    print("🔵🔵🔵 DASHBOARD CONTROLLER onInit START 🔵🔵🔵");
+    // ❌ No cache loading - remove loadCachedData()
+    print("🔵🔵🔵 DASHBOARD CONTROLLER onInit END 🔵🔵🔵");
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    print("🟢🟢🟢 DASHBOARD CONTROLLER onReady START 🟢🟢🟢");
+
+    // Load home tab data on app start
     getProfileDetailsWithoutLoader();
     getAllEventsWithLoader();
+
+    print("🟢🟢🟢 DASHBOARD CONTROLLER onReady END 🟢🟢🟢");
   }
 
-  // ==================== CACHE METHODS ====================
+  // ==================== PROFILE API (Home Tab) ====================
 
-  void loadCachedData() {
-    try {
-      // Load cached profile
-      String? cachedProfile = _storage.read('profile_data');
-      if (cachedProfile != null) {
-        Map<String, dynamic> profileMap = jsonDecode(cachedProfile);
-        profileData.value = ProfileData.fromJson(profileMap);
-        print("✅ Loaded profile from cache");
-      }
-
-      // Load cached events
-      String? cachedEvents = _storage.read('events_data');
-      if (cachedEvents != null) {
-        Map<String, dynamic> eventsMap = jsonDecode(cachedEvents);
-        eventsData.value = EventsResponseModel.fromJson(eventsMap);
-        print("✅ Loaded events from cache");
-      }
-
-      // Load cached fees
-      String? cachedFees = _storage.read('fees_data');
-      if (cachedFees != null) {
-        Map<String, dynamic> feesMap = jsonDecode(cachedFees);
-        feeData.value = FeeResponseModel.fromJson(feesMap);
-        print("✅ Loaded fees from cache");
-      }
-    } catch (e) {
-      print("Error loading cached data: $e");
-    }
-  }
-
-  // ==================== PROFILE API METHODS ====================
-
-  // ✅ Profile API - Without Loader (First time / Home tab)
   Future<void> getProfileDetailsWithoutLoader() async {
+    print("👤👤👤 getProfileDetailsWithoutLoader START 👤👤👤");
     try {
-      print("📡 Fetching profile WITHOUT loader");
-
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
       var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
+      if (token == null || token.isEmpty || studentId == null || studentId.isEmpty) {
+        print("❌ Missing required data for profile");
+        return;
+      }
+
       var res = await dashboardPresenter.getProfileDetailsAPI(
         isLoading: false,
-        token: token?.toString() ?? '',
+        token: token.toString(),
         branchId: branchId?.toString() ?? '',
-        studentId: studentId?.toString() ?? '',
+        studentId: studentId.toString(),
       );
 
       if (res != null && res.status == true && res.data != null) {
         profileData.value = res.data;
-
-        String jsonString = jsonEncode(res.data!.toJson());
-        await _storage.write('profile_data', jsonString);
         print("✅ Profile loaded: ${res.data?.personal?.name}");
       } else {
         print("❌ Failed to load profile: ${res?.message}");
       }
     } catch (e) {
-      print("Error in getProfileDetailsWithoutLoader: $e");
+      print("❌ Error in getProfileDetailsWithoutLoader: $e");
     }
+    print("👤👤👤 getProfileDetailsWithoutLoader END 👤👤👤");
   }
 
-  // ✅ Profile API - With Loader (Profile tab click / Refresh)
+  // ==================== PROFILE API WITH LOADER (Profile Tab) ====================
+
   Future<void> getProfileDetailsWithLoader() async {
     try {
       isLoadingProfile.value = true;
-      print("📡 Fetching profile WITH loader");
+      print("📡📡📡 getProfileDetailsWithLoader START - API HIT WITH LOADER 📡📡📡");
 
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
       var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
+      if (token == null || token.isEmpty) {
+        print("❌ Missing token");
+        isLoadingProfile.value = false;
+        return;
+      }
+
       var res = await dashboardPresenter.getProfileDetailsAPI(
         isLoading: true,
-        token: token?.toString() ?? '',
+        token: token.toString(),
         branchId: branchId?.toString() ?? '',
         studentId: studentId?.toString() ?? '',
       );
 
       if (res != null && res.status == true && res.data != null) {
         profileData.value = res.data;
-
-        String jsonString = jsonEncode(res.data!.toJson());
-        await _storage.write('profile_data', jsonString);
         print("✅ Profile loaded: ${res.data?.personal?.name}");
       } else {
         print("❌ Failed to load profile: ${res?.message}");
@@ -154,22 +136,27 @@ class DashboardController extends GetxController {
     }
   }
 
-  // ==================== EVENTS API METHODS ====================
+  // ==================== EVENTS API (Home Tab) ====================
 
-  // ✅ Events API - With Loader (First time / Home tab)
   Future<void> getAllEventsWithLoader() async {
+    print("📅📅📅 getAllEventsWithLoader START 📅📅📅");
     try {
       isLoadingEvents.value = true;
-      print("📡 Fetching events WITH loader");
 
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
       var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
+      if (token == null || token.isEmpty) {
+        print("❌ No token, cannot fetch events");
+        isLoadingEvents.value = false;
+        return;
+      }
+
       var res = await dashboardPresenter.getAllEvents(
         isLoading: true,
-        token: token?.toString() ?? '',
+        token: token.toString(),
         branchId: branchId?.toString() ?? '',
         studentId: studentId?.toString() ?? '',
       );
@@ -187,144 +174,39 @@ class DashboardController extends GetxController {
           );
         }
 
-        if (eventsData.value != null && eventsData.value!.data != null) {
-          String jsonString = jsonEncode(eventsData.value!.toJson());
-          await _storage.write('events_data', jsonString);
-          print("📊 Events Count: ${eventsData.value?.data?.events?.length ?? 0}");
-        }
+        print("📊 Events Count: ${eventsData.value?.data?.events?.length ?? 0}");
       } else {
         print("❌ Failed to load events: ${res?.message ?? 'Unknown error'}");
       }
     } catch (e) {
-      print("Error in getAllEventsWithLoader: $e");
+      print("❌ Error in getAllEventsWithLoader: $e");
     } finally {
       isLoadingEvents.value = false;
     }
+    print("📅📅📅 getAllEventsWithLoader END 📅📅📅");
   }
 
-  Future<void> logoutAPI({
-    required bool isLoading,
-  }) async {
-    try {
-      Utility.showLoader();
+  // ==================== FEES API (Fees Tab) ====================
 
-      // Try to call logout API (optional - don't wait if it fails)
-      try {
-        var res = await dashboardPresenter.logoutAPI(isLoading: isLoading);
-        debugPrint('Logout response: $res');
-      } catch (apiError) {
-        print("Logout API error: $apiError");
-        // Continue with cleanup even if API fails
-      }
-
-      // Clear all stored data
-      await _clearAllStorageData();
-
-      Utility.closeLoader();
-
-      // Navigate to login screen
-      RouteManagement.goToLogin();
-      update();
-
-    } catch (e) {
-      print("Logout error: $e");
-
-      // Force clear storage even if something fails
-      await _clearAllStorageData();
-
-      Utility.closeLoader();
-      RouteManagement.goToLogin();
-      update();
-    }
-  }
-
-// Helper method to clear all storage data
-  Future<void> _clearAllStorageData() async {
-    try {
-      var repo = Get.find<DeviceRepository>();
-
-      // Clear all secured values
-      await repo.deleteAllSecuredValues();
-
-      // Clear individual values (double ensure)
-      await repo.deleteSecuredValue(DeviceConstants.token);
-      await repo.deleteSecuredValue(DeviceConstants.branchId);
-      await repo.deleteSecuredValue(DeviceConstants.branchCode);
-      await repo.deleteSecuredValue(DeviceConstants.email);
-      await repo.deleteSecuredValue(DeviceConstants.username);
-      await repo.deleteSecuredValue(DeviceConstants.studentId);
-      await repo.deleteSecuredValue(DeviceConstants.profileData);
-
-      // Clear Hive box
-      await repo.deleteBox();
-
-      // Clear any other cached data
-      //await repo.clearCache(); // If available
-
-      print("All storage data cleared successfully");
-
-    } catch (e) {
-      print("Error in _clearAllStorageData: $e");
-    }
-  }
-
-  // ✅ Events API - Without Loader (Refresh only if needed)
-  Future<void> getAllEventsWithoutLoader() async {
-    try {
-      print("📡 Fetching events WITHOUT loader");
-
-      var deviceRepo = Get.find<DeviceRepository>();
-      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
-      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
-      var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
-
-      var res = await dashboardPresenter.getAllEvents(
-        isLoading: false,
-        token: token?.toString() ?? '',
-        branchId: branchId?.toString() ?? '',
-        studentId: studentId?.toString() ?? '',
-      );
-
-      if (res != null && res.status == true && res.data != null) {
-        if (res.data is EventsResponseModel) {
-          eventsData.value = res.data as EventsResponseModel;
-        } else if (res.data is Map<String, dynamic>) {
-          eventsData.value = EventsResponseModel.fromJson(res.data as Map<String, dynamic>);
-        } else if (res.data is EventsData) {
-          eventsData.value = EventsResponseModel(
-            status: true,
-            message: "Success",
-            data: res.data as EventsData,
-          );
-        }
-
-        if (eventsData.value != null && eventsData.value!.data != null) {
-          String jsonString = jsonEncode(eventsData.value!.toJson());
-          await _storage.write('events_data', jsonString);
-          print("📊 Events Count: ${eventsData.value?.data?.events?.length ?? 0}");
-        }
-      }
-    } catch (e) {
-      print("Error in getAllEventsWithoutLoader: $e");
-    }
-  }
-
-  // ==================== FEES API METHODS ====================
-
-  // ✅ Fees API - With Loader (Every time)
   Future<void> getFeesDetails() async {
     try {
       isLoadingFees.value = true;
-      print("📡 Fetching fees WITH loader");
+      print("💰💰💰 getFeesDetails START - API HIT WITH LOADER 💰💰💰");
 
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
       var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
+      if (token == null || token.isEmpty) {
+        print("❌ No token, cannot fetch fees");
+        isLoadingFees.value = false;
+        return;
+      }
+
       var res = await dashboardPresenter.getFeesDetailsAPI(
         isLoading: true,
-        token: token?.toString() ?? '',
+        token: token.toString(),
         branchId: branchId?.toString() ?? '',
         studentId: studentId?.toString() ?? '',
       );
@@ -342,79 +224,106 @@ class DashboardController extends GetxController {
           feeData.value = res.data as FeeResponseModel;
         }
 
-        if (feeData.value != null && feeData.value!.data != null) {
-          String jsonString = jsonEncode(feeData.value!.toJson());
-          await _storage.write('fees_data', jsonString);
-          print("💰 Fees loaded successfully");
-        }
+        print("💰 Fees loaded successfully");
+      } else {
+        print("❌ Failed to load fees: ${res?.message}");
       }
     } catch (e) {
-      print("Error in getFeesDetails: $e");
+      print("❌ Error in getFeesDetails: $e");
     } finally {
       isLoadingFees.value = false;
     }
+    print("💰💰💰 getFeesDetails END 💰💰💰");
   }
 
-  // ==================== REFRESH METHODS ====================
-
-  Future<void> refreshProfile() async {
-    print("🔄 Refreshing profile...");
-    await getProfileDetailsWithLoader();
-  }
-
-  Future<void> refreshEvents() async {
-    print("🔄 Refreshing events...");
-    await getAllEventsWithLoader();
-  }
-
-  Future<void> refreshFees() async {
-    print("🔄 Refreshing fees...");
-    await getFeesDetails();
-  }
-
-  // ==================== NAVIGATION METHODS ====================
+  // ==================== NAVIGATION ====================
 
   void changeNavIndex(int index) {
-    print("Changing index to: $index");
+    print("🔄🔄🔄 changeNavIndex CALLED: index = $index 🔄🔄🔄");
     selectedIndex.value = index;
+    update();
 
+    // ✅ Fresh API call on every tab click with loader
     switch (index) {
       case 0: // Home Tab
-        print("🏠 Home tab selected");
-        // Profile WITHOUT loader
+        print("🏠 Home tab selected - Loading fresh data");
         getProfileDetailsWithoutLoader();
-        // Events WITH loader
         getAllEventsWithLoader();
         break;
-
       case 1: // Homework Tab
         print("📚 Homework tab selected");
         break;
-
-      case 2: // Schedule Tab
-        print("📅 Schedule tab selected");
+      case 2: // Fees Tab
+        print("💰 Fees tab selected - Loading fresh data with loader");
+        getFeesDetails();  // ✅ Fresh API every time
         break;
-
-      case 3: // Fees Tab
-        print("💰 Fees tab selected - Fetching fresh data WITH loader");
-        getFeesDetails();
+      case 3: // Profile Tab
+        print("👤 Profile tab selected - Loading fresh data with loader");
+        getProfileDetailsWithLoader();  // ✅ Fresh API every time
         break;
-
-      case 4: // Profile Tab
-        print("👤 Profile tab selected - Fetching fresh data WITH loader");
-        getProfileDetailsWithLoader();
+      case 4: // More Tab
+        print("📱 More tab selected - Loading fresh data");
+        // More tab can also load fresh data if needed
         break;
     }
-
-    update();
   }
 
   Widget getCurrentScreen() {
     return screens[selectedIndex.value];
   }
 
+  // ==================== LOGOUT ====================
+
+  Future<void> logoutAPI({required bool isLoading}) async {
+    var deviceRepo = Get.find<DeviceRepository>();
+    var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+    try {
+      Utility.showLoader();
+      try {
+        var res = await dashboardPresenter.logoutAPI(isLoading: isLoading,token:token);
+        debugPrint('Logout response: $res');
+      } catch (apiError) {
+        print("Logout API error: $apiError");
+      }
+      await _clearAllStorageData();
+      Utility.closeLoader();
+      RouteManagement.goToLogin();
+      update();
+    } catch (e) {
+      print("Logout error: $e");
+      await _clearAllStorageData();
+      Utility.closeLoader();
+      RouteManagement.goToLogin();
+      update();
+    }
+  }
+
+  Future<void> _clearAllStorageData() async {
+    try {
+      var repo = Get.find<DeviceRepository>();
+      await repo.deleteAllSecuredValues();
+      await repo.deleteSecuredValue(DeviceConstants.token);
+      await repo.deleteSecuredValue(DeviceConstants.branchId);
+      await repo.deleteSecuredValue(DeviceConstants.branchCode);
+      await repo.deleteSecuredValue(DeviceConstants.email);
+      await repo.deleteSecuredValue(DeviceConstants.username);
+      await repo.deleteSecuredValue(DeviceConstants.studentId);
+      await repo.deleteSecuredValue(DeviceConstants.profileData);
+      await repo.deleteBox();
+
+      await _storage.remove('profile_data');
+      await _storage.remove('events_data');
+      await _storage.remove('fees_data');
+
+      print("All storage data cleared successfully");
+    } catch (e) {
+      print("Error in _clearAllStorageData: $e");
+    }
+  }
+
   @override
   void onClose() {
+    print("🔴🔴🔴 DASHBOARD CONTROLLER onClose CALLED 🔴🔴🔴");
     super.onClose();
   }
 }

@@ -6,8 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:school_app/app/app.dart';
-import '../../notice_board/notice_board_screen.dart';
-import '../../upcoming_events/upcoming_events_screen.dart';
 import '../dashboard_controller.dart';
 
 class DashboardHomeScreen extends StatelessWidget {
@@ -15,147 +13,222 @@ class DashboardHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<DashboardController>()) {
+      Get.put(DashboardController(Get.find()), permanent: true);
+    }
+
     final DashboardController controller = Get.find<DashboardController>();
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
-      ),
-    );
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // ✅ Set navigation bar and status bar styles
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          // Status Bar (Top)
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+
+          // Navigation Bar (Bottom)
+          systemNavigationBarColor: Colors.white,
+          systemNavigationBarIconBrightness: Brightness.dark,
+          systemNavigationBarDividerColor: Colors.transparent,
+        ),
+      );
+    });
+
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ========== FIXED HEADER SECTION (Non-scrollable) ==========
-            Column(
-              children: [
-                // Header Section
-                Container(
-                  decoration: const BoxDecoration(
-                    color: ColorsValue.bgColors,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
-                    child: Column(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 0,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+      ),
+      body: Column(
+        children: [
+          // ========== FIXED HEADER SECTION (Non-scrollable) ==========
+          Stack(
+            children: [
+              // SVG Background Image - Responsive
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SvgPicture.asset(
+                  AssetConstants.icBlueBg,
+                  width: screenWidth,
+                  height: 280,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              // Content on top of SVG
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 50, 16, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        // Avatar with Status
+                        Stack(
                           children: [
-                            // Avatar with Status
-                            Stack(
-                              children: [
-                                Container(
-                                  width: 55,
-                                  height: 55,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: ColorsValue.lightBorderBlueColor,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: ColorsValue.darkFillBlueColor,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Obx(() => Center(
-                                      child: Text(
-                                        controller.profileData.value?.personal?.name?.isNotEmpty == true
-                                            ? controller.profileData.value!.personal!.name![0].toUpperCase()
-                                            : 'AS',
-                                        style: Styles.whiteBold,
-                                      ),
-                                    )),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 2,
-                                  right: 2,
-                                  child: Container(
-                                    width: 14,
-                                    height: 14,
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // User Info
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Good morning 🌞',
-                                      style: Styles.whiteW60010,
-                                    ),
-                                    Obx(() => Text(
-                                      controller.profileData.value?.personal?.name ?? 'Olivier Thomas',
-                                      style: Styles.whiteBold,
-                                    )),
-                                    Obx(() => Text(
-                                      'Class ${controller.profileData.value?.personal?.classInfo?.name ?? '1'} – ${controller.profileData.value?.personal?.section?.name ?? 'A'} - Session ${controller.profileData.value?.other?.academic?.session ?? '2025 – 26'}',
-                                      style: Styles.whiteW400011,
-                                    )),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // Notification Icon
                             Container(
+                              width: 55,
+                              height: 55,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
+                                shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
-                                  width: 1,
+                                  color: ColorsValue.lightBorderBlueColor,
+                                  width: 2,
                                 ),
                               ),
-                              child: IconButton(
-                                icon: const Icon(Icons.notifications, color: Colors.white, size: 20),
-                                onPressed: () {},
+                              child: _buildAvatar(controller),
+                            ),
+                            Positioned(
+                              bottom: 2,
+                              right: 2,
+                              child: Container(
+                                width: 14,
+                                height: 14,
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        // Credit Score Card
-                        CreditScoreCard(),
+                        // User Info
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Good morning 🌞',
+                                  style: Styles.whiteW60010,
+                                ),
+                                Obx(() => Text(
+                                  controller.profileData.value?.personal?.name ?? 'Olivier Thomas',
+                                  style: Styles.whiteBold,
+                                )),
+                                Obx(() => Text(
+                                  'Class ${controller.profileData.value?.personal?.classInfo?.name ?? '1'} – ${controller.profileData.value?.personal?.section?.name ?? 'A'}',
+                                  style: Styles.whiteW400011,
+                                )),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Notification Icon
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.notifications, color: Colors.white, size: 20),
+                            onPressed: () {},
+                          ),
+                        ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    // Credit Score Card
+                    CreditScoreCard(),
+                  ],
                 ),
-                const SizedBox(height: 16),
-              ],
-            ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
 
-            // ========== SCROLLABLE TABS SECTION ==========
-            Expanded(
+          // ========== SCROLLABLE TABS SECTION ==========
+          Expanded(
+            child: Container(
+              color: Colors.grey.shade50,
               child: AnnouncementsTabs(),
             ),
-            const SizedBox(height: 20),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(DashboardController controller) {
+    String? photoUrl = controller.profileData.value?.personal?.photo;
+    String? fullName = controller.profileData.value?.personal?.name;
+
+    // Agar image hai to show image
+    if (photoUrl != null && photoUrl.isNotEmpty) {
+      return ClipOval(
+        child: Image.network(
+          photoUrl,
+          width: 55,
+          height: 55,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Image fail ho to initials dikhao
+            return _buildInitialsAvatar(fullName);
+          },
+        ),
+      );
+    }
+
+    // Image nahi hai to initials dikhao
+    return _buildInitialsAvatar(fullName);
+  }
+
+  Widget _buildInitialsAvatar(String? fullName) {
+    return Container(
+      width: 55,
+      height: 55,
+      decoration: BoxDecoration(
+        color: ColorsValue.bgColors,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          _getInitials(fullName),
+          style: Styles.whiteBold.copyWith(fontSize: 18),
         ),
       ),
     );
   }
+
+  String _getInitials(String? fullName) {
+    if (fullName == null || fullName.isEmpty) return 'AS';
+
+    List<String> parts = fullName.trim().split(' ');
+
+    if (parts.length == 1) {
+      return parts[0][0].toUpperCase();
+    }
+
+    String first = parts[0][0].toUpperCase();
+    String last = parts[parts.length - 1][0].toUpperCase();
+    return '$first$last';
+  }
 }
 
-// Credit Score Card
+// Credit Score Card (No changes needed)
 class CreditScoreCard extends StatelessWidget {
   const CreditScoreCard({super.key});
 
@@ -179,9 +252,9 @@ class CreditScoreCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                 Text(
-                  'CREDIT SCORE',
-                  style: Styles.whiteW70010
+                Text(
+                    'CREDIT SCORE',
+                    style: Styles.whiteW70010
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
@@ -196,16 +269,16 @@ class CreditScoreCard extends StatelessWidget {
                         width: 80,
                         fit: BoxFit.contain,
                       ),
-                       Column(
+                      Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                               '${controller.profileData.value?.other?.grade?.averagePercentage ?? 0}',
-                            style: Styles.whiteBold
+                              style: Styles.whiteBold
                           ),
                           Text(
-                            '/100',
-                            style: Styles.whiteW4009
+                              '/100',
+                              style: Styles.whiteW4009
                           ),
                         ],
                       ),
@@ -240,15 +313,15 @@ class CreditScoreCard extends StatelessWidget {
                       width: 20,
                     ),
                     const SizedBox(width: 10),
-                     Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                             '${controller.profileData.value?.other.attendance?.percentage ?? 0}%',
-                          style: Styles.whiteBold15
+                            style: Styles.whiteBold15
                         ),
                         Text(
-                          'Attendance',
+                            'Attendance',
                             style: Styles.whiteW400010
                         ),
                       ],
@@ -275,7 +348,7 @@ class CreditScoreCard extends StatelessWidget {
                       width: 20,
                     ),
                     const SizedBox(width: 10),
-                     Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -283,7 +356,7 @@ class CreditScoreCard extends StatelessWidget {
                             style: Styles.whiteBold
                         ),
                         Text(
-                          'Last Grade',
+                            'Last Grade',
                             style: Styles.whiteW400010
                         ),
                       ],
@@ -331,13 +404,11 @@ class AnnouncementsTabs extends StatelessWidget {
   int _currentIndex = 0;
   final CarouselController _carouselController = CarouselController();
 
-
   String _formatEventDate(String? date) {
     if (date == null || date.isEmpty) return 'Event Date';
     try {
       final parts = date.split('-');
       if (parts.length == 3) {
-        // parts[0] = year (2025), parts[1] = month (06), parts[2] = day (28)
         final year = parts[0];
         final month = int.parse(parts[1]);
         final day = parts[2];
@@ -376,7 +447,7 @@ class AnnouncementsTabs extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ Tab Bar with See All on Top Right
+            // Tab Bar with See All on Top Right
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -410,22 +481,20 @@ class AnnouncementsTabs extends StatelessWidget {
                   ),
                 ),
                 // Tab Bar
-                 TabBar(
-                  tabs: const [
+                const TabBar(
+                  tabs: [
                     Tab(text: 'Announcements'),
                     Tab(text: 'Upcoming Events'),
                   ],
                   labelColor: ColorsValue.navIconColor,
                   unselectedLabelColor: ColorsValue.unSelectedClr,
-                  labelStyle: Styles.darkBlueW700,
-                  unselectedLabelStyle: Styles.darkBlackW700,
                   indicatorColor: ColorsValue.navIconColor,
                   indicatorWeight: 3,
                 ),
               ],
             ),
 
-            // TabBarView (Same as before)
+            // TabBarView
             Expanded(
               child: TabBarView(
                 children: [
@@ -446,7 +515,8 @@ class AnnouncementsTabs extends StatelessWidget {
                         const SizedBox(height: 10),
                         const Academics(),
                         const SizedBox(height: 10),
-                        const Others(),
+                       const Others(),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -457,11 +527,12 @@ class AnnouncementsTabs extends StatelessWidget {
                       children: [
                         Obx(() => _buildCarouselSlider(controller)),
                         const SizedBox(height: 16),
-                        const ELearningHub(),
+                       const ELearningHub(),
                         const SizedBox(height: 10),
-                        const Academics(),
+                       const Academics(),
                         const SizedBox(height: 10),
-                        const Others(),
+                       const Others(),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -474,6 +545,7 @@ class AnnouncementsTabs extends StatelessWidget {
     );
   }
 
+  // Rest of the methods remain the same...
   Widget _buildCarouselSlider(DashboardController controller) {
     final events = controller.eventsData.value?.data?.events ?? [];
 
@@ -481,7 +553,6 @@ class AnnouncementsTabs extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    // Reset index if needed
     if (_currentIndex >= events.length) {
       _currentIndex = 0;
     }
@@ -593,8 +664,6 @@ class AnnouncementsTabs extends StatelessWidget {
             ),
             carouselController: _carouselController,
           ),
-
-          // Title and Subtitle
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
@@ -625,10 +694,7 @@ class AnnouncementsTabs extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // Dots Indicator
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: events.asMap().entries.map((entry) {
@@ -648,16 +714,16 @@ class AnnouncementsTabs extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildEventCard(Map<String, dynamic> event, int index) {
-    // Get light shade color based on event color
     Color getLightShade(Color color) {
-      return color.withOpacity(0.10); // 15% opacity for light shade
+      return color.withOpacity(0.10);
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: getLightShade(event['color']), // ✅ Light shade background
+        color: getLightShade(event['color']),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: (event['color'] as Color).withOpacity(0.3),
@@ -668,7 +734,6 @@ class AnnouncementsTabs extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Vertical Colored Line
           Container(
             width: 4,
             height: 100,
@@ -698,7 +763,6 @@ class AnnouncementsTabs extends StatelessWidget {
               size: 20,
             ),
           ),
-          // Content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -710,7 +774,6 @@ class AnnouncementsTabs extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-
                       Text(
                           event['type'],
                           style: index==0?Styles.orangeBold700:index==1?
@@ -740,7 +803,6 @@ class AnnouncementsTabs extends StatelessWidget {
       ),
     );
   }
-
 }
 
 // E-Learning Hub Widget - 2 Rows with 4 items each (Appears in both tabs)
@@ -778,12 +840,11 @@ class ELearningHub extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 5),
           Text(
             'E-Learning Hub',
             style: Styles.darkBlkW70014,
           ),
-          const SizedBox(height: 20),
-
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -918,12 +979,11 @@ class Academics extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 5),
           Text(
             'Academics',
             style: Styles.darkBlkW70014,
           ),
-          const SizedBox(height: 20),
-
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -1055,11 +1115,11 @@ class Others extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 5),
           Text(
             'Others',
             style: Styles.darkBlkW70014,
           ),
-          const SizedBox(height: 20),
 
           GridView.builder(
             shrinkWrap: true,
@@ -1130,17 +1190,15 @@ class Others extends StatelessWidget {
               children: [
                 SvgPicture.asset(
                   svgIcon,
-                  height: 18, // Reduced from 28
-                  width: 18,  // Reduced from 28
+                  height: 28, // Reduced from 28
+                  width: 28,  // Reduced from 28
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 2), // Reduced from 8
                 Flexible(
                   child: Text(
                     label,
-                    style: Styles.darkBlkW600013?.copyWith(
-                      fontSize: 9, // Smaller text size for better fit
-                    ),
+                    style: Styles.darkBlkW600013,
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

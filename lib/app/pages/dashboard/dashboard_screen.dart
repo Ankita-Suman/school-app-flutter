@@ -1,8 +1,7 @@
-// screens/dashboard_screen.dart
+// dashboard_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../widgets/bottom_nav.dart';
-
 import 'dashboard_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -11,6 +10,11 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Initialize controller
+    print("🏠🏠🏠 DASHBOARD SCREEN BUILD START 🏠🏠🏠");
+
+    final DashboardController controller = Get.put(DashboardController(Get.find()), permanent: true);
+
+    print("🏠🏠🏠 DASHBOARD SCREEN BUILD END 🏠🏠🏠");
     return GetBuilder<DashboardController>(
       builder: (controller) => Scaffold(
         backgroundColor: Colors.grey.shade50,

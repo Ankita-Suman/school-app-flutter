@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
-// Remove permission_handler import
-// import 'package:permission_handler/permission_handler.dart';
 
 class AddLeaveController extends GetxController {
   // Text Controllers
@@ -80,10 +78,8 @@ class AddLeaveController extends GetxController {
     isFormValid.value = allFieldsFilled && noDateError;
   }
 
-  // ✅ Simplified pickFile - No permission_handler needed
   Future<void> pickFile() async {
     try {
-      // FilePicker automatically handles permissions
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
@@ -125,7 +121,6 @@ class AddLeaveController extends GetxController {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 
-  // Select Apply Date
   Future<void> selectApplyDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -153,7 +148,6 @@ class AddLeaveController extends GetxController {
     }
   }
 
-  // Select From Date
   Future<void> selectFromDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -185,7 +179,6 @@ class AddLeaveController extends GetxController {
     }
   }
 
-  // Select To Date
   Future<void> selectToDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -217,7 +210,6 @@ class AddLeaveController extends GetxController {
     }
   }
 
-  // Validate Date Range
   void validateDateRange() {
     if (fromDate.value.isNotEmpty && toDate.value.isNotEmpty) {
       List<String> fromParts = fromDate.value.split('/');
@@ -253,19 +245,19 @@ class AddLeaveController extends GetxController {
     }
   }
 
-  // Submit Leave
+  // ✅ Fixed Submit Leave
   void submitLeave(BuildContext context) {
     if (!isFormValid.value) {
       if (applyDate.value.isEmpty) {
-        Get.snackbar('Error', 'Please select Apply Date', snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        _showErrorSnackbar('Please select Apply Date');
       } else if (fromDate.value.isEmpty) {
-        Get.snackbar('Error', 'Please select From Date', snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        _showErrorSnackbar('Please select From Date');
       } else if (toDate.value.isEmpty) {
-        Get.snackbar('Error', 'Please select To Date', snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        _showErrorSnackbar('Please select To Date');
       } else if (reasonController.text.isEmpty) {
-        Get.snackbar('Error', 'Please enter reason for leave', snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        _showErrorSnackbar('Please enter reason for leave');
       } else if (selectedFileName.value.isEmpty) {
-        Get.snackbar('Error', 'Please upload a file', snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        _showErrorSnackbar('Please upload a file');
       }
       return;
     }
@@ -276,8 +268,6 @@ class AddLeaveController extends GetxController {
     Future.delayed(const Duration(seconds: 2), () {
       isLoading.value = false;
 
-      Get.snackbar('Success', 'Leave applied successfully!', snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
-
       // Clear form
       applyDate.value = '';
       fromDate.value = '';
@@ -286,15 +276,34 @@ class AddLeaveController extends GetxController {
       selectedFile.value = null;
       selectedFileName.value = '';
       selectedFileSize.value = '';
-      applyDateController.clear();
-      fromDateController.clear();
-      toDateController.clear();
       reasonController.clear();
 
-      Future.delayed(const Duration(seconds: 2), () {
-        Get.back();
+      // ✅ Navigate back FIRST
+      Navigator.pop(context);
+
+      // ✅ Then show success snackbar
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.snackbar(
+          'Success',
+          'Leave applied successfully!',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
       });
     });
+  }
+
+  void _showErrorSnackbar(String message) {
+    Get.snackbar(
+      'Error',
+      message,
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+      duration: const Duration(seconds: 2),
+    );
   }
 
   @override

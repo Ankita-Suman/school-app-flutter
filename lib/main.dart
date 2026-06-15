@@ -5,12 +5,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:school_app/domain/usecases/home_usecases.dart';
 import 'app/app.dart';
+import 'app/pages/dashboard/dashboard_presenter.dart';
+import 'app/pages/login/login_presenter.dart';
 import 'data/helpers/connect_helper.dart';
 import 'data/repositories/data_repositories.dart';
 import 'device/repositories/device_repositories.dart';
 import 'domain/repositories/repository.dart';
 import 'domain/usecases/auth_use_cases.dart';
+import 'domain/usecases/login_usecases.dart';
 
 late String? deviceToken;
 
@@ -18,20 +22,14 @@ void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
 
-    // ✅ FULL SCREEN MODE - Hides navigation bar completely
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.immersiveSticky,
-      overlays: [], // Empty list = no navigation bar, no status bar
-    );
-
-    // ✅ Set status bar and navigation bar styles
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
         systemNavigationBarDividerColor: Colors.transparent,
       ),
     );
@@ -40,8 +38,6 @@ void main() async {
     await initServices();
     await GetStorage.init();
 
-    Get.put(DeviceRepository());
-
     runApp(const MyApp());
   } catch (error) {
     Utility.printELog(error.toString());
@@ -49,14 +45,14 @@ void main() async {
 }
 
 Future<void> initServices() async {
+  // Register DeviceRepository first
+  Get.put(DeviceRepository(), permanent: true);
+
   Get.put(
     AuthUseCases(
       Get.put(
         Repository(
-          Get.put(
-            DeviceRepository(),
-            permanent: true,
-          ),
+          Get.find<DeviceRepository>(),  // ✅ Use existing, don't create new
           Get.put(
             DataRepository(
               Get.put(
@@ -72,6 +68,25 @@ Future<void> initServices() async {
     ),
     permanent: true,
   );
+  // ✅ Register all UseCases and Presenters
+  final repository = Get.find<Repository>();
+
+  // ✅ Safe registration - Check if already exists
+  if (!Get.isRegistered<HomeUseCases>()) {
+    Get.put(HomeUseCases(repository), permanent: true);
+  }
+
+  if (!Get.isRegistered<LoginUseCases>()) {
+    Get.put(LoginUseCases(repository), permanent: true);
+  }
+
+  if (!Get.isRegistered<LoginPresenter>()) {
+    Get.put(LoginPresenter(Get.find<LoginUseCases>()), permanent: true);
+  }
+
+  if (!Get.isRegistered<DashboardPresenter>()) {
+    Get.put(DashboardPresenter(Get.find<HomeUseCases>()), permanent: true);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -79,7 +94,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Set preferred orientations
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

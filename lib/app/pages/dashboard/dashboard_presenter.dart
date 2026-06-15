@@ -51,7 +51,7 @@ class DashboardPresenter extends GetxController {
   }
 
 Future<ResponseModel?> logoutAPI({
-  required bool isLoading,
+  required bool isLoading, required String token,
 }) async =>
-    await homeUseCases.logoutAPI(isLoading: isLoading);
+    await homeUseCases.logoutAPI(isLoading: isLoading,token:token);
 }

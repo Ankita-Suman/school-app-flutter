@@ -44,19 +44,27 @@ class NoticeBoardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     filteredEventsList.value = upcomingEventsList;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // ✅ Dynamic background height based on screen size
+    // Small phones: less height, Large phones: more height
+    final backgroundHeight = screenHeight < 700 ? 160.0 : 180.0;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // SVG Background
-          SizedBox(
-            width: double.infinity,
-            height: 170,
+          // ✅ Fixed height background (not percentage)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
             child: SvgPicture.asset(
               AssetConstants.icBlueBg,
               width: double.infinity,
-              height: 170,
-              fit: BoxFit.fill,
+              height: backgroundHeight,
+              fit: BoxFit.cover,
             ),
           ),
 
@@ -67,8 +75,6 @@ class NoticeBoardScreen extends StatelessWidget {
                 // Fixed Header Section
                 Column(
                   children: [
-                    // Header Section
-                    SizedBox(height:15),
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -78,7 +84,9 @@ class NoticeBoardScreen extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => Get.back(),
-                                child: SvgPicture.asset(AssetConstants.icBackBg),
+                                child:SvgPicture.asset(
+                                    AssetConstants.icBackBg,
+                                  ),
                               ),
                               const SizedBox(width: 8),
                               Text('Notice Board', style: Styles.whiteBold),
@@ -128,12 +136,13 @@ class NoticeBoardScreen extends StatelessWidget {
                             focusedBorder: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                           ),
-                          style: Styles.whiteBold14600
+                          style: Styles.whiteBold14600,
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 30),
+                    // ✅ Fixed spacing (not percentage)
+                    const SizedBox(height: 24),
                   ],
                 ),
 
@@ -162,10 +171,10 @@ class NoticeBoardScreen extends StatelessWidget {
                       ),
                     )
                         : ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       itemCount: filteredEventsList.length,
                       itemBuilder: (context, index) {
-                        return _buildEventCard(filteredEventsList[index],index);
+                        return _buildEventCard(filteredEventsList[index], index);
                       },
                     ),
                   ),
@@ -179,15 +188,14 @@ class NoticeBoardScreen extends StatelessWidget {
   }
 
   Widget _buildEventCard(Map<String, dynamic> event, int index) {
-    // Get light shade color based on event color
     Color getLightShade(Color color) {
-      return color.withOpacity(0.10); // 15% opacity for light shade
+      return color.withOpacity(0.10);
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: getLightShade(event['color']), // ✅ Light shade background
+        color: getLightShade(event['color']),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: (event['color'] as Color).withOpacity(0.3),
@@ -198,7 +206,6 @@ class NoticeBoardScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Vertical Colored Line
           Container(
             width: 4,
             height: 100,
@@ -228,7 +235,6 @@ class NoticeBoardScreen extends StatelessWidget {
               size: 20,
             ),
           ),
-          // Content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -240,11 +246,15 @@ class NoticeBoardScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-
                       Text(
                         event['type'],
-                        style: index==0?Styles.orangeBold700:index==1?
-                        Styles.blueBold70009:index==2?Styles.greenBold70009:Styles.rdBold70009
+                        style: index == 0
+                            ? Styles.orangeBold700
+                            : index == 1
+                            ? Styles.blueBold70009
+                            : index == 2
+                            ? Styles.greenBold70009
+                            : Styles.rdBold70009,
                       ),
                       Text(
                         event['date'],
@@ -255,12 +265,12 @@ class NoticeBoardScreen extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     event['description'],
-                    style: Styles.darkBlackW700
+                    style: Styles.darkBlackW700,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     event['deadline'],
-                      style: Styles.darkBlkW400
+                    style: Styles.darkBlkW400,
                   ),
                 ],
               ),

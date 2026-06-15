@@ -12,6 +12,7 @@
         android:label="school_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
         android:usesCleartextTraffic="true">
 
         <activity

@@ -46,9 +46,10 @@ class HomeUseCases {
       );
 
   Future<ResponseModel?> logoutAPI(
-          {required bool isLoading,
+          {required bool isLoading, required String token,
           }) async =>
       await repository.logoutAPI(
           isLoading: isLoading,
+        token: token,
       );
 }

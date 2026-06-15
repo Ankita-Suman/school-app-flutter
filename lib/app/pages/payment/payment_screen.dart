@@ -20,20 +20,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final isSmallScreen = screenWidth < 360;
+    final backgroundHeight = screenHeight * 0.32; // 28% of screen height
 
     return Scaffold(
       body: Stack(
         children: [
-          // SVG Background with responsive height
+          // ✅ Responsive SVG Background - FIXED
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: SvgPicture.asset(
               AssetConstants.icBlueBg,
-              width: screenWidth,
-              height: screenHeight * 0.34, // Responsive height (32% of screen)
+              width: double.infinity,
+              height: backgroundHeight,
               fit: BoxFit.cover,
             ),
           ),
@@ -45,7 +45,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 // Fixed Header Section (Non-scrollable)
                 Column(
                   children: [
-                    const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -56,12 +55,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               onTap: () {
                                 Get.back();
                               },
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                child: SvgPicture.asset(
+                              child: SvgPicture.asset(
                                   AssetConstants.icBackBg,
+                                  // height: 20,
+                                  // width: 20,
                                 ),
-                              ),
                             ),
                             const SizedBox(width: 8),
                             Text('Payment', style: Styles.whiteBold),
@@ -69,12 +67,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ],
                       ),
                     ),
-                    // Total Amount Payable Card (Centered with responsive padding)
+
+                    // Total Amount Payable Card (Centered)
                     Center(
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.022,
-                          horizontal: screenWidth * 0.15,
+                          vertical: screenHeight * 0.014,
+                          horizontal: screenWidth * 0.12,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
@@ -90,12 +89,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               'TOTAL AMOUNT PAYABLE',
                               style: Styles.whiteW400,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 4),
                             Text(
                               'Rs. 12,500',
                               style: Styles.whiteW800,
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 4),
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 vertical: 6,
@@ -114,7 +113,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+
+                    // Dynamic spacing
+                    SizedBox(height: backgroundHeight * 0.1),
                   ],
                 ),
 
@@ -266,7 +267,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             child: _buildAddNewCardRow(),
                           ),
 
-                          // Responsive bottom space based on screen size
+                          // Responsive bottom space
                           SizedBox(height: screenHeight * 0.12),
                         ],
                       ),
@@ -277,7 +278,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
           ),
 
-          // Fixed Pay Now Button at Bottom
+          // ✅ Fixed Pay Now Button at Bottom
           Positioned(
             bottom: 0,
             left: 0,
@@ -299,7 +300,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ],
               ),
-              child: Container(
+              child: SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
@@ -320,7 +321,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                   child: Text(
                     'Pay Now',
-                    style: Styles.whiteBold15
+                    style: Styles.whiteBold15,
                   ),
                 ),
               ),

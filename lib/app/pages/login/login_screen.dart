@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:school_app/app/app.dart';
+import 'package:school_app/domain/usecases/login_usecases.dart';
+import '../../../device/repositories/device_repositories.dart';
 import '../../theme/dimens.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/tab_bar.dart';
 import 'login_controller.dart';
+import 'login_presenter.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -17,8 +20,6 @@ class LoginScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
-
-    // ✅ FIX: Permanent controller
     final LoginController controller = Get.put(LoginController(Get.find()), permanent: true);
 
     return Scaffold(

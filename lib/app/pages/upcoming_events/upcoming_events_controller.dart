@@ -42,10 +42,10 @@ class UpcomingEventsController extends GetxController {
 
       // ✅ Call correct API - getAllEventsAPI, not getFeesDetailsAPI
       var res = await upcomingEventsPresenter.getAllEvents(
-        isLoading: true,
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3NzkxMDcwODIsImV4cCI6MTc3OTI3OTg4MiwibmJmIjoxNzc5MTA3MDgyLCJqdGkiOiJWYzE5bGZoRnc4cm1oMjliIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZmYzk3M2RjLTExMGMtNGMxZS04YTQwLTkxNzBhYTAzOTRiYiIsInJvbGVfaWQiOiI3N2M1NjIyNS02NDZlLTRiMzUtODM5Yy0zZDYzN2I1ODEwZDYifQ._jQ-IOsQzOvc2ZizF7OvdAj5qncGrs8_NuNCRUGrF-c',
+        isLoading: false,
+        token: token?.toString() ?? '',
         branchId: branchId?.toString() ?? '',
-        studentId: 'af44e29a-b3a2-4445-8e69-f74fcf6637fc',
+        studentId: studentId?.toString() ?? '',
       );
 
       print("📡 Events Response type: ${res?.message}");

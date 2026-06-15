@@ -52,8 +52,8 @@ class InvoiceController extends GetxController {
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
 
       var res = await invoicePresenter.getInvoiceDetailsAPI(
-        isLoading: true,
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3Nzk3ODM5OTMsImV4cCI6MTc3OTk1Njc5MywibmJmIjoxNzc5NzgzOTkzLCJqdGkiOiJZeVFnVWdrMFNwYnhubmxLIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZmYzk3M2RjLTExMGMtNGMxZS04YTQwLTkxNzBhYTAzOTRiYiIsInJvbGVfaWQiOiI3N2M1NjIyNS02NDZlLTRiMzUtODM5Yy0zZDYzN2I1ODEwZDYifQ.JyJrp_uc96k1J32tAse5MeL8J-Mtvt80pqrHQfRqSqg',
+        isLoading: false,
+        token: token?.toString() ?? '',
         branchId: branchId?.toString() ?? '',
         invoiceId: invoiceId,
       );

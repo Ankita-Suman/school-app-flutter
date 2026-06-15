@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../device/device_constants.dart';
 import '../../../device/repositories/device_repositories.dart';
 import '../../navigators/routes_management.dart';
@@ -311,23 +312,34 @@ class LoginController extends GetxController {
       print("✅ Login successful");
 
       var deviceRepository = Get.find<DeviceRepository>();
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.token, '${res.data?.token}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.branchId, '${res.data?.branchId}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.branchCode, '${res.data?.branchCode}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.email, '${res.data?.user.email}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.username, '${res.data?.user.username}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.studentId, '${res.data?.user.studentId}');
+
+      // ✅ Save token
+      String token = '${res.data?.token}';
+      await deviceRepository.saveValueSecurely(DeviceConstants.token, token);
+      print("✅ Token saved: $token");
+
+      // ✅ Verify immediately
+      String? savedToken = await deviceRepository.getSecuredValue(DeviceConstants.token);
+      print("✅ Verified token: ${savedToken != null ? 'EXISTS' : 'NOT FOUND'}");
+
+      await deviceRepository.saveValueSecurely(DeviceConstants.branchId, '${res.data?.branchId}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.branchCode, '${res.data?.branchCode}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.email, '${res.data?.user.email}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.username, '${res.data?.user.username}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.studentId, '${res.data?.user.studentId}');
+
+      // ✅ Check again before navigation
+      String? finalCheck = await deviceRepository.getSecuredValue(DeviceConstants.token);
+      print("✅ Final token check before home: ${finalCheck != null ? 'EXISTS' : 'NOT FOUND'}");
+
+      // ✅ Small delay to ensure storage is written
+      await Future.delayed(const Duration(milliseconds: 500));
 
       RouteManagement.goToHome();
+    } else {
+      print("❌ Login failed");
     }
   }
-
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }

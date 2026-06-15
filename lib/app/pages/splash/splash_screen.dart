@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../app.dart';
 import '../login/login_screen.dart';
 
+// splash_screen.dart
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -16,29 +17,32 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+  bool _navigated = false;  // ✅ Add this flag
 
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 5000), // 4 seconds total
+      duration: const Duration(milliseconds: 5000),
       vsync: this,
     );
 
-    // ✅ Super smooth, very slow growth
     _scaleAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.fastOutSlowIn, // Very smooth curve
+        curve: Curves.fastOutSlowIn,
       ),
     );
 
     _controller.forward();
 
+    // ✅ Only navigate if not already navigated
     Future.delayed(const Duration(milliseconds: 4500), () {
-      if (mounted) {
-        RouteManagement.goToLogin();
+      if (mounted && !_navigated) {
+        _navigated = true;
+        // ✅ Don't navigate here - let SplashController handle it
+        // RouteManagement.goToLogin();  // ❌ REMOVE THIS LINE
       }
     });
   }
@@ -51,34 +55,36 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          color: Colors.blue,
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            SvgPicture.asset(
-              AssetConstants.icBlueBg,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
-            ),
-            Center(
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Image.asset(
-                  AssetConstants.iclogo,
-                  width: 250,
-                  height: 250,
-                  fit: BoxFit.contain,
+    return GetBuilder<SplashController>(
+      builder: (controller) => Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+          ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              SvgPicture.asset(
+                AssetConstants.icBlueBg,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              Center(
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Image.asset(
+                    AssetConstants.iclogo,
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

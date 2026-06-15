@@ -1,4 +1,4 @@
-// widgets/bottom_nav_widget.dart (Complete Clean Version)
+// widgets/bottom_nav_widget.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,9 +11,16 @@ class BottomNavBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("🔽🔽🔽 BOTTOM NAV BAR BUILD 🔽🔽🔽");
+
+    if (!Get.isRegistered<DashboardController>()) {
+      print("⚠️ DashboardController not registered yet");
+      return const SizedBox.shrink();
+    }
+
+    final DashboardController controller = Get.find<DashboardController>();
     return Obx(
           () {
-        final controller = Get.find<DashboardController>();
         final selectedIndex = controller.selectedIndex.value;
 
         return Container(
@@ -40,14 +47,6 @@ class BottomNavBarWidget extends StatelessWidget {
                     selectedIndex: selectedIndex,
                     controller: controller,
                   ),
-                  // _buildNavItem(
-                  //   icon: AssetConstants.icUnSelectedSchedule,
-                  //   activeIcon: AssetConstants.icUnSelectedSchedule,
-                  //   label: 'Schedule',
-                  //   index: 2,
-                  //   selectedIndex: selectedIndex,
-                  //   controller: controller,
-                  // ),
                   _buildNavItem(
                     icon: AssetConstants.icUnselectedFees,
                     activeIcon: AssetConstants.icUnselectedFees,
@@ -97,7 +96,7 @@ class BottomNavBarWidget extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal:8),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           decoration: BoxDecoration(
             color: isSelected ? ColorsValue.navSelectColor : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
@@ -111,7 +110,7 @@ class BottomNavBarWidget extends StatelessWidget {
                 width: 24,
                 colorFilter: ColorFilter.mode(
                   isSelected ? ColorsValue.navIconColor : Colors.grey.shade500,
-                  BlendMode.srcIn, // This will replace SVG color
+                  BlendMode.srcIn,
                 ),
               ),
               const SizedBox(height: 4),
@@ -119,7 +118,7 @@ class BottomNavBarWidget extends StatelessWidget {
                 label,
                 style: TextStyle(
                   color: isSelected ? ColorsValue.navIconColor : Colors.grey.shade500,
-                  fontSize:10,
+                  fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),

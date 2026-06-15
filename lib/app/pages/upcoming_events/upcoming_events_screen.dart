@@ -40,6 +40,12 @@ class UpcomingEventsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final UpcomingEventsController controller = Get.put(UpcomingEventsController(Get.find()));
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // ✅ Dynamic background height based on screen size
+    final backgroundHeight = screenHeight < 700 ? 160.0 : 180.0;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Obx(() {
@@ -72,15 +78,16 @@ class UpcomingEventsScreen extends StatelessWidget {
 
         return Stack(
           children: [
-            // SVG Background
-            SizedBox(
-              width: double.infinity,
-              height: 170,
+            // ✅ Responsive SVG Background - Fixed height
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
               child: SvgPicture.asset(
                 AssetConstants.icBlueBg,
                 width: double.infinity,
-                height: 170,
-                fit: BoxFit.fill,
+                height: backgroundHeight,
+                fit: BoxFit.cover,
               ),
             ),
 
@@ -91,7 +98,7 @@ class UpcomingEventsScreen extends StatelessWidget {
                   // Fixed Header Section
                   Column(
                     children: [
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 5),
                       Padding(
                         padding: const EdgeInsets.all(12),
                         child: Row(
@@ -101,7 +108,9 @@ class UpcomingEventsScreen extends StatelessWidget {
                               children: [
                                 GestureDetector(
                                   onTap: () => Get.back(),
-                                  child: SvgPicture.asset(AssetConstants.icBackBg),
+                                  child:  SvgPicture.asset(
+                                      AssetConstants.icBackBg,
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Text('Upcoming Events', style: Styles.whiteBold),
@@ -110,13 +119,13 @@ class UpcomingEventsScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 5),
 
                       // Search Field
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         child: Container(
-                          height: 50,
+                          height: 45,
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
@@ -130,10 +139,8 @@ class UpcomingEventsScreen extends StatelessWidget {
                             onChanged: (value) {
                               final allEventsList = controller.eventsData.value?.data?.events ?? [];
                               if (value.isEmpty) {
-                                // Show all events when search is empty
                                 filteredEventsList.value = allEventsList;
                               } else {
-                                // Filter events by title (case insensitive)
                                 final filtered = allEventsList.where((event) {
                                   return event.title?.toLowerCase().contains(value.toLowerCase()) == true ||
                                       event.eventType?.toLowerCase().contains(value.toLowerCase()) == true ||
@@ -146,7 +153,7 @@ class UpcomingEventsScreen extends StatelessWidget {
                             decoration: InputDecoration(
                               hintText: 'Search events...',
                               hintStyle: Styles.darkBlueW500,
-                              prefixIcon: Icon(Icons.search, color: Colors.grey.shade500, size: 20),
+                              prefixIcon: Icon(Icons.search, color: Colors.grey.shade500, size: 18),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -156,14 +163,16 @@ class UpcomingEventsScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 30),
+
+                      // ✅ Fixed spacing
+                      const SizedBox(height: 20),
                     ],
                   ),
 
                   // Events List
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       itemCount: events.length,
                       itemBuilder: (context, index) {
                         return _buildCarouselCard(events[index], index);
@@ -179,13 +188,12 @@ class UpcomingEventsScreen extends StatelessWidget {
     );
   }
 
-  // Same UI as your _buildCarouselSlider - just data set from API
   Widget _buildCarouselCard(Event event, int index) {
     return Container(
-      margin: const EdgeInsets.all(6),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: ColorsValue.navBgColors,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200, width: 1),
         boxShadow: [
           BoxShadow(
@@ -200,84 +208,77 @@ class UpcomingEventsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Carousel Image Container
-          Container(
-            margin: const EdgeInsets.all(10),
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200, width: 1),
-              image: const DecorationImage(
-                image: AssetImage('assets/images/bg.png'),
-                fit: BoxFit.cover,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
             ),
             child: Container(
               width: double.infinity,
+              height: 180,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.black.withOpacity(0.4),
-                    Colors.black.withOpacity(0.1),
-                  ],
+                color: Colors.blue.shade50,
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/bg.png'),
+                  fit: BoxFit.cover,
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Left Container - Date from API
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Text(
-                            _formatEventDate(event.eventDate),
-                            style: Styles.darkBlcW70010,
-                          ),
-                        ),
-                        // Right Container - Event Type from API
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.3),
-                            border: Border.all(color: Colors.grey.shade500, width: 1),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Text(
-                            event.eventType?.toUpperCase() ?? 'EVENT',
-                            style: Styles.whiteW70010W,
-                          ),
-                        ),
-                      ],
-                    ),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.black.withOpacity(0.4),
+                      Colors.black.withOpacity(0.1),
+                    ],
                   ),
-                ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _formatEventDate(event.eventDate),
+                              style: Styles.darkBlcW70010,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.3),
+                              border: Border.all(color: Colors.grey.shade500, width: 1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              event.eventType?.toUpperCase() ?? 'EVENT',
+                              style: Styles.whiteW70010W,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
 
-          // Title and Subtitle from API
+          // Title and Subtitle
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -285,29 +286,30 @@ class UpcomingEventsScreen extends StatelessWidget {
                   event.title ?? 'Upcoming Event',
                   style: Styles.darkBlkW70014,
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
                 Text(
                   event.description ?? 'Join us for this event',
                   style: Styles.darkGryW40011,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 Row(
                   children: [
-                    SvgPicture.asset(AssetConstants.icLocations),
-                    const SizedBox(width: 5),
-                    Text(
-                      event.location ?? 'School Premises',
-                      style: Styles.darkBlkW400,
+                    SvgPicture.asset(AssetConstants.icLocations, height: 14, width: 14),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        event.location ?? 'School Premises',
+                        style: Styles.darkBlkW400.copyWith(fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-
-          const SizedBox(height: 20),
         ],
       ),
     );

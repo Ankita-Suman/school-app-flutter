@@ -441,10 +441,8 @@ class Repository {
   }
 
   Future<ResponseModel?> logoutAPI({
-    required bool isLoading,
+    required bool isLoading, required String token,
   }) async {
-    var token =
-        await _deviceRepository.getSecuredValue(DeviceConstants.accessToken);
     try {
       var res = await _dataRepository.logoutAPI(
           isLoading: isLoading, token: token);
