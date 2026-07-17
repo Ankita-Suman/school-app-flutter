@@ -1,14 +1,11 @@
-// coverage:ignore-file
-/// [ResponseModel] handels the Api [data], [errorCode] and tells 
-/// api is called Successfully or it has error while calling. 
 class ResponseModel {
   ResponseModel({
     required this.data,
     required this.hasError,
     this.errorCode,
-   
   });
-  final String data;
+
+  final dynamic data;  // ✅ dynamic - String/Map/List sab handle karega
   final bool hasError;
   final int? errorCode;
 }

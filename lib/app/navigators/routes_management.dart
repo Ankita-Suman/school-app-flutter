@@ -16,13 +16,19 @@ abstract class RouteManagement {
   static void goToChooseOptions() {
     Get.offAllNamed(Routes.chooseOptions);
   }
-
-
   static void goToHome() {
     // Navigate to home screen (replace with your actual home route)
     Get.offAllNamed(Routes.home);
     // or Routes.dashboard
-  }  static void goToLogin() {
+  }
+
+  static void goToTeacherDashboard() {
+    // Navigate to home screen (replace with your actual home route)
+    Get.offAllNamed(Routes.teacherHome);
+    // or Routes.dashboard
+  }
+
+  static void goToLogin() {
     // Navigate to home screen (replace with your actual home route)
     Get.offAllNamed(Routes.login); // or Routes.dashboard
   }
@@ -32,6 +38,56 @@ abstract class RouteManagement {
   }
   static void goToPayment() {
     Get.toNamed(Routes.payment);
+  }
+  static void goToMyClasses() {
+    Get.toNamed(Routes.myClasses);
+  }
+
+  static void goToStudentList({
+    required String classId,
+    required String sectionId,
+  }) {
+    Get.toNamed(
+      Routes.myStudentList,
+      arguments: {
+        'classId': classId,
+        'sectionId': sectionId,
+      },
+    );
+  }
+  static void goToMyStudentClassList() {
+    Get.toNamed(Routes.myStudentClass);
+  }
+
+  static void goToStudentProfile({required String studentId}) {
+    Get.toNamed(
+      Routes.studentProfile,
+      arguments: {'studentId': studentId ?? ''},
+    );
+  }
+  static void goToAttendanceManagement() {
+    Get.toNamed(Routes.attendanceManagement);
+  }
+  static void goToHomeworkAssignment() {
+    Get.toNamed(Routes.homeworkAssignment);
+  }
+  static void goToLessonPlanning() {
+    Get.toNamed(Routes.lessonPlanning);
+  }
+  static void goToExamination() {
+    Get.toNamed(Routes.examination);
+  }
+  static void goToStaffLeave() {
+    Get.toNamed(Routes.staffLeave);
+  }
+  static void goToFeeCollection() {
+    Get.toNamed(Routes.feeCollection);
+  }
+  static void goToCreateLiveClass() {
+    Get.toNamed(Routes.createLiveClass);
+  }
+  static void goToStudentClass() {
+    Get.toNamed(Routes.myStudentClass);
   }
 
   // static void goToLoginStudentWithParam({required String role}) {
@@ -45,6 +101,19 @@ abstract class RouteManagement {
     Get.toNamed(
       Routes.invoice,
       arguments: {'invoiceId': invoiceId ?? ''},
+    );
+  }
+
+  static void goToMyClassDetails({
+    required String classId,
+    required String sectionId,
+  }) {
+    Get.toNamed(
+      Routes.myClassDetails,
+      arguments: {
+        'classId': classId,
+        'sectionId': sectionId,
+      },
     );
   }
 
@@ -90,6 +159,9 @@ abstract class RouteManagement {
   }
   static void goToResetPassword() {
     Get.toNamed(Routes.resetPassword);
+  }
+  static void goToStaffResetPassword() {
+    Get.toNamed(Routes.staffResetPassword);
   }
   static void goToNotifications() {
     Get.toNamed(Routes.notifications);

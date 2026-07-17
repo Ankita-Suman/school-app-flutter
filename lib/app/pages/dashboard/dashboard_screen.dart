@@ -1,4 +1,4 @@
-// dashboard_screen.dart
+// teacher_dashboard_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../widgets/bottom_nav.dart';

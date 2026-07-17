@@ -7,6 +7,7 @@
 abstract class AssetConstants {
   //SVG
   static const String icArrowBack = 'assets/icons/icon_arrow_left.svg';
+  static const String icPassLock = 'assets/icons/pass.svg';
   static const String icTask = 'assets/icons/ic_task.svg';
   static const String icWork = 'assets/icons/ic_work.svg';
   static const String icLsn = 'assets/icons/ic_lsn.svg';
@@ -122,6 +123,21 @@ abstract class AssetConstants {
   static const String icVisa= 'assets/icons/visa.svg';
   static const String icAddCard= 'assets/icons/addc.svg';
   static const String icUpi= 'assets/icons/upi.svg';
+  static const String icTable= 'assets/icons/table.svg';
+  static const String icReviews= 'assets/icons/reviews.svg';
+  static const String icBell= 'assets/icons/bell.svg';
+  static const String icTimer= 'assets/icons/timer.svg';
+  static const String icTClass= 'assets/icons/tclass.svg';
+  static const String tStudent= 'assets/icons/tstudent.svg';
+  static const String tAttan= 'assets/icons/tattan.svg';
+  static const String tHome= 'assets/icons/thome.svg';
+  static const String tLesson= 'assets/icons/tlesson.svg';
+  static const String tExam= 'assets/icons/texam.svg';
+  static const String tStaf= 'assets/icons/tstaf.svg';
+  static const String tOnline= 'assets/icons/tonline.svg';
+  static const String tFee= 'assets/icons/tfee.svg';
+  static const String icInbox= 'assets/icons/inbox.svg';
+  static const String icNote= 'assets/icons/note.svg';
 
 
 

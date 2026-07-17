@@ -54,6 +54,12 @@ static TextStyle blk10w400 = TextStyle(
       fontWeight: FontWeight.w400,
       color: ColorsValue.whiteColor.withOpacity(0.6));
 
+static TextStyle whiteW600 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.whiteColor);
+
   static TextStyle whiteW800 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.thirtyTwo,
@@ -96,6 +102,18 @@ static TextStyle whiteW80010 = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.blcColors);
 
+ static TextStyle darkBlcW60015 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.fifteen,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.blcColors);
+
+ static TextStyle darkBlcW60013 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.thirteen,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.blcColors);
+
  static TextStyle darkPinkW700 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.fifteen,
@@ -120,10 +138,28 @@ static TextStyle whiteW80010 = TextStyle(
       fontWeight: FontWeight.w400,
       color: ColorsValue.blcColors);
 
+ static TextStyle darkBlcW60014 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.blcColors);
+
+ static TextStyle darkBlcW40010 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.ten,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.blcColors);
+
  static TextStyle darkBlcW70013 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.thirteen,
       fontWeight: FontWeight.w700,
+      color: ColorsValue.blcColors);
+
+ static TextStyle darkBlcW40013 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.thirteen,
+      fontWeight: FontWeight.w400,
       color: ColorsValue.blcColors);
 
 static TextStyle darkBlcW70014 = TextStyle(
@@ -138,9 +174,33 @@ static TextStyle darkBlcW50012 = TextStyle(
       fontWeight: FontWeight.w500,
       color: ColorsValue.blcColors);
 
+static TextStyle darkBlcW50011 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.eleven,
+      fontWeight: FontWeight.w500,
+      color: ColorsValue.blcColors);
+
+static TextStyle darkBlcW40012 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.blcColors);
+
+static TextStyle darkBlcGryW400 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.thirteen,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.blcGryClr);
+
 static TextStyle darkBlcW70010 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.ten,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.blcColors);
+
+static TextStyle darkBlcW70024 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twentyFour,
       fontWeight: FontWeight.w700,
       color: ColorsValue.blcColors);
 
@@ -156,6 +216,12 @@ static TextStyle darkBlcW70010 = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.txtGreenClrs);
 
+ static TextStyle darkGreenW70020 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twenty,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.txtGreenClrs);
+
 static TextStyle darkOrangeW70013 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.thirteen,
@@ -166,6 +232,12 @@ static TextStyle darkOrangeW70016 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.sixteen,
       fontWeight: FontWeight.w700,
+      color: ColorsValue.txtOrangeClrs);
+
+static TextStyle darkOrangeW60010 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.ten,
+      fontWeight: FontWeight.w600,
       color: ColorsValue.txtOrangeClrs);
 
 static TextStyle darkRedW70013 = TextStyle(
@@ -180,9 +252,63 @@ static TextStyle darkRedW70012 = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.txtRedClrs);
 
+static TextStyle skyBlueW50012 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.eleven,
+      fontWeight: FontWeight.w500,
+      color: ColorsValue.bgBlueColors);
+
+static TextStyle skyBlueW60012 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.bgBlueColors);
+
+static TextStyle skyBlueW70016 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.sixteen,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.bgBlueColors);
+
+static TextStyle skyBlueW70014 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.bgBlueColors);
+
+static TextStyle skyBlueW70032 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.thirtyTwo,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.bgBlueColors);
+
+static TextStyle skyBlueW70020 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twenty,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.bgBlueColors);
+
  static TextStyle darkBlcW70020 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.twenty,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.blcColors);
+
+ static TextStyle darkBlcW700016 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.sixteen,
+      fontWeight: FontWeight.w800,
+      color: ColorsValue.blcColors);
+
+ static TextStyle darkBlcW80032 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.thirtyTwo,
+      fontWeight: FontWeight.w800,
+      color: ColorsValue.blcColors);
+
+ static TextStyle darkBlcW70016 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.sixteen,
       fontWeight: FontWeight.w700,
       color: ColorsValue.blcColors);
 
@@ -247,6 +373,24 @@ static TextStyle darkBlackW70011 = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.darkGryBlueClr);
 
+static TextStyle darkBlackW70010 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.ten,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.darkGryBlueClr);
+
+static TextStyle darkGryW60012 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.darkGryClr);
+
+static TextStyle darkGryW60014 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.fourteen,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.darkGryClr);
+
 static TextStyle darkBlackW70012 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.twelve,
@@ -266,6 +410,12 @@ static TextStyle darkBlackW60009 = TextStyle(
       fontWeight: FontWeight.w600,
       color: ColorsValue.darkGryLightClr);
 
+static TextStyle darkBlackW60012 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.darkGryLightClr);
+
 static TextStyle darkBlueW500 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.fourteen,
@@ -274,7 +424,19 @@ static TextStyle darkBlueW500 = TextStyle(
 
 static TextStyle darkBlueW400 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
-      fontSize: Dimens.eleven,
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.darkGryLightClr);
+
+static TextStyle darkBlueW40013 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.thirteen,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.darkGryLightClr);
+
+static TextStyle darkBlueW40010 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.ten,
       fontWeight: FontWeight.w400,
       color: ColorsValue.darkGryLightClr);
 
@@ -572,6 +734,18 @@ static TextStyle orangeBold700 = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.lightBorderOrangeColor);
 
+static TextStyle orange12500 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.twelve,
+      fontWeight: FontWeight.w500,
+      color: ColorsValue.lightBorderOrangeColor);
+
+static TextStyle orange11600 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.eleven,
+      fontWeight: FontWeight.w600,
+      color: ColorsValue.lightBorderOrangeColor);
+
 static TextStyle blueBold70009 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.nine,
@@ -638,6 +812,12 @@ static TextStyle whiteExBold15R = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.darkBlueClr);
 
+ static TextStyle blueW60015 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.fifteen,
+      fontWeight: FontWeight.w700,
+      color: ColorsValue.darkBlueClr);
+
   static TextStyle whiteExBold22 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.twentyTwo,
@@ -662,6 +842,12 @@ static TextStyle whiteExBold15R = TextStyle(
       fontWeight: FontWeight.w700,
       color: ColorsValue.skipBlueColor);
 
+  static TextStyle skyBlueDark13 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.thirteen,
+      fontWeight: FontWeight.w400,
+      color: ColorsValue.skipBlueColor);
+
   static TextStyle blueDark20 = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.twenty,
@@ -672,6 +858,12 @@ static TextStyle whiteExBold15R = TextStyle(
       fontFamily: GoogleFonts.sora().fontFamily,
       fontSize: Dimens.eighteen,
       fontWeight: FontWeight.w400,
+      color: ColorsValue.blackColor);
+
+  static TextStyle blackDark16 = TextStyle(
+      fontFamily: GoogleFonts.sora().fontFamily,
+      fontSize: Dimens.sixteen,
+      fontWeight: FontWeight.w700,
       color: ColorsValue.blackColor);
 
  static TextStyle greyDark14 = TextStyle(

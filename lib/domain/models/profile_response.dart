@@ -422,7 +422,7 @@ class AttendanceInfo {
 
   factory AttendanceInfo.fromJson(Map<String, dynamic> json) {
     return AttendanceInfo(
-      percentage: json['percentage'] ?? 0,
+      percentage: (json['percentage'] as num?)?.toInt() ?? 0,
       totalDays: json['total_days'] ?? 0,
       presentDays: json['present_days'] ?? 0,
       absentDays: json['absent_days'] ?? 0,

@@ -296,6 +296,62 @@ class DataRepository extends DomainRepository {
     return res;
   }
 
+@override
+  Future<ResponseModel> getTeacherDashboardAPI({required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var res = await connectHelper.getTeacherDashboardAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getStaffProfileData({required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var res = await connectHelper.getStaffProfileData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+    );
+    return res;
+  }
+
+@override
+  Future<ResponseModel> getLateArrivalData({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) async {
+    var res = await connectHelper.getLateArrivalData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      filter: filter,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getLeaveStatusData({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) async {
+    var res = await connectHelper.getLeaveStatusData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      filter: filter,
+    );
+    return res;
+  }
+
   @override
   Future<ResponseModel> getAllEvents({required bool isLoading,
     required String token,
@@ -306,6 +362,232 @@ class DataRepository extends DomainRepository {
       token: token,
       branchId: branchId,
       studentId: studentId,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getMyClassData({required bool isLoading,
+    required String token,
+    required String branchId
+  }) async {
+    var res = await connectHelper.getMyClassData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+    );
+    return res;
+  }
+
+ @override
+  Future<ResponseModel> getTermClassData({required bool isLoading,
+    required String token,
+    required String branchId
+  }) async {
+    var res = await connectHelper.getTermClassData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+    );
+    return res;
+  }
+  @override
+  Future<ResponseModel> getTermAttendanceStudents({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var res = await connectHelper.getTermAttendanceStudents(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      examinationGroupId: examinationGroupId,
+      examinationTermId: examinationTermId,
+      classId: classId,
+      sectionId: sectionId,
+    );
+    return res;
+  }
+  @override
+  Future<ResponseModel> getExamGroupData({required bool isLoading,
+    required String token,
+    required String branchId
+  }) async {
+    var res = await connectHelper.getExamGroupData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+    );
+    return res;
+  }
+
+@override
+  Future<ResponseModel> getTermSectionData({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId
+  }) async {
+    var res = await connectHelper.getTermSectionData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      classId: classId,
+    );
+    return res;
+  }
+
+@override
+  Future<ResponseModel> getExamTermData({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId
+  }) async {
+    var res = await connectHelper.getExamTermData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      examinationGroupId: examinationGroupId,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getMyClassDetailsData({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var res = await connectHelper.getMyClassDetailsData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      classId: classId,
+      sectionId: sectionId,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getStudentListData({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+    required String date,
+  }) async {
+    var res = await connectHelper.getStudentListData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      classId: classId,
+      sectionId: sectionId,
+      date: date,
+    );
+    return res;
+  }
+
+@override
+  Future<ResponseModel> fetchClassAttendanceReport({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+    required String date,
+  }) async {
+    var res = await connectHelper.fetchClassAttendanceReport(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      classId: classId,
+      sectionId: sectionId,
+      date: date,
+    );
+    return res;
+  }
+
+@override
+  Future<ResponseModel> getAllStudentList({required bool isLoading,
+    required String token,
+    required String branchId,
+  required String classId,
+  required String sectionId,
+  }) async {
+    var res = await connectHelper.getAllStudentList(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      classId: classId,
+      sectionId: sectionId,
+    );
+    return res;
+  }
+
+ @override
+  Future<ResponseModel> saveAttendance({required bool isLoading,
+   required String token,
+   required String branchId,
+   required Map<String, dynamic> payload
+  }) async {
+    var res = await connectHelper.saveAttendance(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      payload: payload,
+    );
+    return res;
+  }
+  @override
+  Future<ResponseModel> updateAttendance({required bool isLoading,
+   required String token,
+   required String branchId,
+   required Map<String, dynamic> payload
+  }) async {
+    var res = await connectHelper.updateAttendance(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      payload: payload,
+    );
+    return res;
+  }
+
+  Future<ResponseModel> saveTermAttendance({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    var res = await connectHelper.saveTermAttendance(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      payload: payload,
+    );
+    return res;
+  }
+
+  @override
+  Future<ResponseModel> getClassAttendance({required bool isLoading,
+    required String token,
+    required String attendanceDate,
+    required String branchId,
+    required String classId,
+    required String sectionId, required int perPage,required int page
+  }) async {
+    var res = await connectHelper.getClassAttendance(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      attendanceDate: attendanceDate,
+      classId: classId,
+      sectionId: sectionId,
+      perPage: perPage,
+      page: page,
     );
     return res;
   }

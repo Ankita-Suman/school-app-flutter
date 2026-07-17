@@ -1,5 +1,7 @@
 // coverage:ignore-file
+import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:school_app/data/data.dart';
 import 'package:school_app/domain/domain.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -168,7 +170,8 @@ class ConnectHelper {
     String branch_id = branchId;
     String url = '${DataConstants.getProfile}/$branch_id/student/$studentId/profile';
     var res = await apiWrapper.makeRequest(url, Request.get, null, isLoading, headers);
-    print("✅ Profile url---: ${url}");
+    print("🔍 All Student List URL: $url");
+    print("📦 RAW RESPONSE DATA: ${res.data}");
     return res;
   }
 
@@ -197,6 +200,115 @@ class ConnectHelper {
     print("✅ Fees Dashboard URL: $url");
     return res;
   }
+
+  Future<ResponseModel> getTeacherDashboardAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/teacher/marks/dashboard';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ Fees Dashboard URL: $url");
+    return res;
+  }
+
+Future<ResponseModel> getStaffProfileData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/profile';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ Fees Dashboard URL: $url");
+    return res;
+  }
+
+  Future<ResponseModel> getLateArrivalData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/attendance/late-arrivals?filter=$filter';
+
+    print("🔍 Late Arrivals URL: $url");
+    print("🔍 Filter: $filter");
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ Fees Dashboard URL: $url");
+    return res;
+  }
+
+  Future<ResponseModel> getLeaveStatusData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/attendance/leave?filter=$filter';
+
+    print("🔍 Late Arrivals URL: $url");
+    print("🔍 Filter: $filter");
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ Fees Dashboard URL: $url");
+    return res;
+  }
+
   Future<ResponseModel> getAllEvents({
     required bool isLoading,
     required String token,
@@ -220,6 +332,161 @@ class ConnectHelper {
     );
 
     print("✅ events Dashboard URL: $url");
+    return res;
+  }
+
+  Future<ResponseModel> getMyClassData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/my-classes';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ events Dashboard URL: $url");
+    return res;
+  }
+
+  Future<ResponseModel> getTermClassData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/term-attendance/classes';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ term Dashboard URL: $url");
+    return res;
+  }
+  Future<ResponseModel> getExamGroupData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/term-attendance/examination-groups';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ term Dashboard URL: $url");
+    return res;
+  }
+
+ Future<ResponseModel> getTermSectionData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/term-attendance/sections?class_id=$classId';
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ term section Dashboard URL: $url");
+    return res;
+  }
+
+Future<ResponseModel> getExamTermData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/term-attendance/examination-terms?examination_group_id=$examinationGroupId';    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ term section Dashboard URL: $url");
+    return res;
+  }
+  Future<ResponseModel> getTermAttendanceStudents({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/term-attendance/students?'
+        'examination_group_id=$examinationGroupId'
+        '&examination_term_id=$examinationTermId'
+        '&class_id=$classId'
+        '&section_id=$sectionId';
+
+    var res = await apiWrapper.makeRequest(
+      url,
+      Request.get,
+      null,
+      isLoading,
+      headers,
+    );
+
+    print("✅ Term Attendance Students URL: $url");
+    print("📦 RAW RESPONSE DATA: ${res.data}");
     return res;
   }
 
@@ -248,7 +515,265 @@ class ConnectHelper {
     print("✅ invoice Dashboard URL: $url");
     return res;
   }
+  Future<ResponseModel> getMyClassDetailsData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
 
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/my-classes/$classId/details?section_id=$sectionId&class_id=$classId';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ invoice Dashboard URL: $url");
+    return res;
+  }
+
+Future<ResponseModel> getStudentListData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+    required String date,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/attendance/students?attendance_date=$date&class_id=$classId&section_id=$sectionId';    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ invoice Dashboard URL: $url");
+    print("📦 RAW RESPONSE DATA: ${res.data}");
+    return res;
+  }
+  Future<ResponseModel> fetchClassAttendanceReport({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+    required String date,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/class-attendance/report?class_id=$classId&section_id=$sectionId&month=$date';
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ invoice Dashboard URL: $url");
+    print("📦 RAW RESPONSE DATA: ${res.data}");
+    return res;
+  }
+
+// ConnectHelper mein ye method add karo
+
+  Future<ResponseModel> getAllStudentList({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Add classId and sectionId to the path
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/my-students?class_id=$classId&section_id=$sectionId';
+    var res = await apiWrapper.makeRequest(
+      url,
+      Request.get,
+      null,
+      isLoading,
+      headers,
+    );
+
+    print("🔍 All Student List URL: $url");
+    print("📦 RAW RESPONSE DATA: ${res.data}");
+    return res;
+  }
+
+  Future<ResponseModel> saveAttendance({
+  required bool isLoading,
+  required String token,
+  required String branchId,
+  required Map<String, dynamic> payload,
+  }) async {
+  var headers = {
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer $token',
+  };
+
+  String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/class-attendance';
+  String jsonPayload = jsonEncode(payload);
+
+  print("✅ Save Attendance URL: $url");
+  print("✅ Save Attendance Payload: $jsonPayload");
+
+  try {
+  var response = await Dio().post(
+  url,
+  data: jsonPayload,
+  options: Options(headers: headers),
+  );
+
+  print("✅ Save Attendance Response: ${response.data}");
+  print("✅ Status Code: ${response.statusCode}");
+  print("📤📤📤 RETURNING FROM PRESENTER - SUCCESS");
+
+  return ResponseModel(
+  data: response.data,
+  hasError: false,
+  errorCode: null,
+  );
+  } catch (e) {
+  print("❌ Error: $e");
+  print("📤📤📤 RETURNING FROM PRESENTER - ERROR");
+
+  return ResponseModel(
+  data: e.toString(),
+  hasError: true,
+  errorCode: 500,
+  );
+  }
+  }
+
+  Future<ResponseModel> updateAttendance({
+  required bool isLoading,
+  required String token,
+  required String branchId,
+  required Map<String, dynamic> payload,
+  }) async {
+  var headers = {
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer $token',
+  };
+
+  String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/class-attendance';
+  String jsonPayload = jsonEncode(payload);
+
+  print("✅ Save Attendance URL: $url");
+  print("✅ Save Attendance Payload: $jsonPayload");
+
+  try {
+  var response = await Dio().put(
+  url,
+  data: jsonPayload,
+  options: Options(headers: headers),
+  );
+
+  print("✅ Save Attendance Response: ${response.data}");
+  print("✅ Status Code: ${response.statusCode}");
+  print("📤📤📤 RETURNING FROM PRESENTER - SUCCESS");
+
+  return ResponseModel(
+  data: response.data,
+  hasError: false,
+  errorCode: null,
+  );
+  } catch (e) {
+  print("❌ Error: $e");
+  print("📤📤📤 RETURNING FROM PRESENTER - ERROR");
+
+  return ResponseModel(
+  data: e.toString(),
+  hasError: true,
+  errorCode: 500,
+  );
+  }
+  }
+
+  Future<ResponseModel> getClassAttendance({
+    required bool isLoading,
+    required String token,
+    required String attendanceDate,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+    required int perPage,
+    required int page,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Method 2: Manual concatenation
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/class-attendance?attendance_date=$attendanceDate&class_id=$classId&section_id=$sectionId&per_page=$perPage&page=$page';    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers
+    );
+
+    print("✅ invoice Dashboard URL: $url");
+    return res;
+  }
+  Future<ResponseModel> saveTermAttendance({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/term-attendance';
+    String jsonPayload = jsonEncode(payload);
+
+    try {
+      var response = await Dio().post(
+        url,
+        data: jsonPayload,
+        options: Options(headers: headers),
+      );
+      return ResponseModel(
+        data: response.data,
+        hasError: false,
+        errorCode: null,
+      );
+    } catch (e) {
+      return ResponseModel(
+        data: e.toString(),
+        hasError: true,
+        errorCode: 500,
+      );
+    }
+  }
   Future<ResponseModel> logoutAPI({
     required bool isLoading,
     required String? token,

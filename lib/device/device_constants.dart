@@ -24,6 +24,9 @@ abstract class DeviceConstants {
   static const String location = 'location';
   static const String isPasswordReset = 'isPasswordReset';
   static const String token = 'token';
+  static const String lastAttendanceClassId = 'lastAttendanceClassId';
+  static const String lastAttendanceSectionId = 'lastAttendanceSectionId';
+  static const String lastAttendanceDate = 'lastAttendanceDate';
   static const String otp = 'otp';
   static const String resetToken = 'token';
   static const String branchId = 'branchId';
@@ -43,5 +46,6 @@ abstract class DeviceConstants {
   static const String appointmentData = 'appointmentData';
   static const String favouriteData = 'favouriteData';
   static const String discoverData = 'discoverData';
-
+  static const String userRole = 'user_role';
+  static const String loginResponse = 'login_response';
 }

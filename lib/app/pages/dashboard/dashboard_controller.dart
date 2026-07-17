@@ -1,4 +1,4 @@
-// controllers/dashboard_controller.dart
+// controllers/teacher_dashboard_controller.dart
 
 import 'dart:convert';
 import 'package:flutter/material.dart';

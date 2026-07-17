@@ -1,4 +1,4 @@
-// controllers/dashboard_presenter.dart
+// controllers/teacher_dashboard_presenter.dart
 import 'package:get/get.dart';
 import '../../../domain/models/events_response.dart';
 import '../../../domain/models/fees_response.dart';

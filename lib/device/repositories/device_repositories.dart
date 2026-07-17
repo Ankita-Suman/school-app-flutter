@@ -203,6 +203,42 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
+  @override
+  Future<ResponseModel> getTeacherDashboardAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+  @override
+  Future<ResponseModel> getStaffProfileData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getLateArrivalData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getLeaveStatusData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) {
+    throw UnimplementedError();
+  }
 
   @override
   Future<ResponseModel> getInvoiceDetailsAPI({
@@ -210,6 +246,148 @@ class DeviceRepository extends DomainRepository {
     required String token,
     required String invoiceId,
     required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+  @override
+  Future<ResponseModel> saveTermAttendance({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getMyClassDetailsData({
+    required bool isLoading,
+    required String token,
+    required String classId,
+    required String sectionId,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getStudentListData({
+    required bool isLoading,
+    required String token,
+    required String classId,
+    required String sectionId,
+    required String branchId,
+    required String date,
+  }) {
+    throw UnimplementedError();
+  }
+  @override
+  Future<ResponseModel> fetchClassAttendanceReport({
+    required bool isLoading,
+    required String token,
+    required String classId,
+    required String sectionId,
+    required String branchId,
+    required String date,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getAllStudentList({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> saveAttendance({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload
+  }) {
+    throw UnimplementedError();
+  }
+@override
+  Future<ResponseModel> updateAttendance({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getClassAttendance({
+    required bool isLoading,
+    required String token,
+    required String attendanceDate,
+    required String branchId,
+    required String classId,
+    required String sectionId, required int perPage,required int page
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getMyClassData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+  @override
+  Future<ResponseModel> getTermClassData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ResponseModel> getExamGroupData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+  @override
+  Future<ResponseModel> getTermAttendanceStudents({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) {
+    throw UnimplementedError();
+  }
+  @override
+  Future<ResponseModel> getTermSectionData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+  }) {
+    throw UnimplementedError();
+  }
+
+@override
+  Future<ResponseModel> getExamTermData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
   }) {
     throw UnimplementedError();
   }

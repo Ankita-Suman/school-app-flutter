@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:school_app/app/app.dart';
 import 'package:school_app/data/data.dart';
 import 'package:school_app/device/device.dart';
@@ -6,8 +7,11 @@ import 'package:school_app/domain/domain.dart';
 import 'package:school_app/domain/models/invoice_response.dart';
 import 'package:school_app/domain/models/profile_response.dart';
 
+import '../models/class_attendance_response.dart';
 import '../models/events_response.dart';
 import '../models/forgot_password_model.dart';
+import '../models/get_student_attendance_response.dart';
+import '../models/term_attendance_student_response.dart';
 
 /// The main repository which will get the data from [DeviceRepository] or the
 /// [DataRepository].
@@ -382,6 +386,124 @@ class Repository {
     }
   }
 
+  Future<TeacherDashboardResponse?> getTeacherDashboardAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getTeacherDashboardAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return teacherDashboardResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getTeacherDashboardAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+      );
+      return null;
+    }
+  }
+
+Future<StaffProfileResponse?> getStaffProfileData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getStaffProfileData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return staffProfileResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getStaffProfileData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+      );
+      return null;
+    }
+  }
+
+ Future<LateArrivalsResponse?> getLateArrivalData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) async {
+    try {
+      var res = await _dataRepository.getLateArrivalData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        filter: filter,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return lateArrivalsResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getLateArrivalData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        filter: filter,
+      );
+      return null;
+    }
+  }
+
+  Future<LeaveApplicationsResponse?> getLeaveStatusData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String filter,
+  }) async {
+    try {
+      var res = await _dataRepository.getLeaveStatusData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        filter: filter,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return leaveApplicationsResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getLeaveStatusData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        filter: filter,
+      );
+      return null;
+    }
+  }
+
  Future<EventsResponseModel?> getAllEvents({
     required bool isLoading,
     required String token,
@@ -410,7 +532,477 @@ class Repository {
       return null;
     }
   }
+  Future<TeacherClassesResponse?> getMyClassData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getMyClassData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
 
+      );
+      if (!res.hasError && res.data != null) {
+        return teacherClassesResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getMyClassData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      return null;
+    }
+  }
+
+Future<TermClassResponse?> getTermClassData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getTermClassData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return termClassResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getTermClassData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      return null;
+    }
+  }
+
+Future<ExaminationGroupResponse?> getExamGroupData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getExamGroupData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return examinationGroupResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getExamGroupData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      return null;
+    }
+  }
+
+  Future<TermAttendanceStudentsResponse?> getTermAttendanceStudents({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    try {
+      var res = await _dataRepository.getTermAttendanceStudents(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      if (!res.hasError && res.data != null) {
+        return termAttendanceStudentsResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getTermAttendanceStudents(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      return null;
+    }
+  }
+
+Future<TermSectionResponse?> getTermSectionData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+  }) async {
+    try {
+      var res = await _dataRepository.getTermSectionData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return termSectionResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getTermSectionData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+
+      );
+      return null;
+    }
+  }
+  Future<ExaminationTermResponse?> getExamTermData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+  }) async {
+    try {
+      var res = await _dataRepository.getExamTermData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return examinationTermResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getExamTermData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+
+      );
+      return null;
+    }
+  }
+
+ Future<ClassDetailsResponse?> getMyClassDetailsData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+   required String classId,
+   required String sectionId,
+  }) async {
+    try {
+      var res = await _dataRepository.getMyClassDetailsData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return classDetailsResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getMyClassDetailsData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      return null;
+    }
+  }
+
+  Future<GetStudentAttendanceResponse?> getStudentListData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+   required String classId,
+   required String sectionId,
+   required String date,
+  }) async {
+    try {
+      var res = await _dataRepository.getStudentListData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+        date: date,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return getStudentAttendanceResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getStudentListData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+        date: date,
+      );
+      return null;
+    }
+  }
+
+  Future<AttendanceReportResponse?> fetchClassAttendanceReport({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+   required String classId,
+   required String sectionId,
+   required String date,
+  }) async {
+    try {
+      var res = await _dataRepository.fetchClassAttendanceReport(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+        date: date,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return attendanceReportResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.fetchClassAttendanceReport(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+        date: date,
+      );
+      return null;
+    }
+  }
+
+    Future<StudentsResponse?> getAllStudentList({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+      required String classId,
+      required String sectionId,
+  }) async {
+    try {
+      var res = await _dataRepository.getAllStudentList(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      if (!res.hasError && res.data != null) {
+        return studentsResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getAllStudentList(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      return null;
+    }
+  }
+
+ Future<ClassAttendanceResponse?> getClassAttendance({
+    required bool isLoading,
+   required String token,
+   required String attendanceDate,
+   required String branchId,
+   required String classId,
+   required String sectionId, required int perPage,required int page
+  }) async {
+    try {
+      var res = await _dataRepository.getClassAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        attendanceDate: attendanceDate,
+        classId: classId,
+        sectionId: sectionId,
+        perPage: perPage,
+        page: page,
+      );
+      if (!res.hasError && res.data != null) {
+        return classAttendanceResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getClassAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        attendanceDate: attendanceDate,
+        classId: classId,
+        sectionId: sectionId,
+        perPage: perPage,
+        page: page,
+      );
+      return null;
+    }
+  }
+
+  Future<SaveAttendanceResponse?> saveAttendance({   // Object? ki jagah SaveAttendanceResponse?
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload
+  }) async {
+    try {
+      var res = await _dataRepository.saveAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+
+      if (res.hasError || res.data == null) {
+        print("? Error or null data");
+        return null;
+      }
+
+      String jsonString = res.data is String ? res.data as String : jsonEncode(res.data);
+
+      SaveAttendanceResponse response = saveAttendanceResponseFromJson(jsonString);
+      print("??? PARSED SUCCESS: ${response.status}");
+
+      return response;   // ✅ already sahi tha
+    } catch (e) {
+      print("? saveAttendance Exception: $e");   // ✅ error bhi print karein
+      await _deviceRepository.saveAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      return null;
+    }
+  }
+  Future<SaveAttendanceResponse?> updateAttendance({   // Object? ki jagah SaveAttendanceResponse?
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload
+  }) async {
+    try {
+      var res = await _dataRepository.updateAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+
+      if (res.hasError || res.data == null) {
+        print("? Error or null data");
+        return null;
+      }
+
+      String jsonString = res.data is String ? res.data as String : jsonEncode(res.data);
+
+      SaveAttendanceResponse response = saveAttendanceResponseFromJson(jsonString);
+      print("??? PARSED SUCCESS: ${response.status}");
+
+      return response;   // ✅ already sahi tha
+    } catch (e) {
+      print("? saveAttendance Exception: $e");   // ✅ error bhi print karein
+      await _deviceRepository.updateAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      return null;
+    }
+  }
+  Future<SaveTermAttendanceResponse?> saveTermAttendance({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    try {
+      var res = await _dataRepository.saveTermAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      if (!res.hasError && res.data != null) {
+        return saveTermAttendanceResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.saveTermAttendance(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      return null;
+    }
+  }
   Future<InvoiceResponseModel?> getInvoiceDetailsAPI({
     required bool isLoading,
     required String token,

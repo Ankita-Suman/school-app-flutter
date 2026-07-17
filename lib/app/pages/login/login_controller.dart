@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../device/device_constants.dart';
 import '../../../device/repositories/device_repositories.dart';
+import '../../../domain/models/login_response.dart';
 import '../../navigators/routes_management.dart';
 import 'login_presenter.dart';
 
@@ -11,7 +13,27 @@ class LoginController extends GetxController {
 
   final LoginPresenter loginStudentPresenter;
 
-  // Selected Tab
+  // ========== ROLE SELECTION ==========
+  var selectedRole = 'student'.obs; // 'student', 'parent', 'staff'
+
+  final Map<String, String> displayToApiRole = {
+    'student': 'student',
+    'parent': 'parent',
+    'teacher': 'staff',
+  };
+
+  final Map<String, String> apiToDisplayRole = {
+    'student': 'student',
+    'parent': 'parent',
+    'staff': 'teacher',
+  };
+
+  final Map<String, String> roleRoutes = {
+    'student': '/student-dashboard',
+    'parent': '/parent-dashboard',
+    'staff': '/teacher-dashboard',
+  };
+
   var selectedTab = 0.obs;
 
   // Branch Code
@@ -78,6 +100,47 @@ class LoginController extends GetxController {
     branchCodeController?.addListener(_checkFormValidity);
     emailController?.addListener(_checkFormValidity);
     passwordController?.addListener(_checkFormValidity);
+  }
+
+  // ========== ROLE SELECTION METHODS ==========
+  void selectRole(String role) {
+    if (selectedRole.value != role) {
+      clearAllFields();
+      selectedRole.value = role;
+
+      String displayName = apiToDisplayRole[selectedRole.value] ?? selectedRole.value;
+      print('🔄 Role selected: $role (Display: $displayName)');
+
+      Get.snackbar(
+        'Role Selected',
+        'You are logging in as ${displayName.toUpperCase()}',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.blue.shade700,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 10,
+      );
+    }
+  }
+
+  void clearAllFields() {
+    branchCodeController?.clear();
+    emailController?.clear();
+    passwordController?.clear();
+
+    isBranchCodeValid.value = false;
+    isEmailValid.value = false;
+    isPasswordValid.value = false;
+    isFormValid.value = false;
+
+    branchCodeError.value = '';
+    emailError.value = '';
+    passwordError.value = '';
+
+    _branchCodeErrorShown = false;
+    _emailErrorShown = false;
+    _passwordErrorShown = false;
   }
 
   void _onBranchCodeFocusChange() {
@@ -294,6 +357,41 @@ class LoginController extends GetxController {
     loginAPI();
   }
 
+  // ========== ✅ FULL LOGIN RESPONSE STORAGE METHODS ==========
+
+  /// Save the entire LoginResponse as a JSON string
+  Future<void> saveFullLoginResponse(LoginResponse response) async {
+    final deviceRepository = Get.find<DeviceRepository>();
+    final jsonString = loginResponseToJson(response); // from your model
+    await deviceRepository.saveValueSecurely(DeviceConstants.loginResponse, jsonString);
+    print('✅ Full login response saved to shared preferences');
+  }
+
+  /// Retrieve the full LoginResponse
+  Future<LoginResponse?> getFullLoginResponse() async {
+    final deviceRepository = Get.find<DeviceRepository>();
+    final jsonString = await deviceRepository.getSecuredValue(DeviceConstants.loginResponse);
+    if (jsonString != null && jsonString.isNotEmpty) {
+      try {
+        final Map<String, dynamic> jsonMap = json.decode(jsonString);
+        return LoginResponse.fromJson(jsonMap);
+      } catch (e) {
+        print('❌ Error parsing login response: $e');
+        return null;
+      }
+    }
+    return null;
+  }
+
+  /// Clear the stored login response (call on logout)
+  Future<void> clearFullLoginResponse() async {
+    final deviceRepository = Get.find<DeviceRepository>();
+    await GetStorage().remove(DeviceConstants.loginResponse);
+    print('✅ Full login response cleared');
+  }
+
+  // ========== LOGIN API ==========
+
   Future<void> loginAPI() async {
     String loginName = emailController?.text.trim() ?? '';
     String branchCode = branchCodeController?.text.trim() ?? '';
@@ -311,16 +409,27 @@ class LoginController extends GetxController {
     if (res != null && res.status == true) {
       print("✅ Login successful");
 
+      // ✅ Store the entire response
+      await saveFullLoginResponse(res);
+
+      // ✅ Get API role
+      String? apiRole = res.data?.user.userType?.toLowerCase() ?? '';
+      print("📌 API User Type: $apiRole");
+
+      String displayRole = apiToDisplayRole[apiRole] ?? apiRole;
+      print("📌 Display Role: $displayRole");
+
+      String navigationRole = apiRole.isNotEmpty ? apiRole : 'student';
+
       var deviceRepository = Get.find<DeviceRepository>();
 
-      // ✅ Save token
+      // ✅ Save token and other individual fields (backward compatibility)
       String token = '${res.data?.token}';
       await deviceRepository.saveValueSecurely(DeviceConstants.token, token);
       print("✅ Token saved: $token");
 
-      // ✅ Verify immediately
-      String? savedToken = await deviceRepository.getSecuredValue(DeviceConstants.token);
-      print("✅ Verified token: ${savedToken != null ? 'EXISTS' : 'NOT FOUND'}");
+      await deviceRepository.saveValueSecurely(DeviceConstants.userRole, navigationRole);
+      print("✅ User role saved: $navigationRole");
 
       await deviceRepository.saveValueSecurely(DeviceConstants.branchId, '${res.data?.branchId}');
       await deviceRepository.saveValueSecurely(DeviceConstants.branchCode, '${res.data?.branchCode}');
@@ -328,18 +437,58 @@ class LoginController extends GetxController {
       await deviceRepository.saveValueSecurely(DeviceConstants.username, '${res.data?.user.username}');
       await deviceRepository.saveValueSecurely(DeviceConstants.studentId, '${res.data?.user.studentId}');
 
-      // ✅ Check again before navigation
+      // ✅ Verify token exists
       String? finalCheck = await deviceRepository.getSecuredValue(DeviceConstants.token);
       print("✅ Final token check before home: ${finalCheck != null ? 'EXISTS' : 'NOT FOUND'}");
 
-      // ✅ Small delay to ensure storage is written
       await Future.delayed(const Duration(milliseconds: 500));
 
-      RouteManagement.goToHome();
+      navigateBasedOnRole(navigationRole);
     } else {
       print("❌ Login failed");
+      showErrorSnackbar('Login failed. Please check your credentials.');
     }
   }
+
+  // ========== NAVIGATE BASED ON ROLE ==========
+
+  void navigateBasedOnRole(String role) {
+    print("🚀 Navigating based on role: $role");
+
+    String roleLower = role.toLowerCase();
+
+    if (roleLower == 'student') {
+      print("📚 Navigating to Student Dashboard");
+      RouteManagement.goToHome();
+    } else if (roleLower == 'staff') {
+      print("👨‍🏫 Navigating to Staff/Teacher Dashboard");
+      RouteManagement.goToTeacherDashboard();
+    } else if (roleLower == 'parent') {
+      print("👨‍👩‍👧 Navigating to Parent Dashboard");
+      // RouteManagement.goToParentDashboard(); // Uncomment when ready
+    } else {
+      print("⚠️ Unknown role: $role, defaulting to Student Dashboard");
+      RouteManagement.goToHome();
+    }
+
+    clearAllFields();
+  }
+
+  // ========== GET USER ROLE ==========
+
+  Future<String?> getUserRole() async {
+    var deviceRepository = Get.find<DeviceRepository>();
+    return await deviceRepository.getSecuredValue(DeviceConstants.userRole);
+  }
+
+  // ========== CHECK LOGIN STATUS ==========
+
+  Future<bool> isUserLoggedIn() async {
+    var deviceRepository = Get.find<DeviceRepository>();
+    String? token = await deviceRepository.getSecuredValue(DeviceConstants.token);
+    return token != null && token.isNotEmpty;
+  }
+
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
@@ -372,27 +521,14 @@ class LoginController extends GetxController {
     }
   }
 
-  // login_controller.dart
-
   @override
   void onClose() {
-    // ✅ Don't dispose the controllers, just remove listeners
-    // Keep controllers alive for reuse
+    // Remove listeners only, keep controllers alive for reuse
+    branchCodeFocusNode?.removeListener(_onBranchCodeFocusChange);
+    emailFocusNode?.removeListener(_onEmailFocusChange);
+    passwordFocusNode?.removeListener(_onPasswordFocusChange);
 
-    // Remove listeners only
-    if (branchCodeFocusNode != null) {
-      branchCodeFocusNode!.removeListener(_onBranchCodeFocusChange);
-    }
-    if (emailFocusNode != null) {
-      emailFocusNode!.removeListener(_onEmailFocusChange);
-    }
-    if (passwordFocusNode != null) {
-      passwordFocusNode!.removeListener(_onPasswordFocusChange);
-    }
-
-    // DON'T dispose controllers here
-    // branchCodeController?.dispose(); // ❌ Remove this
-
+    // Do NOT dispose controllers here
     super.onClose();
   }
 }

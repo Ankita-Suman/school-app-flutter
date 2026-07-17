@@ -5,3 +5,4 @@ export 'verify_otp_usecases.dart';
 export 'home_usecases.dart';
 export 'reset_password_usecases.dart';
 export 'invoice_usecases.dart';
+export 'teacher_home_usecase.dart';

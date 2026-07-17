@@ -309,6 +309,9 @@ static Color borderGryBgClr = const Color(
   static const darkGryBlueClr = Color(
     darkGryBlue,
   );
+  static const darkGryClr = Color(
+    darkGry,
+  );
   static const darkGryLightClr = Color(
     darkGryLight,
   );
@@ -563,6 +566,12 @@ static const Color txtGrClrs = Color(
   static const Color titleGreenBlackClr = Color(
     titleGreenBlack,
   );
+  static const Color lightYellowClr = Color(
+    lightYellow,
+  );
+  static const Color blcGryClr = Color(
+    blcGryColor,
+  );
   // ===========================================================================
 
   /// Hex Values
@@ -590,6 +599,7 @@ static const Color txtGrClrs = Color(
   static const int borders = 0xffD9D9D9;
   static const int tvGrey = 0xffA5A5A5;
   static const int tvDarkGrey = 0xff323643;
+  static const int lightYellow = 0xffFEEA71;
 
   static const int lightGreyColorWithOpacityHex35 = 0x59C9CCD1;
 
@@ -671,6 +681,7 @@ static const Color txtGrClrs = Color(
   static const int navColor = 0xff124A82;
   static const int redClr = 0xffEF4444;
   static const int blcColor = 0xff0D1B2A;
+  static const int blcGryColor = 0xff757575;
   static const int navSelectedColor = 0xffE6F1FB;
   static const int navBgColor = 0xffEFF6FF;
   static const int bgSkyColor = 0xffB5D4F4;
@@ -695,6 +706,7 @@ static const Color txtGrClrs = Color(
   static const int bgBlueColor = 0xff2070C8;
   static const int darkBlue = 0xff7769AC;
   static const int darkGryBlue = 0xff4A6080;
+  static const int darkGry = 0xff4C4C4C;
   static const int darkGryLight = 0xff8AA0B8;
   static const int darkBlueC = 0xff185FA5;
   static const int lightBlue = 0xffEFEBFF;
