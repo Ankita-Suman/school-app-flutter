@@ -215,10 +215,13 @@ class EditAttendanceController extends GetxController {
     }
   }
 
+  // ========== FETCH WITH DATE FALLBACK ==========
   void _fetchAttendanceForCurrentSelection() {
-    if (selectedClassId.value.isNotEmpty &&
-        selectedSectionId.value.isNotEmpty) {
-      final date = storedDate ?? _getCurrentDate();
+    if (selectedClassId.value.isNotEmpty && selectedSectionId.value.isNotEmpty) {
+      // ✅ Ensure date is never empty – use storedDate or today
+      final date = (storedDate != null && storedDate!.isNotEmpty)
+          ? storedDate!
+          : _getCurrentDate();
       getClassAttendanceData(
         classId: selectedClassId.value,
         sectionId: selectedSectionId.value,
@@ -232,12 +235,15 @@ class EditAttendanceController extends GetxController {
     return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
   }
 
-  // ========== GET CLASS ATTENDANCE DATA ==========
+  // ========== GET CLASS ATTENDANCE DATA (FIXED: date never empty) ==========
   Future<void> getClassAttendanceData({
     required String classId,
     required String sectionId,
     required String date,
   }) async {
+    // ✅ If date is empty, use today
+    String effectiveDate = (date.isNotEmpty) ? date : _getCurrentDate();
+
     try {
       isLoading.value = true;
 
@@ -263,7 +269,7 @@ class EditAttendanceController extends GetxController {
         branchId: branchId,
         classId: classId,
         sectionId: sectionId,
-        date: date,
+        date: effectiveDate,  // ✅ Always non‑empty
       );
 
       if (res != null && res.status == true && res.data != null) {
@@ -283,22 +289,20 @@ class EditAttendanceController extends GetxController {
           debugPrint("📚 ${student.fullName}: ${student.attendance?.status ?? 'Not Marked'}");
         }
       } else {
-        Get.snackbar(
-          'Error',
-          res?.message ?? 'Failed to load attendance data.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        // ❌ Only show snackbar for errors that are not date‑related
+        if (res?.message != null && !res!.message.toLowerCase().contains('attendance date is required')) {
+          Get.snackbar(
+            'Error',
+            res.message,
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Something went wrong while loading attendance.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Handle errors silently for date issues, but log them
+      debugPrint('❌ getClassAttendanceData error: $e');
     } finally {
       isLoading.value = false;
     }
@@ -340,8 +344,7 @@ class EditAttendanceController extends GetxController {
     }
   }
 
-  // ---------- REVERT ALL CHANGES (FIXED) ----------
-// ---------- REVERT ALL CHANGES (FIXED: replace student object) ----------
+  // ---------- REVERT ALL CHANGES ----------
   void revertChanges() {
     for (int i = 0; i < allStudents.length; i++) {
       final student = allStudents[i];
@@ -350,11 +353,9 @@ class EditAttendanceController extends GetxController {
 
       AttendanceInfo? newAttendance;
       if (originalStatus.isEmpty && originalRemarksValue.isEmpty) {
-        // No attendance data originally – set to null
         newAttendance = null;
       } else {
-        // Preserve the original attendanceId and other info if they exist
-        final currentAttendance = student.attendance; // may be null
+        final currentAttendance = student.attendance;
         newAttendance = AttendanceInfo(
           attendanceId: currentAttendance?.attendanceId,
           attendanceDate: currentAttendance?.attendanceDate,
@@ -364,7 +365,6 @@ class EditAttendanceController extends GetxController {
         );
       }
 
-      // Create a new StudentAttendance object with the reverted attendance
       final updatedStudent = StudentAttendance(
         studentId: student.studentId,
         registrationNumber: student.registrationNumber,
@@ -408,7 +408,7 @@ class EditAttendanceController extends GetxController {
     return false;
   }
 
-  // ========== UPDATE ATTENDANCE (FIXED: status conversion) ==========
+  // ========== UPDATE ATTENDANCE ==========
   Future<void> updateAttendance() async {
     try {
       if (selectedClassId.isEmpty || selectedSectionId.isEmpty) {
@@ -443,14 +443,14 @@ class EditAttendanceController extends GetxController {
         return;
       }
 
-      final now = DateTime.now();
-      final attendanceDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      final String attendanceDate = (storedDate != null && storedDate!.isNotEmpty)
+          ? storedDate!
+          : _getCurrentDate();
 
       final List<Map<String, dynamic>> attendanceData = [];
       for (var student in students) {
         String status = student.attendance?.status ?? '';
         if (status.isEmpty) status = 'PRESENT';
-        // ✅ Convert status to backend format
         attendanceData.add({
           'student_id': student.studentId,
           'status': _getBackendStatus(status),
@@ -504,7 +504,7 @@ class EditAttendanceController extends GetxController {
     }
   }
 
-  // ========== STATUS CONVERTER (FIXED: maps "HALF DAY" to "HALF_DAY") ==========
+  // ========== STATUS CONVERTER ==========
   String _getBackendStatus(String? status) {
     if (status == null) return 'PRESENT';
     switch (status.toUpperCase()) {
@@ -514,7 +514,7 @@ class EditAttendanceController extends GetxController {
         return 'ABSENT';
       case 'LATE':
         return 'LATE';
-      case 'HALF DAY':      // UI uses "HALF DAY" with space
+      case 'HALF DAY':
         return 'HALF_DAY';
       case 'LEAVE':
         return 'LEAVE';
