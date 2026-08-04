@@ -24,17 +24,18 @@ class EditAttendancePresenter {
       date: date,
     );
   }
-  Future<TeacherClassesResponse?> getMyClassData({
-    required bool isLoading,
-    required String token,
-    required String branchId
-  }) async {
+
+  Future<TeacherClassesResponse?> getMyClassData(
+      {required bool isLoading,
+      required String token,
+      required String branchId}) async {
     return await homeUseCases.getMyClassData(
       isLoading: isLoading,
       token: token,
       branchId: branchId,
     );
   }
+
 // ✅ Save Attendance
   Future<SaveAttendanceResponse?> updateAttendance({
     required bool isLoading,

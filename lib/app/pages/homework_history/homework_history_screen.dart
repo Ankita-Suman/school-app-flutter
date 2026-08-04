@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../app.dart';
-import '../../widgets/gradient_button.dart';
 
 class HomeworkHistoryScreen extends StatefulWidget {
   const HomeworkHistoryScreen({super.key});
@@ -163,7 +162,9 @@ class _HomeworkHistoryScreenState extends State<HomeworkHistoryScreen> {
                   fontSize: 12,
                   fontFamily: GoogleFonts.sora().fontFamily,
                   fontWeight: FontWeight.w700,
-                  color: isSelected ? ColorsValue.navIconColor : ColorsValue.unSelectedClr,
+                  color: isSelected
+                      ? ColorsValue.navIconColor
+                      : ColorsValue.unSelectedClr,
                 ),
               ),
               const SizedBox(height: 4),
@@ -172,7 +173,9 @@ class _HomeworkHistoryScreenState extends State<HomeworkHistoryScreen> {
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 0),
                 decoration: BoxDecoration(
-                  color: isSelected ? ColorsValue.navIconColor : Colors.transparent,
+                  color: isSelected
+                      ? ColorsValue.navIconColor
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -216,7 +219,9 @@ class _HomeworkHistoryScreenState extends State<HomeworkHistoryScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            _selectedTab == 1 ? 'No submitted homework' : 'No homework to review',
+            _selectedTab == 1
+                ? 'No submitted homework'
+                : 'No homework to review',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey.shade500,
@@ -306,22 +311,18 @@ class _HomeworkHistoryScreenState extends State<HomeworkHistoryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
-                          'Due: $due',
-                          style:Styles.darkBlackW70011
+                        child: Text('Due: $due', style: Styles.darkBlackW70011),
                       ),
-                  ),
                       Align(
                         alignment: Alignment.bottomRight,
-                        child: Text(
-                            '$submitted/$total Submitted',
-                            style: Styles.skyBlueW60012
-                        ),
+                        child: Text('$submitted/$total Submitted',
+                            style: Styles.skyBlueW60012),
                       ),
                     ],
                   ),

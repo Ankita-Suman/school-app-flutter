@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../app.dart';
 import '../teacher_dashboard_controller.dart';
 
@@ -21,6 +21,22 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
   void initState() {
     super.initState();
     controller = Get.find<TeacherDashboardController>();
+  }
+
+  // ========== MAKE PHONE CALL ==========
+  void _makePhoneCall(String phoneNumber) async {
+    // Clean the number: keep only digits and '+'
+    final String cleanedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9+]'), '');
+    if (cleanedNumber.isEmpty) return;
+    final Uri phoneUri = Uri(scheme: 'tel', path: cleanedNumber);
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      Get.snackbar('Error', 'Could not open dialer.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+    }
   }
 
   @override
@@ -99,14 +115,17 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _buildDefaultAvatar(),
+                              errorBuilder: (_, __, ___) =>
+                                  _buildDefaultAvatar(),
                             ),
                           )
                               : _buildDefaultAvatar(),
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          controller.staffName.isNotEmpty ? controller.staffName : '-- --',
+                          controller.staffName.isNotEmpty
+                              ? controller.staffName
+                              : '-- --',
                           style: Styles.darkBlcW700,
                         ),
                         const SizedBox(height: 4),
@@ -224,7 +243,8 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.blue.shade700 : Colors.grey.shade600,
+                  color:
+                  isSelected ? Colors.blue.shade700 : Colors.grey.shade600,
                 ),
               ),
               const SizedBox(height: 4),
@@ -246,6 +266,22 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
 
   // ========== BASIC INFORMATION CONTENT ==========
   Widget _buildBasicInformationContent() {
+    // Build full name from parts
+    final String fullName = [
+      controller.prefix != '--' && controller.prefix.isNotEmpty
+          ? controller.prefix
+          : '',
+      controller.firstName != '--' && controller.firstName.isNotEmpty
+          ? controller.firstName
+          : '',
+      controller.middleName != '--' && controller.middleName.isNotEmpty
+          ? controller.middleName
+          : '',
+      controller.lastName != '--' && controller.lastName.isNotEmpty
+          ? controller.lastName
+          : '',
+    ].where((s) => s.isNotEmpty).join(' ');
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Column(
@@ -287,14 +323,11 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
             ],
           ),
 
-          // ---------- BASIC INFORMATION ----------
+          // ---------- PERSONAL DETAILS ----------
           _buildInfoCard(
             title: 'Personal Details',
             children: [
-              _buildInfoRow('Prefix', controller.prefix),
-              _buildInfoRow('First Name', controller.firstName),
-              _buildInfoRow('Middle Name', controller.middleName),
-              _buildInfoRow('Last Name', controller.lastName),
+              _buildInfoRow('Name', fullName),
               _buildInfoRow('Gender', controller.gender),
               _buildInfoRow('Date Of Birth', controller.dateOfBirth),
               _buildInfoRow('Mother Tongue', controller.motherTongue),
@@ -302,7 +335,17 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               _buildInfoRow('Religion', controller.religion),
               _buildInfoRow('Marital Status', controller.maritalStatus),
               _buildInfoRow('Spouse Name', controller.spouseName),
+              // ---------- FAMILY DETAILS (added) ----------
+              _buildInfoRow('Father Name', controller.fatherName ?? '--'),
+              _buildInfoRow('Father Contact', controller.fatherContact ?? '--'),
               _buildInfoRow('Mother Name', controller.motherName),
+              _buildInfoRow('Mother Contact', controller.motherContact ?? '--'),
+              // ---------- SIBLING INFO (added) ----------
+              // if (controller.siblings != null && controller.siblings!.isNotEmpty)
+              //   ..._buildSiblingRows(),
+              // // if no siblings, show a placeholder
+              // if (controller.siblings == null || controller.siblings!.isEmpty)
+              //   _buildInfoRow('Siblings', 'No siblings added'),
             ],
           ),
 
@@ -345,7 +388,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                   child: _buildOutlinedActionButton(
                     label: 'Logout',
                     icon: Icons.logout,
-                    onPressed: _showLogoutDialog, // ✅ FIXED: calls the dialog method
+                    onPressed: _showLogoutDialog,
                     isDestructive: true,
                   ),
                 ),
@@ -358,6 +401,42 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
       ),
     );
   }
+
+  // ========== BUILD SIBLING ROWS ==========
+  // List<Widget> _buildSiblingRows() {
+  //   List<Widget> rows = [];
+  //   final siblings = controller.siblings!;
+  //   for (int i = 0; i < siblings.length; i++) {
+  //     final sibling = siblings[i];
+  //     // Use sibling.name, sibling.contact, sibling.address
+  //     final name = sibling['name'] ?? '--';
+  //     final contact = sibling['contact'] ?? '--';
+  //     final address = sibling['address'] ?? '--';
+  //     rows.add(
+  //       Padding(
+  //         padding: const EdgeInsets.only(top: 8),
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               'Sibling ${i + 1}',
+  //               style: Styles.darkBlcW600.copyWith(
+  //                 fontSize: 14,
+  //                 color: Colors.blue.shade700,
+  //               ),
+  //             ),
+  //             const SizedBox(height: 4),
+  //             _buildInfoRow('  Name', name),
+  //             _buildInfoRow('  Contact', contact),
+  //             _buildInfoRow('  Address', address),
+  //             if (i != siblings.length - 1) const Divider(height: 16),
+  //           ],
+  //         ),
+  //       ),
+  //     );
+  //   }
+  //   return rows;
+  // }
 
   // ========== OTHER DETAILS CONTENT ==========
   Widget _buildOtherDetailsContent() {
@@ -383,7 +462,8 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
             children: [
               _buildInfoRow('Paid Leaves', controller.paidLeaves.toString()),
               _buildInfoRow('Half Leaves', controller.halfLeaves.toString()),
-              _buildInfoRow('Full Day Leaves', controller.fullDayLeaves.toString()),
+              _buildInfoRow(
+                  'Full Day Leaves', controller.fullDayLeaves.toString()),
             ],
           ),
 
@@ -472,31 +552,54 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
   }
 
   // ========== INFO ROW ==========
-  Widget _buildInfoRow(String label, String value, {IconData? icon, Color? iconBgColor, Color? iconColor}) {
+  Widget _buildInfoRow(String label, String value,
+      {IconData? icon, Color? iconBgColor, Color? iconColor}) {
     IconData getIcon(String label) {
-      if (label.contains('Date') || label.contains('Birth') || label.contains('Joining')) {
+      if (label.contains('Date') ||
+          label.contains('Birth') ||
+          label.contains('Joining')) {
         return Icons.calendar_today_outlined;
       } else if (label.contains('Email')) {
         return Icons.email_outlined;
-      } else if (label.contains('Contact') || label.contains('Phone') || label.contains('Emergency')) {
+      } else if (label.contains('Contact') ||
+          label.contains('Phone') ||
+          label.contains('Emergency')) {
         return Icons.phone_outlined;
       } else if (label.contains('Address')) {
         return Icons.location_on_outlined;
-      } else if (label.contains('Prefix') || label.contains('Name') || label.contains('Spouse') || label.contains('Mother')) {
+      } else if (label.contains('Prefix') ||
+          label.contains('Name') ||
+          label.contains('Spouse') ||
+          label.contains('Mother') ||
+          label.contains('Father') ||
+          label.contains('Sibling')) {
         return Icons.person_outline;
       } else if (label.contains('Gender')) {
         return Icons.wc;
       } else if (label.contains('Marital')) {
         return Icons.favorite_border;
-      } else if (label.contains('Nationality') || label.contains('Religion') || label.contains('Tongue')) {
+      } else if (label.contains('Nationality') ||
+          label.contains('Religion') ||
+          label.contains('Tongue')) {
         return Icons.language;
-      } else if (label.contains('Qualification') || label.contains('Experience')) {
+      } else if (label.contains('Qualification') ||
+          label.contains('Experience')) {
         return Icons.school_outlined;
-      } else if (label.contains('EPF') || label.contains('Salary') || label.contains('Contract') || label.contains('Shift') || label.contains('Location')) {
+      } else if (label.contains('EPF') ||
+          label.contains('Salary') ||
+          label.contains('Contract') ||
+          label.contains('Shift') ||
+          label.contains('Location')) {
         return Icons.work_outline;
-      } else if (label.contains('Leave') || label.contains('Paid') || label.contains('Half') || label.contains('Full')) {
+      } else if (label.contains('Leave') ||
+          label.contains('Paid') ||
+          label.contains('Half') ||
+          label.contains('Full')) {
         return Icons.calendar_month;
-      } else if (label.contains('Account') || label.contains('Bank') || label.contains('IFSC') || label.contains('Branch')) {
+      } else if (label.contains('Account') ||
+          label.contains('Bank') ||
+          label.contains('IFSC') ||
+          label.contains('Branch')) {
         return Icons.account_balance_outlined;
       }
       return Icons.info_outline;
@@ -504,29 +607,57 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
 
     Color getBgColor(String label) {
       if (label.contains('Email')) return Colors.blue.shade50;
-      if (label.contains('Contact') || label.contains('Phone')) return Colors.green.shade50;
+      if (label.contains('Contact') || label.contains('Phone')) {
+        return Colors.green.shade50;
+      }
       if (label.contains('Address')) return Colors.orange.shade50;
-      if (label.contains('Marital') || label.contains('Spouse')) return Colors.pink.shade50;
-      if (label.contains('Nationality') || label.contains('Religion')) return Colors.purple.shade50;
+      if (label.contains('Marital') || label.contains('Spouse') ||
+          label.contains('Father') || label.contains('Mother') ||
+          label.contains('Sibling')) {
+        return Colors.pink.shade50;
+      }
+      if (label.contains('Nationality') || label.contains('Religion')) {
+        return Colors.purple.shade50;
+      }
       if (label.contains('Leave')) return Colors.teal.shade50;
-      if (label.contains('Bank') || label.contains('Account')) return Colors.indigo.shade50;
+      if (label.contains('Bank') || label.contains('Account')) {
+        return Colors.indigo.shade50;
+      }
       return Colors.blue.shade50;
     }
 
     Color getIconColor(String label) {
       if (label.contains('Email')) return Colors.blue.shade700;
-      if (label.contains('Contact') || label.contains('Phone')) return Colors.green.shade700;
+      if (label.contains('Contact') || label.contains('Phone')) {
+        return Colors.green.shade700;
+      }
       if (label.contains('Address')) return Colors.orange.shade700;
-      if (label.contains('Marital') || label.contains('Spouse')) return Colors.pink.shade700;
-      if (label.contains('Nationality') || label.contains('Religion')) return Colors.purple.shade700;
+      if (label.contains('Marital') || label.contains('Spouse') ||
+          label.contains('Father') || label.contains('Mother') ||
+          label.contains('Sibling')) {
+        return Colors.pink.shade700;
+      }
+      if (label.contains('Nationality') || label.contains('Religion')) {
+        return Colors.purple.shade700;
+      }
       if (label.contains('Leave')) return Colors.teal.shade700;
-      if (label.contains('Bank') || label.contains('Account')) return Colors.indigo.shade700;
+      if (label.contains('Bank') || label.contains('Account')) {
+        return Colors.indigo.shade700;
+      }
       return Colors.blue.shade700;
     }
 
     final iconData = icon ?? getIcon(label);
     final bgColor = iconBgColor ?? getBgColor(label);
     final fgColor = iconColor ?? getIconColor(label);
+
+    // Check if this is a contact field
+    final bool isContactField = label.contains('Contact') ||
+        label.contains('Phone') ||
+        label.contains('Emergency');
+
+    // Trim leading spaces for sibling rows
+    final displayLabel = label.trim();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -549,9 +680,24 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: Styles.darkBlueW400),
+                Text(displayLabel, style: Styles.darkBlueW400),
                 const SizedBox(height: 2),
-                Text(value, style: Styles.darkBlcW600),
+                // If contact field and value is valid, make it clickable
+                (isContactField && value.isNotEmpty && value != '--')
+                    ? GestureDetector(
+                  onTap: () => _makePhoneCall(value),
+                  child: Text(
+                    value,
+                    style: Styles.darkBlcW600.copyWith(
+                      color: Colors.blue.shade700,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                )
+                    : Text(
+                  value,
+                  style: Styles.darkBlcW600,
+                ),
               ],
             ),
           ),
@@ -605,7 +751,9 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                   fileName.isNotEmpty ? fileName : 'No file chosen',
                   style: TextStyle(
                     fontSize: 13,
-                    color: fileName.isNotEmpty ? Colors.green.shade700 : Colors.grey.shade500,
+                    color: fileName.isNotEmpty
+                        ? Colors.green.shade700
+                        : Colors.grey.shade500,
                   ),
                 ),
               ),
@@ -655,7 +803,8 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: isDestructive ? Colors.red.shade700 : Colors.blue.shade700,
+          foregroundColor:
+          isDestructive ? Colors.red.shade700 : Colors.blue.shade700,
           elevation: 0,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
@@ -669,7 +818,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
   }
 
   // ============================================================
-  // ✅ FIXED: Logout dialog method
+  // LOGOUT DIALOG
   // ============================================================
   void _showLogoutDialog() {
     Get.dialog(

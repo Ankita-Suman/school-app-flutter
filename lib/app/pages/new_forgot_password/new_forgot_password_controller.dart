@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import '../../../data/helpers/connect_helper.dart';
 import '../../../device/device_constants.dart';
 import '../../../device/repositories/device_repositories.dart';
-import '../../../domain/repositories/domain_repository.dart';
-import '../../../domain/repositories/repository.dart';
 import '../../navigators/routes_management.dart';
 import '../../utils/asset_constants.dart';
 import 'new_forgot_password_presenter.dart';
@@ -42,7 +39,8 @@ class NewForgotPasswordController extends GetxController {
     // Add listeners for focus changes
     branchCodeFocusNode.addListener(() {
       isBranchCodeFocused.value = branchCodeFocusNode.hasFocus;
-      if (!branchCodeFocusNode.hasFocus && branchCodeController.text.isNotEmpty) {
+      if (!branchCodeFocusNode.hasFocus &&
+          branchCodeController.text.isNotEmpty) {
         validateBranchCode(branchCodeController.text, showSnackbar: false);
       }
     });
@@ -136,11 +134,11 @@ class NewForgotPasswordController extends GetxController {
 
   void _checkFormValidity() {
     isFormValid.value = isEmailValid.value && isBranchCodeValid.value;
-    print("Form Valid: ${isFormValid.value}, Email Valid: ${isEmailValid.value}, Branch Valid: ${isBranchCodeValid.value}");
   }
 
   bool _isValidEmail(String email) {
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        .hasMatch(email);
   }
 
   void showErrorSnackbar(String message) {
@@ -237,42 +235,31 @@ class NewForgotPasswordController extends GetxController {
         branchCode: branchCode,
       );
 
-      print("Forgot password response: ${res?.status}");
-      print("Forgot password message: ${res?.message}");
-
       if (res != null && res.status == true) {
-        print("✅ Forgot password success");
-
         var deviceRepository = Get.find<DeviceRepository>();
 
         if (res.data?.otp != null) {
           await deviceRepository.saveValueSecurely(
               DeviceConstants.otp, res.data!.otp!);
-          print("✅ OTP stored: ${res.data!.otp}");
         }
 
         if (res.data?.branchCode != null) {
           await deviceRepository.saveValueSecurely(
               DeviceConstants.branchCode, res.data!.branchCode!);
-          print("✅ Branch code stored: ${res.data!.branchCode}");
         }
 
         if (res.data?.login != null) {
           await deviceRepository.saveValueSecurely(
               DeviceConstants.username, res.data!.login!);
-          print("✅ Username stored: ${res.data!.login}");
         }
 
-        openCheckEmailDialog(res.message ?? 'OTP sent successfully');
-
+        openCheckEmailDialog(res.message);
       } else {
-        String errorMessage = res?.message ?? 'Failed to send OTP. Please check your credentials.';
-        print("❌ Forgot password failed: $errorMessage");
+        String errorMessage = res?.message ??
+            'Failed to send OTP. Please check your credentials.';
         showErrorSnackbar(errorMessage);
       }
-
     } catch (e) {
-      print("Error in forgotPasswordAPI: $e");
       showErrorSnackbar('Network error. Please try again.');
     }
   }
@@ -287,7 +274,8 @@ class NewForgotPasswordController extends GetxController {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(32.0)),
         ),
-        contentPadding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+        contentPadding:
+            const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         content: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -298,11 +286,16 @@ class NewForgotPasswordController extends GetxController {
             const SizedBox(height: 30),
             const Text(
               'Check Your Email',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
             ),
             const SizedBox(height: 10),
             Text(
-              message.isEmpty ? 'We have sent an OTP to your email address.' : message,
+              message.isEmpty
+                  ? 'We have sent an OTP to your email address.'
+                  : message,
               style: const TextStyle(fontSize: 14, color: Colors.grey),
               textAlign: TextAlign.center,
             ),

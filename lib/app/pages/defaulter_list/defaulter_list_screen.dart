@@ -50,6 +50,7 @@ class _DefaulterListScreenState extends State<DefaulterListScreen> {
 
   // ========== CALCULATE TOTALS ==========
   int get totalStudents => defaulterList.length;
+
   int get totalPendingAmount {
     int total = 0;
     for (var student in defaulterList) {
@@ -142,7 +143,7 @@ class _DefaulterListScreenState extends State<DefaulterListScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 '₹${totalPendingAmount.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 32,
                                   color: Colors.black87,
                                   fontWeight: FontWeight.w700,
@@ -199,8 +200,10 @@ class _DefaulterListScreenState extends State<DefaulterListScreen> {
                                 name: student['name'] as String? ?? '',
                                 classInfo: student['class'] as String? ?? '',
                                 roll: student['roll'] as String? ?? '',
-                                overdueDays: student['overdueDays'] as String? ?? '',
-                                pendingAmount: student['pendingAmount'] as String? ?? '',
+                                overdueDays:
+                                    student['overdueDays'] as String? ?? '',
+                                pendingAmount:
+                                    student['pendingAmount'] as String? ?? '',
                                 initial: student['initial'] as String? ?? '',
                               ),
                             );
@@ -320,7 +323,7 @@ class _DefaulterListScreenState extends State<DefaulterListScreen> {
                   const SizedBox(height: 4),
                   Text(
                     '$overdueDays Days',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,
@@ -342,7 +345,7 @@ class _DefaulterListScreenState extends State<DefaulterListScreen> {
                   const SizedBox(height: 4),
                   Text(
                     pendingAmount,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,

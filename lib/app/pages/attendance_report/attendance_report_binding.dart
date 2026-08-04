@@ -6,7 +6,6 @@ import 'attendance_report.dart';
 
 /// A list of bindings which will be used in the route of [AttendanceReportScreen].
 class AttendanceReportBinding extends Bindings {
-
   @override
   void dependencies() {
     Get.put<AttendanceReportController>(

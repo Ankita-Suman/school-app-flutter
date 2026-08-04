@@ -1,7 +1,6 @@
 import 'package:school_app/domain/domain.dart';
 
 import '../models/invoice_response.dart';
-import '../models/profile_response.dart';
 
 /// Use case for getting the data from the API
 class InvoiceUseCases {

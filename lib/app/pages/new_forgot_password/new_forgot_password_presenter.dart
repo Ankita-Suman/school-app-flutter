@@ -8,12 +8,9 @@ class NewForgotPasswordPresenter {
   final ForgotPasswordUseCases _forgotPasswordUseCases;
 
   Future<ForgotPasswordResponse?> forgotPasswordAPI(
-      {required bool isLoading,
-        required String login,
-        required String branchCode}) async =>
+          {required bool isLoading,
+          required String login,
+          required String branchCode}) async =>
       await _forgotPasswordUseCases.forgotPasswordAPI(
-          isLoading: isLoading,
-          login: login,
-          branchCode: branchCode);
-
+          isLoading: isLoading, login: login, branchCode: branchCode);
 }

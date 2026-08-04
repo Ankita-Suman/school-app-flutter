@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../app.dart';
-import '../../navigators/routes_management.dart';
 
 class AttendanceManagementScreen extends StatelessWidget {
   AttendanceManagementScreen({super.key});
@@ -17,14 +16,7 @@ class AttendanceManagementScreen extends StatelessWidget {
       'route': '/Mark-Attendance-Screen', // ✅ Added route
       'position': 0,
     },
-    {
-      'title': 'Exam Term Attendance',
-      'subtitle': 'Max attendance days & obtained',
-      'icon': Icons.assignment_outlined,
-      'color': Colors.orange,
-      'route': '/Term-Attendance-Screen',
-      'position': 1,
-    },
+
     {
       'title': 'Edit Attendance',
       'subtitle': 'Modify previous records',
@@ -106,7 +98,8 @@ class AttendanceManagementScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Text('Attendance Management', style: Styles.whiteBold),
+                          Text('Attendance Management',
+                              style: Styles.whiteBold),
                         ],
                       ),
                     ],
@@ -154,7 +147,7 @@ class AttendanceManagementScreen extends StatelessWidget {
                                   position: item['position'] as int,
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
 
@@ -192,7 +185,7 @@ class AttendanceManagementScreen extends StatelessWidget {
                                   position: item['position'] as int,
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
 
@@ -282,12 +275,9 @@ class AttendanceManagementScreen extends StatelessWidget {
 
   // ========== NAVIGATION HANDLER ==========
   void _handleNavigation(String route, String title, int position) {
-    print("🔄 Navigating to: $title (Position: $position)");
-
     switch (position) {
       case 0:
-      // Class Attendance
-        print("📋 Opening Class Attendance");
+        // Class Attendance
         Get.toNamed(
           Routes.markAttendance,
           arguments: {'title': title},
@@ -297,8 +287,7 @@ class AttendanceManagementScreen extends StatelessWidget {
         break;
 
       case 1:
-      // Exam Term Attendance
-        print("📝 Opening Exam Term Attendance");
+        // Exam Term Attendance
         Get.toNamed(
           Routes.termAttendance,
           arguments: {'title': title},
@@ -307,8 +296,7 @@ class AttendanceManagementScreen extends StatelessWidget {
         break;
 
       case 2:
-      // Edit Attendance
-        print("✏️ Opening Edit Attendance");
+        // Edit Attendance
         Get.toNamed(
           Routes.editAttendance,
           arguments: {'title': title},
@@ -317,8 +305,7 @@ class AttendanceManagementScreen extends StatelessWidget {
         break;
 
       case 3:
-      // Attendance History
-        print("📊 Opening Attendance History");
+        // Attendance History
         Get.toNamed(
           Routes.attendanceReport,
           arguments: {'title': title},
@@ -327,8 +314,7 @@ class AttendanceManagementScreen extends StatelessWidget {
         break;
 
       case 4:
-      // Late Arrival Tracking
-        print("⏰ Opening Late Arrival Tracking");
+        // Late Arrival Tracking
         Get.toNamed(
           Routes.lateArrival,
           arguments: {'title': title},
@@ -337,8 +323,7 @@ class AttendanceManagementScreen extends StatelessWidget {
         break;
 
       case 5:
-      // Leave Status
-        print("🏖️ Opening Leave Status");
+        // Leave Status
         Get.toNamed(
           Routes.leaveApplications,
           arguments: {'title': title},

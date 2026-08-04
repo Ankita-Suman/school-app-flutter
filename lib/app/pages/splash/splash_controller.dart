@@ -10,7 +10,6 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print("Splash Screen - Token: ");
     checkLoginStatus();
   }
 
@@ -24,11 +23,10 @@ class SplashController extends GetxController {
       var deviceRepository = Get.find<DeviceRepository>();
       String? token = await deviceRepository.getSecuredValue(DeviceConstants.token);
 
-      print("Splash Screen - Token: ${token != null ? 'exists' : 'null'}");
-
-      if (token != null && token.isNotEmpty) {
+      if (token.isNotEmpty) {
         _navigated = true;
-        RouteManagement.goToHome();
+        //RouteManagement.goToHome();
+        RouteManagement.goToTeacherDashboard();
       } else {
         _navigated = true;
         RouteManagement.goToLogin();

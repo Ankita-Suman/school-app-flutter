@@ -7,11 +7,10 @@ class TermAttendancePresenter {
 
   final TeacherHomeUseCases homeUseCases;
 
-  Future<TermClassResponse?> getTermClassData({
-    required bool isLoading,
-    required String token,
-    required String branchId
-  }) async {
+  Future<TermClassResponse?> getTermClassData(
+      {required bool isLoading,
+      required String token,
+      required String branchId}) async {
     return await homeUseCases.getTermClassData(
       isLoading: isLoading,
       token: token,
@@ -19,11 +18,10 @@ class TermAttendancePresenter {
     );
   }
 
-Future<ExaminationGroupResponse?> getExamGroupData({
-    required bool isLoading,
-    required String token,
-    required String branchId
-  }) async {
+  Future<ExaminationGroupResponse?> getExamGroupData(
+      {required bool isLoading,
+      required String token,
+      required String branchId}) async {
     return await homeUseCases.getExamGroupData(
       isLoading: isLoading,
       token: token,
@@ -31,12 +29,11 @@ Future<ExaminationGroupResponse?> getExamGroupData({
     );
   }
 
-Future<TermSectionResponse?> getTermSectionData({
-    required bool isLoading,
-    required String token,
-    required String branchId,
-    required String classId
-  }) async {
+  Future<TermSectionResponse?> getTermSectionData(
+      {required bool isLoading,
+      required String token,
+      required String branchId,
+      required String classId}) async {
     return await homeUseCases.getTermSectionData(
       isLoading: isLoading,
       token: token,
@@ -44,12 +41,12 @@ Future<TermSectionResponse?> getTermSectionData({
       classId: classId,
     );
   }
-  Future<ExaminationTermResponse?> getExamTermData({
-    required bool isLoading,
-    required String token,
-    required String branchId,
-    required String examinationGroupId
-  }) async {
+
+  Future<ExaminationTermResponse?> getExamTermData(
+      {required bool isLoading,
+      required String token,
+      required String branchId,
+      required String examinationGroupId}) async {
     return await homeUseCases.getExamTermData(
       isLoading: isLoading,
       token: token,
@@ -57,6 +54,7 @@ Future<TermSectionResponse?> getTermSectionData({
       examinationGroupId: examinationGroupId,
     );
   }
+
   Future<TermAttendanceStudentsResponse?> getTermAttendanceStudents({
     required bool isLoading,
     required String token,
@@ -76,6 +74,7 @@ Future<TermSectionResponse?> getTermSectionData({
       sectionId: sectionId,
     );
   }
+
   Future<SaveTermAttendanceResponse?> saveTermAttendance({
     required bool isLoading,
     required String token,

@@ -8,10 +8,10 @@ class LoginPresenter {
   final LoginUseCases _loginUseCases;
 
   Future<LoginResponse?> loginAPI(
-      {required bool isLoading,
-        required String loginName,
-        required String password,
-        required String branchCode}) async =>
+          {required bool isLoading,
+          required String loginName,
+          required String password,
+          required String branchCode}) async =>
       await _loginUseCases.loginAPI(
           isLoading: isLoading,
           loginName: loginName,

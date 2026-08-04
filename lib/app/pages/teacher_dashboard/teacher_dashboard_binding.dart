@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:school_app/app/pages/dashboard/dashboard_presenter.dart';
 import 'package:school_app/domain/domain.dart';
 
 import 'teacher_dashboard.dart';

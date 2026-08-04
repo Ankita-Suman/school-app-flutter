@@ -1,5 +1,4 @@
 // mark_attendance_presenter.dart
-import 'dart:convert';
 import 'package:school_app/domain/domain.dart';
 import '../../../domain/models/class_attendance_response.dart';
 
@@ -8,11 +7,10 @@ class MarkAttendancePresenter {
 
   final TeacherHomeUseCases homeUseCases;
 
-  Future<TeacherClassesResponse?> getMyClassData({
-    required bool isLoading,
-    required String token,
-    required String branchId
-  }) async {
+  Future<TeacherClassesResponse?> getMyClassData(
+      {required bool isLoading,
+      required String token,
+      required String branchId}) async {
     return await homeUseCases.getMyClassData(
       isLoading: isLoading,
       token: token,

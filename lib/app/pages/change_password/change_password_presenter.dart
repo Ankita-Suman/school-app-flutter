@@ -5,14 +5,14 @@ class ChangePasswordPresenter {
 
   final ResetPasswordUseCases resetPasswordUseCases;
 
-  Future<ResetPasswordResponse?> resetPasswordAPI(
-      {required bool isLoading,
-        required String login,
-        required String branchCode,
-        required String token,
-        required String newPassword,
-        required String passwordConfirmation,
-      }) async =>
+  Future<ResetPasswordResponse?> resetPasswordAPI({
+    required bool isLoading,
+    required String login,
+    required String branchCode,
+    required String token,
+    required String newPassword,
+    required String passwordConfirmation,
+  }) async =>
       await resetPasswordUseCases.resetPasswordAPI(
         isLoading: isLoading,
         login: login,

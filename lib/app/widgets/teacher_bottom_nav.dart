@@ -4,17 +4,14 @@ import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:school_app/app/app.dart';
 import '../pages/teacher_dashboard/teacher_dashboard_controller.dart';
-import '../utils/asset_constants.dart';
 
 class TeacherBottomNavBarWidget extends StatelessWidget {
   const TeacherBottomNavBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    print("🔽🔽🔽 TEACHER BOTTOM NAV BAR BUILD 🔽🔽🔽");
-
     if (!Get.isRegistered<TeacherDashboardController>()) {
-      print("⚠️ TeacherDashboardController not registered yet");
+      debugPrint("⚠️ TeacherDashboardController not registered yet");
       return const SizedBox.shrink();
     }
 

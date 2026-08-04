@@ -30,27 +30,29 @@ class LateArrivalsController extends GetxController {
   Future<void> fetchLateArrivals({required String filter}) async {
     try {
       isLoading.value = true;
-      print("📡📡📡 fetchLateArrivals START - FILTER: $filter 📡📡📡");
 
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
 
-      if (token == null || token.isEmpty) {
-        print("❌ Missing token");
+      if (token.isEmpty || branchId.isEmpty) {
         isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
         return;
       }
 
       var res = await lateArrivalsPresenter.getLateArrivalData(
         isLoading: false,
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3ODM5Njc5OTYsImV4cCI6MTc4NDE0MDc5NiwibmJmIjoxNzgzOTY3OTk2LCJqdGkiOiJDNUE4YW1Gb0FqOTFEa0JCIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZjZTg0MjJlLWFhOTItNGQ2OS1hZjZhLTIxNTlmZDBjOGM2YSIsInJvbGVfaWQiOiI4MmY4MGE0Yi03ZWIxLTRiNWMtYmIxMS03Yjk5ODczMjY4ZjUifQ.vr39Y0QMHVdAC0gc0B3B3K-wyEp2NL3uAmaZHAL-1Ps',
-        branchId: '6ce8422e-aa92-4d69-af6a-2159fd0c8c6a',
+        token: token, // ✅ dynamic
+        branchId: branchId, // ✅ dynamic
         filter: filter, // Pass filter: today, week, month
       );
-
-      print("📡📡📡 RESPONSE STATUS: ${res?.status}");
-      print("📡📡📡 RESPONSE DATA: ${res?.data}");
 
       if (res != null && res.status == true && res.data != null) {
         lateArrivalData.value = res;
@@ -58,16 +60,12 @@ class LateArrivalsController extends GetxController {
         // Store late arrivals
         if (res.data!.data != null) {
           allLateArrivals.value = res.data!.data!;
-          print("✅ Late arrivals loaded: ${allLateArrivals.length}");
-
           for (var arrival in allLateArrivals) {
-            print("📚 ${arrival.studentName} - ${arrival.formattedDate} - ${arrival.statusDisplay}");
+            debugPrint(
+                "📚 ${arrival.studentName} - ${arrival.formattedDate} - ${arrival.statusDisplay}");
           }
         }
-
-        print("✅ Late arrivals loaded successfully");
       } else {
-        print("❌ Failed to load late arrivals: ${res?.message}");
         Get.snackbar(
           'Error',
           res?.message ?? 'Failed to load late arrivals data.',
@@ -77,7 +75,6 @@ class LateArrivalsController extends GetxController {
         );
       }
     } catch (e) {
-      print("❌ Error in fetchLateArrivals: $e");
       Get.snackbar(
         'Error',
         'Something went wrong while loading late arrivals.',
@@ -114,12 +111,10 @@ class LateArrivalsController extends GetxController {
 
   // ========== GETTERS ==========
   List<LateArrival> get lateArrivals => allLateArrivals;
-  bool get hasData => allLateArrivals.isNotEmpty;
-  int get totalCount => lateArrivalData.value?.data?.total ?? 0;
-  bool get isLoadingData => isLoading.value;
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
+  bool get hasData => allLateArrivals.isNotEmpty;
+
+  int get totalCount => lateArrivalData.value?.data?.total ?? 0;
+
+  bool get isLoadingData => isLoading.value;
 }

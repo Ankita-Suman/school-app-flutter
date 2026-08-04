@@ -1,7 +1,5 @@
 import 'package:school_app/domain/domain.dart';
 
-import '../../../domain/models/class_attendance_response.dart';
-
 class AttendanceReportPresenter {
   AttendanceReportPresenter(this.homeUseCases);
 
@@ -25,11 +23,10 @@ class AttendanceReportPresenter {
     );
   }
 
-  Future<TeacherClassesResponse?> getMyClassData({
-    required bool isLoading,
-    required String token,
-    required String branchId
-  }) async {
+  Future<TeacherClassesResponse?> getMyClassData(
+      {required bool isLoading,
+      required String token,
+      required String branchId}) async {
     return await homeUseCases.getMyClassData(
       isLoading: isLoading,
       token: token,

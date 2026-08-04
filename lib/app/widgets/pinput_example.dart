@@ -69,7 +69,7 @@ class PinputExample extends StatelessWidget {
               ),
               pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
               onCompleted: (pin) {
-                print('OTP Completed: $pin');
+                debugPrint('OTP Completed: $pin');
               },
               cursor: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -84,7 +84,7 @@ class PinputExample extends StatelessWidget {
               ),
               showCursor: true,
               onChanged: (pin) {
-                print('Changed PIN: $pin');
+                debugPrint('Changed PIN: $pin');
               },
             ),
           ),

@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../domain/models/my_classes_response.dart';
 import '../../app.dart';
-import '../../navigators/routes_management.dart';
 import 'my_student_class_controller.dart';
 
 class MyStudentClassScreen extends StatefulWidget {
@@ -84,11 +83,6 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
     final String className = classItem.className;
     final String sectionName = classItem.sectionName;
 
-    print("📚 Navigating to Class Details");
-    print("   Class ID: $classId");
-    print("   Section ID: $sectionId");
-    print("   Class: $className - Section $sectionName");
-
     // Navigate to class details screen with required data
     RouteManagement.goToStudentList(
       classId: classId,
@@ -145,20 +139,21 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
                       ),
                       // Show total classes count
                       Obx(() => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${controller.totalClasses} Classes',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      )),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${controller.totalClasses} Classes',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          )),
                     ],
                   ),
                 ),
@@ -209,20 +204,20 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
                                       vertical: 12,
                                       horizontal: 4,
                                     ),
-                                    suffixIcon: Obx(() =>
-                                    searchQuery.value.isNotEmpty
-                                        ? IconButton(
-                                      icon: Icon(
-                                        Icons.clear,
-                                        color: Colors.grey.shade400,
-                                        size: 20,
-                                      ),
-                                      onPressed: () {
-                                        searchController.clear();
-                                        searchQuery.value = '';
-                                      },
-                                    )
-                                        : const SizedBox.shrink(),
+                                    suffixIcon: Obx(
+                                      () => searchQuery.value.isNotEmpty
+                                          ? IconButton(
+                                              icon: Icon(
+                                                Icons.clear,
+                                                color: Colors.grey.shade400,
+                                                size: 20,
+                                              ),
+                                              onPressed: () {
+                                                searchController.clear();
+                                                searchQuery.value = '';
+                                              },
+                                            )
+                                          : const SizedBox.shrink(),
                                     ),
                                   ),
                                 ),
@@ -337,7 +332,9 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
                             itemBuilder: (context, index) {
                               final classItem = filteredList[index];
                               // Find original index for color
-                              final originalIndex = controller.classList?.indexOf(classItem) ?? index;
+                              final originalIndex =
+                                  controller.classList?.indexOf(classItem) ??
+                                      index;
 
                               return _buildClassCard(
                                 classItem: classItem,
@@ -373,7 +370,8 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
         : classItem.className.substring(0, 1).toUpperCase();
 
     // Get grade display
-    String gradeDisplay = '${classItem.className} - Section ${classItem.sectionName}';
+    String gradeDisplay =
+        '${classItem.className} - Section ${classItem.sectionName}';
 
     // Get teacher type - You can modify this based on your data
     String teacherType = 'Class Teacher';

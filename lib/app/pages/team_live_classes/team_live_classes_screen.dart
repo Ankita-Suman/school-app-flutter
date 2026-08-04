@@ -57,12 +57,13 @@ class TeamLiveClassesScreen extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => Get.back(),
-                                child:  SvgPicture.asset(
-                                    AssetConstants.icBackBg,
+                                child: SvgPicture.asset(
+                                  AssetConstants.icBackBg,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text('Teams Live Classes', style: Styles.whiteBold),
+                              Text('Teams Live Classes',
+                                  style: Styles.whiteBold),
                             ],
                           ),
                         ],
@@ -75,7 +76,6 @@ class TeamLiveClassesScreen extends StatelessWidget {
                     const SizedBox(height: 15),
                   ],
                 ),
-
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(12),
@@ -94,12 +94,12 @@ class TeamLiveClassesScreen extends StatelessWidget {
   }
 
   Widget _buildOnlineSessionsWidget() {
-    return  Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           SvgPicture.asset(AssetConstants.icTeam),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -154,23 +154,24 @@ class TeamLiveClassesScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: ColorsValue.redClrs,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child:  Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
                           width: 6,
                           height: 6,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text('LIVE', style: Styles.whiteW70009),
                       ],
                     ),
@@ -178,7 +179,10 @@ class TeamLiveClassesScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(height: 1, thickness: 1, color: ColorsValue.blueColorss.withOpacity(0.3)),
+            Divider(
+                height: 1,
+                thickness: 1,
+                color: ColorsValue.blueColorss.withOpacity(0.3)),
             Container(
               padding: const EdgeInsets.all(12),
               color: Colors.white,
@@ -216,30 +220,34 @@ class TeamLiveClassesScreen extends StatelessWidget {
                               style: Styles.darkBlackW700,
                               overflow: TextOverflow.ellipsis,
                             ),
-                             Text('Teacher', style: Styles.darkGryW400),
+                            Text('Teacher', style: Styles.darkGryW400),
                           ],
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Divider(height: 1, thickness: 1, color: ColorsValue.blueColorss.withOpacity(0.3)),
+                  Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: ColorsValue.blueColorss.withOpacity(0.3)),
                   const SizedBox(height: 10),
-                   Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text('Time', style: Styles.darkGryW600),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.access_time, size: 16, color: Colors.grey),
-                          SizedBox(width: 8),
+                          const Icon(Icons.access_time, size: 16, color: Colors.grey),
+                          const SizedBox(width: 8),
                           Expanded(
-                            child: Text('01:00 PM – 02:00 PM', style: Styles.darkBlkW70013),
+                            child: Text('01:00 PM – 02:00 PM',
+                                style: Styles.darkBlkW70013),
                           ),
-                          SizedBox(width: 10),
-                          JoinTeamsButton(),
+                          const SizedBox(width: 10),
+                          const JoinTeamsButton(),
                         ],
                       ),
                     ],
@@ -265,7 +273,7 @@ class JoinTeamsButton extends StatelessWidget {
         color: ColorsValue.navIconColor,
         borderRadius: BorderRadius.circular(16),
       ),
-      child:  Text(
+      child: Text(
         'Join Teams',
         style: Styles.whiteW70012,
       ),

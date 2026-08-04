@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:school_app/app/app.dart';
 import 'package:school_app/data/data.dart';
 import 'package:school_app/device/device.dart';
@@ -327,6 +329,95 @@ class Repository {
       return null;
     }
   }
+  Future<LeaveRequestSubmitResponse?> submitLeaveApplication({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String leaveType,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+    required File? attachment,
+  }) async {
+    try {
+      var res = await _dataRepository.submitLeaveApplication(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        leaveType: leaveType,
+        fromDate: fromDate,
+        toDate: toDate,
+        reason: reason,
+        attachment: attachment,
+      );
+      if (!res.hasError && res.data != null) {
+        try {
+          // Handle both Map and String responses
+          if (res.data is Map<String, dynamic>) {
+            return LeaveRequestSubmitResponse.fromJson(res.data as Map<String, dynamic>);
+          } else if (res.data is String) {
+            return LeaveRequestSubmitResponse.fromJson(jsonDecode(res.data));
+          } else {
+            return null;
+          }
+        } catch (e) {
+          return null; // JSON parse error – just return null
+        }
+      } else {
+        // ❌ Do NOT call Utility.showInfoDialog(res) here – it crashes on non‑JSON
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.submitLeaveApplication(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        leaveType: leaveType,
+        fromDate: fromDate,
+        toDate: toDate,
+        reason: reason,
+        attachment: attachment,
+      );
+      return null;
+    }
+  }
+
+ Future<StaffResetPasswordResponse?> resetStaffPassword({
+   required bool isLoading,
+   required String currentPassword,
+   required String branchId,
+   required String token,
+   required String newPassword,
+   required String passwordConfirmation,
+  }) async {
+    try {
+      var res = await _dataRepository.resetStaffPassword(
+        isLoading: isLoading,
+        currentPassword: currentPassword,
+        branchId: branchId,
+        token: token,
+        newPassword: newPassword,
+        passwordConfirmation: passwordConfirmation,
+      );
+      if (!res!.hasError && res.data != null) {
+        var data = resetPasswordResponseFromJson(res.data);
+        return data;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.resetStaffPassword(
+        isLoading: isLoading,
+        currentPassword: currentPassword,
+        branchId: branchId,
+        token: token,
+        newPassword: newPassword,
+        passwordConfirmation: passwordConfirmation,
+      );
+      return null;
+    }
+  }
 
   Future<ProfileResponse?> getProfileDetailsAPI({
     required bool isLoading,
@@ -414,6 +505,34 @@ class Repository {
     }
   }
 
+Future<LeaveRequestsResponse?> getLeaveApprovalStatusAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getLeaveApprovalStatusAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return leaveRequestsResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getLeaveApprovalStatusAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+      );
+      return null;
+    }
+  }
+
 Future<StaffProfileResponse?> getStaffProfileData({
     required bool isLoading,
     required String token,
@@ -473,6 +592,34 @@ Future<StaffProfileResponse?> getStaffProfileData({
     }
   }
 
+Future<LeaveBalanceResponse?> getLeaveBalanceAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    try {
+      var res = await _dataRepository.getLeaveBalanceAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return leaveBalanceResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getLeaveBalanceAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+      );
+      return null;
+    }
+  }
+
   Future<LeaveApplicationsResponse?> getLeaveStatusData({
     required bool isLoading,
     required String token,
@@ -499,6 +646,37 @@ Future<StaffProfileResponse?> getStaffProfileData({
         token: token,
         branchId: branchId,
         filter: filter,
+      );
+      return null;
+    }
+  }
+
+Future<LeaveHistoryResponse?> getLeaveHistory({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String staffId,
+  }) async {
+    try {
+      var res = await _dataRepository.getLeaveHistory(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        staffId: staffId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return leaveHistoryResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getLeaveHistory(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        staffId: staffId,
       );
       return null;
     }
@@ -657,6 +835,116 @@ Future<ExaminationGroupResponse?> getExamGroupData({
       return null;
     }
   }
+  Future<SaveExternalMarksResponse?> saveExternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    try {
+      var res = await _dataRepository.saveExternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      if (!res.hasError && res.data != null) {
+        // ✅ Handle both Map and String responses
+        if (res.data is Map<String, dynamic>) {
+          return SaveExternalMarksResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return saveExternalMarksResponseFromJson(res.data as String);
+        } else {
+          return null;
+        }
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.saveExternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      return null;
+    }
+  }
+  Future<SaveExternalMarksResponse?> saveInternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    try {
+      var res = await _dataRepository.saveInternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      if (!res.hasError && res.data != null) {
+        // ✅ Handle both Map and String responses
+        if (res.data is Map<String, dynamic>) {
+          return SaveExternalMarksResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return saveExternalMarksResponseFromJson(res.data as String);
+        } else {
+          return null;
+        }
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.saveInternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+      return null;
+    }
+  }
+Future<ExamScheduleResponse?> getExamSchedule({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    try {
+      var res = await _dataRepository.getExamSchedule(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      if (!res.hasError && res.data != null) {
+        return examScheduleResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getExamSchedule(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      return null;
+    }
+  }
 
 Future<TermSectionResponse?> getTermSectionData({
     required bool isLoading,
@@ -689,6 +977,40 @@ Future<TermSectionResponse?> getTermSectionData({
       return null;
     }
   }
+  Future<SubjectResponse?> getSubjectData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    try {
+      var res = await _dataRepository.getSubjectData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return subjectResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getSubjectData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+
+      );
+      return null;
+    }
+  }
   Future<ExaminationTermResponse?> getExamTermData({
     required bool isLoading,
     required String token,
@@ -716,6 +1038,100 @@ Future<TermSectionResponse?> getTermSectionData({
         branchId: branchId,
         examinationGroupId: examinationGroupId,
 
+      );
+      return null;
+    }
+  }
+// ========== GET EXTERNAL MARKS ==========
+  Future<ExternalMarksResponse?> getExternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+    required String subjectId,
+    required String markType,
+    required String internalCount,
+  }) async {
+    try {
+      var res = await _dataRepository.getExternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+        subjectId: subjectId,
+        markType: markType,
+        internalCount: internalCount,
+      );
+      if (!res.hasError && res.data != null) {
+        return externalMarksResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getExternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+        subjectId: subjectId,
+        markType: markType,
+        internalCount: internalCount,
+      );
+      return null;
+    }
+  }
+
+// ========== GET EXTERNAL MARKS ==========
+  Future<InternalMarksResponse?> getInternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+    required String subjectId,
+    required String markType,
+  }) async {
+    try {
+      var res = await _dataRepository.getInternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+        subjectId: subjectId,
+        markType: markType,
+      );
+      if (!res.hasError && res.data != null) {
+        return internalMarksResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getInternalMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+        subjectId: subjectId,
+        markType: markType,
       );
       return null;
     }
@@ -917,18 +1333,15 @@ Future<TermSectionResponse?> getTermSectionData({
       );
 
       if (res.hasError || res.data == null) {
-        print("? Error or null data");
+        debugPrint("? Error or null data");
         return null;
       }
 
       String jsonString = res.data is String ? res.data as String : jsonEncode(res.data);
 
       SaveAttendanceResponse response = saveAttendanceResponseFromJson(jsonString);
-      print("??? PARSED SUCCESS: ${response.status}");
-
       return response;   // ✅ already sahi tha
     } catch (e) {
-      print("? saveAttendance Exception: $e");   // ✅ error bhi print karein
       await _deviceRepository.saveAttendance(
         isLoading: isLoading,
         token: token,
@@ -953,18 +1366,15 @@ Future<TermSectionResponse?> getTermSectionData({
       );
 
       if (res.hasError || res.data == null) {
-        print("? Error or null data");
+        debugPrint("? Error or null data");
         return null;
       }
 
       String jsonString = res.data is String ? res.data as String : jsonEncode(res.data);
 
       SaveAttendanceResponse response = saveAttendanceResponseFromJson(jsonString);
-      print("??? PARSED SUCCESS: ${response.status}");
-
       return response;   // ✅ already sahi tha
     } catch (e) {
-      print("? saveAttendance Exception: $e");   // ✅ error bhi print karein
       await _deviceRepository.updateAttendance(
         isLoading: isLoading,
         token: token,
@@ -988,7 +1398,19 @@ Future<TermSectionResponse?> getTermSectionData({
         payload: payload,
       );
       if (!res.hasError && res.data != null) {
-        return saveTermAttendanceResponseFromJson(res.data);
+        try {
+          // ✅ Handle both Map and String responses
+          if (res.data is Map<String, dynamic>) {
+            return SaveTermAttendanceResponse.fromJson(res.data as Map<String, dynamic>);
+          } else if (res.data is String) {
+            return saveTermAttendanceResponseFromJson(res.data as String);
+          } else {
+            return null;
+          }
+        } catch (e) {
+          debugPrint("❌ JSON parse error in saveTermAttendance: $e");
+          return null;
+        }
       } else {
         Utility.showInfoDialog(res);
         return null;

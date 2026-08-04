@@ -79,7 +79,8 @@ class HomeworkAssignmentScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Text('Homework & Assignments', style: Styles.whiteBold),
+                          Text('Homework & Assignments',
+                              style: Styles.whiteBold),
                         ],
                       ),
                     ],
@@ -125,7 +126,7 @@ class HomeworkAssignmentScreen extends StatelessWidget {
                                   color: item['color'] as Color,
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                         Column(
@@ -157,7 +158,7 @@ class HomeworkAssignmentScreen extends StatelessWidget {
                                   color: item['color'] as Color,
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
 

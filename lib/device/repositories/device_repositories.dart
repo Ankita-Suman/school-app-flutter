@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:school_app/data/data.dart';
 import 'package:school_app/device/device.dart';
 import 'package:school_app/domain/domain.dart';
@@ -70,34 +71,28 @@ class DeviceRepository extends DomainRepository {
 
       if (value == null || value.isEmpty) {
         value = GetStorage().read(key);
-        print("📖 Read from GetStorage: $key = ${value != null ? 'FOUND' : 'NULL'}");
         if (value == null) return '';
       } else {
-        print("📖 Read from SecureStorage: $key = FOUND");
+        debugPrint("📖 Read from SecureStorage: $key = FOUND");
       }
 
-      return value ?? '';  // ✅ Return empty string if null
+      return value;  // ✅ Return empty string if null
     } catch (e) {
-      print("❌ Error reading $key: $e");
+      debugPrint("❌ Error reading $key: $e");
       return '';
     }
   }  /// ✅ FIXED: Save data in secure storage (also save in GetStorage as backup)
   @override
   Future<void> saveValueSecurely(String key, String value) async {
     try {
-      print("🔐 Saving: $key = $value");
       await _flutterSecureStorage.write(key: key, value: value);
 
       // ✅ Also save in GetStorage as backup
       await GetStorage().write(key, value);
-
-      print("✅ Saved successfully: $key");
     } catch (e) {
-      print("❌ Error saving $key: $e");
+      debugPrint("❌ Error saving $key: $e");
     }
   }
-  IOSOptions _getIOSOption() => const IOSOptions(accountName: 'ePod');
-
   /// Delete data from secure storage
   @override
   Future<void> deleteSecuredValue(String key) async {
@@ -105,9 +100,8 @@ class DeviceRepository extends DomainRepository {
       await _flutterSecureStorage.delete(key: key);
       final GetStorage box = GetStorage();
       await box.remove(key);
-      print("🗑️ Deleted: $key");
     } catch (error) {
-      print("❌ Error deleting $key: $error");
+      debugPrint("❌ Error deleting $key: $error");
     }
   }
 
@@ -118,9 +112,8 @@ class DeviceRepository extends DomainRepository {
       await _flutterSecureStorage.deleteAll();
       final GetStorage box = GetStorage();
       await box.erase();
-      print("🗑️ Deleted all secured values");
     } catch (error) {
-      print("❌ Error deleting all: $error");
+      debugPrint("❌ Error deleting all: $error");
     }
   }
 
@@ -134,7 +127,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> forgotPasswordAPI({
     required bool isLoading,
     required String branchCode,
@@ -143,7 +136,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> verifyOtpAPI({
     required bool isLoading,
     required String branchCode,
@@ -153,7 +146,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> resetPasswordAPI({
     required bool isLoading,
     required String login,
@@ -165,7 +158,29 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+  Future<ResponseModel> resetStaffPassword({
+    required bool isLoading,
+    required String currentPassword,
+    required String branchId,
+    required String token,
+    required String newPassword,
+    required String passwordConfirmation,
+  }) {
+    throw UnimplementedError();
+  }
+
+  Future<ResponseModel> submitLeaveApplication({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String leaveType,
+    required String fromDate,
+    required String toDate,
+    required String reason, File? attachment,
+  }) {
+    throw UnimplementedError();
+  }
+
   Future<ResponseModel> resendOtpAPI({
     required bool isLoading,
     required String login,
@@ -174,7 +189,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getProfileDetailsAPI({
     required bool isLoading,
     required String token,
@@ -184,7 +199,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getFeesDetailsAPI({
     required bool isLoading,
     required String token,
@@ -194,7 +209,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getAllEvents({
     required bool isLoading,
     required String token,
@@ -203,7 +218,7 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-  @override
+
   Future<ResponseModel> getTeacherDashboardAPI({
     required bool isLoading,
     required String token,
@@ -211,7 +226,17 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-  @override
+
+
+  Future<ResponseModel> getLeaveApprovalStatusAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+
+
   Future<ResponseModel> getStaffProfileData({
     required bool isLoading,
     required String token,
@@ -220,7 +245,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getLateArrivalData({
     required bool isLoading,
     required String token,
@@ -230,7 +255,16 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
+  Future<ResponseModel> getLeaveBalanceAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) {
+    throw UnimplementedError();
+  }
+
+
   Future<ResponseModel> getLeaveStatusData({
     required bool isLoading,
     required String token,
@@ -240,7 +274,17 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
+  Future<ResponseModel> getLeaveHistory({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String staffId,
+  }) {
+    throw UnimplementedError();
+  }
+
+
   Future<ResponseModel> getInvoiceDetailsAPI({
     required bool isLoading,
     required String token,
@@ -249,7 +293,7 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-  @override
+
   Future<ResponseModel> saveTermAttendance({
     required bool isLoading,
     required String token,
@@ -259,7 +303,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getMyClassDetailsData({
     required bool isLoading,
     required String token,
@@ -270,7 +314,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getStudentListData({
     required bool isLoading,
     required String token,
@@ -281,7 +325,7 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-  @override
+
   Future<ResponseModel> fetchClassAttendanceReport({
     required bool isLoading,
     required String token,
@@ -293,7 +337,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getAllStudentList({
     required bool isLoading,
     required String token,
@@ -304,7 +348,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> saveAttendance({
     required bool isLoading,
     required String token,
@@ -313,7 +357,7 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-@override
+
   Future<ResponseModel> updateAttendance({
     required bool isLoading,
     required String token,
@@ -323,7 +367,6 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
   Future<ResponseModel> getClassAttendance({
     required bool isLoading,
     required String token,
@@ -335,7 +378,6 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
   Future<ResponseModel> getMyClassData({
     required bool isLoading,
     required String token,
@@ -343,7 +385,7 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-  @override
+
   Future<ResponseModel> getTermClassData({
     required bool isLoading,
     required String token,
@@ -352,7 +394,7 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+
   Future<ResponseModel> getExamGroupData({
     required bool isLoading,
     required String token,
@@ -360,7 +402,7 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-  @override
+
   Future<ResponseModel> getTermAttendanceStudents({
     required bool isLoading,
     required String token,
@@ -372,7 +414,38 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
-  @override
+
+  Future<ResponseModel> saveExternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) {
+    throw UnimplementedError();
+  }
+
+  Future<ResponseModel> saveInternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) {
+    throw UnimplementedError();
+  }
+
+  Future<ResponseModel> getExamSchedule({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) {
+    throw UnimplementedError();
+  }
+
+
   Future<ResponseModel> getTermSectionData({
     required bool isLoading,
     required String token,
@@ -382,7 +455,18 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-@override
+
+  Future<ResponseModel> getSubjectData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) {
+    throw UnimplementedError();
+  }
+
+
   Future<ResponseModel> getExamTermData({
     required bool isLoading,
     required String token,
@@ -392,7 +476,36 @@ class DeviceRepository extends DomainRepository {
     throw UnimplementedError();
   }
 
-  @override
+  Future<ResponseModel> getExternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+    required String subjectId,
+    required String markType,
+    required String internalCount,
+  }) {
+    throw UnimplementedError();
+  }
+
+  Future<ResponseModel> getInternalMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+    required String subjectId,
+    required String markType,
+  }) {
+    throw UnimplementedError();
+  }
+
+
   Future<ResponseModel> logout({
     required bool isLoading,
     required String token,

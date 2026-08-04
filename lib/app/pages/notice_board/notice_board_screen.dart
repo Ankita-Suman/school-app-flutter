@@ -38,7 +38,8 @@ class NoticeBoardScreen extends StatelessWidget {
   ];
 
   final TextEditingController searchController = TextEditingController();
-  final RxList<Map<String, dynamic>> filteredEventsList = RxList<Map<String, dynamic>>();
+  final RxList<Map<String, dynamic>> filteredEventsList =
+      RxList<Map<String, dynamic>>();
 
   @override
   Widget build(BuildContext context) {
@@ -84,9 +85,9 @@ class NoticeBoardScreen extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => Get.back(),
-                                child:SvgPicture.asset(
-                                    AssetConstants.icBackBg,
-                                  ),
+                                child: SvgPicture.asset(
+                                  AssetConstants.icBackBg,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Text('Notice Board', style: Styles.whiteBold),
@@ -116,10 +117,20 @@ class NoticeBoardScreen extends StatelessWidget {
                             if (value.isEmpty) {
                               filteredEventsList.value = upcomingEventsList;
                             } else {
-                              filteredEventsList.value = upcomingEventsList.where((event) {
-                                return event['type'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                                    event['description'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                                    event['deadline'].toString().toLowerCase().contains(value.toLowerCase());
+                              filteredEventsList.value =
+                                  upcomingEventsList.where((event) {
+                                return event['type']
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(value.toLowerCase()) ||
+                                    event['description']
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(value.toLowerCase()) ||
+                                    event['deadline']
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(value.toLowerCase());
                               }).toList();
                             }
                           },
@@ -134,7 +145,8 @@ class NoticeBoardScreen extends StatelessWidget {
                             border: InputBorder.none,
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 8),
                           ),
                           style: Styles.whiteBold14600,
                         ),
@@ -149,34 +161,35 @@ class NoticeBoardScreen extends StatelessWidget {
                 // Notice List
                 Expanded(
                   child: Obx(
-                        () => filteredEventsList.isEmpty
+                    () => filteredEventsList.isEmpty
                         ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.priority_high,
-                            size: 64,
-                            color: Colors.grey.shade400,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No notices found',
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 16,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.priority_high,
+                                  size: 64,
+                                  color: Colors.grey.shade400,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No notices found',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    )
+                          )
                         : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: filteredEventsList.length,
-                      itemBuilder: (context, index) {
-                        return _buildEventCard(filteredEventsList[index], index);
-                      },
-                    ),
+                            padding: const EdgeInsets.all(12),
+                            itemCount: filteredEventsList.length,
+                            itemBuilder: (context, index) {
+                              return _buildEventCard(
+                                  filteredEventsList[index], index);
+                            },
+                          ),
                   ),
                 ),
               ],
@@ -227,10 +240,13 @@ class NoticeBoardScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              event['type'] == 'URGENT' ? Icons.priority_high :
-              event['type'] == 'ACADEMIC' ? Icons.school :
-              event['type'] == 'Holiday' ? Icons.beach_access :
-              Icons.person,
+              event['type'] == 'URGENT'
+                  ? Icons.priority_high
+                  : event['type'] == 'ACADEMIC'
+                      ? Icons.school
+                      : event['type'] == 'Holiday'
+                          ? Icons.beach_access
+                          : Icons.person,
               color: event['color'],
               size: 20,
             ),
@@ -251,10 +267,10 @@ class NoticeBoardScreen extends StatelessWidget {
                         style: index == 0
                             ? Styles.orangeBold700
                             : index == 1
-                            ? Styles.blueBold70009
-                            : index == 2
-                            ? Styles.greenBold70009
-                            : Styles.rdBold70009,
+                                ? Styles.blueBold70009
+                                : index == 2
+                                    ? Styles.greenBold70009
+                                    : Styles.rdBold70009,
                       ),
                       Text(
                         event['date'],

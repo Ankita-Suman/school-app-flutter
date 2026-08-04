@@ -51,7 +51,7 @@ class StudentAttendance {
   final String? photo;
   final ClassInfo? classInfo;
   final SectionInfo? sectionInfo;
-  final AttendanceInfo? attendance;
+  late final AttendanceInfo? attendance;
 
   StudentAttendance({
     required this.studentId,

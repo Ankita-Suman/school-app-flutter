@@ -17,19 +17,26 @@ class MarkAttendanceScreen extends StatefulWidget {
 class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   late final MarkAttendanceController controller;
 
-  bool _hasAttendanceChanged = false;
+  // Helper to display status (convert "HALF_DAY" to "HALF DAY")
+  String _displayStatus(String status) {
+    if (status.toUpperCase() == 'HALF_DAY') return 'HALF DAY';
+    return status.toUpperCase();
+  }
 
   List<String> get statusOptions {
     final students = controller.attendanceStudents;
     if (students != null && students.isNotEmpty) {
       final statuses = students.first.attendanceStatuses;
       if (statuses.isNotEmpty) {
-        final unique = statuses.map((s) => s.toUpperCase()).toSet().toList();
-        unique.sort((a, b) => a == 'PRESENT' ? -1 : (b == 'PRESENT' ? 1 : a.compareTo(b)));
+        var unique = statuses.map((s) => s.toUpperCase()).toSet().toList();
+        // Convert any "HALF_DAY" to "HALF DAY" for display
+        unique = unique.map((s) => _displayStatus(s)).toSet().toList();
+        unique.sort((a, b) =>
+        a == 'PRESENT' ? -1 : (b == 'PRESENT' ? 1 : a.compareTo(b)));
         return unique;
       }
     }
-    return ['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY', 'LEAVE'];
+    return ['PRESENT', 'ABSENT', 'LATE', 'HALF DAY', 'LEAVE'];
   }
 
   String get currentDate {
@@ -42,7 +49,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     super.initState();
     controller = Get.put(MarkAttendanceController(Get.find()));
     ever(controller.classAttendanceData, (_) {
-      setState(() => _hasAttendanceChanged = false);
+      // No need to track changes anymore; button always enabled
     });
   }
 
@@ -52,24 +59,38 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   }
 
   Color _getStatusColor(String status) {
-    switch (status.toUpperCase()) {
-      case 'PRESENT': return Colors.green;
-      case 'LATE': return Colors.orange;
-      case 'ABSENT': return Colors.red;
-      case 'HALF_DAY': return Colors.purple;
-      case 'LEAVE': return Colors.blue;
-      default: return Colors.grey;
+    final display = _displayStatus(status);
+    switch (display) {
+      case 'PRESENT':
+        return Colors.green;
+      case 'LATE':
+        return Colors.orange;
+      case 'ABSENT':
+        return Colors.red;
+      case 'HALF DAY':
+        return Colors.purple;
+      case 'LEAVE':
+        return Colors.blue;
+      default:
+        return Colors.grey;
     }
   }
 
   Color _getStatusBgColor(String status) {
-    switch (status.toUpperCase()) {
-      case 'PRESENT': return Colors.green.shade50;
-      case 'LATE': return Colors.orange.shade50;
-      case 'ABSENT': return Colors.red.shade50;
-      case 'HALF_DAY': return Colors.purple.shade50;
-      case 'LEAVE': return Colors.blue.shade50;
-      default: return Colors.white;
+    final display = _displayStatus(status);
+    switch (display) {
+      case 'PRESENT':
+        return Colors.green.shade50;
+      case 'LATE':
+        return Colors.orange.shade50;
+      case 'ABSENT':
+        return Colors.red.shade50;
+      case 'HALF DAY':
+        return Colors.purple.shade50;
+      case 'LEAVE':
+        return Colors.blue.shade50;
+      default:
+        return Colors.transparent;
     }
   }
 
@@ -79,24 +100,29 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
     if (controller.isAttendanceAlreadyMarked.value) {
       Get.snackbar('Info', 'Attendance already marked. Cannot change.',
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white);
       return;
     }
 
     setState(() {
-      students[index].currentStatus = status.toUpperCase();
-      _hasAttendanceChanged = true;
+      // Store display format (HALF DAY)
+      students[index].currentStatus = _displayStatus(status);
     });
   }
 
   void _showNoteDialog(int index, String currentNote) {
     if (controller.isAttendanceAlreadyMarked.value) {
       Get.snackbar('Info', 'Attendance already marked. Cannot add note.',
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white);
       return;
     }
 
-    final TextEditingController noteController = TextEditingController(text: currentNote);
+    final TextEditingController noteController =
+    TextEditingController(text: currentNote);
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -113,10 +139,12 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                 maxLines: 3,
                 decoration: InputDecoration(
                   hintText: 'Enter note...',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8)),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.blue.shade700, width: 2),
+                    borderSide:
+                    BorderSide(color: Colors.blue.shade700, width: 2),
                   ),
                   filled: true,
                   fillColor: Colors.grey.shade50,
@@ -128,7 +156,8 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                 children: [
                   TextButton(
                     onPressed: Get.back,
-                    child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600)),
+                    child: Text('Cancel',
+                        style: TextStyle(color: Colors.grey.shade600)),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -136,14 +165,14 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                       final students = controller.attendanceStudents;
                       if (students != null && index < students.length) {
                         students[index].remarks = noteController.text.trim();
-                        _hasAttendanceChanged = true;
                       }
                       Get.back();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                     child: const Text('Save'),
                   ),
@@ -156,14 +185,135 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     );
   }
 
-  void _saveAttendance() {
+  // ========== CONFIRMATION DIALOG ==========
+  void _showConfirmationDialog() {
     if (controller.isAttendanceAlreadyMarked.value) {
       Get.snackbar('Info', 'Attendance already marked.',
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white);
       return;
     }
-    controller.saveAttendance();
-    setState(() => _hasAttendanceChanged = false);
+
+    final students = controller.attendanceStudents;
+    if (students == null || students.isEmpty) return;
+
+    // Compute counts per status (using display format)
+    final statusCounts = controller.getStatusCounts();
+    if (statusCounts.isEmpty) {
+      Get.snackbar('Info', 'No status selected. Please mark at least one student.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white);
+      return;
+    }
+
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Confirm Attendance',
+                style: Styles.darkBlcW700.copyWith(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Total Students: ${students.length}',
+                style: Styles.darkBlueW400,
+              ),
+              const SizedBox(height: 16),
+              // Status counts (display statuses with proper case)
+              ...statusCounts.entries.map((entry) {
+                final displayStatus = _displayStatus(entry.key);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(displayStatus),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            displayStatus,
+                            style: Styles.darkBlcW600,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '${entry.value}',
+                        style: Styles.darkBlcW600,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        // Cancel: revert changes and close dialog
+                        controller.revertChanges();
+                        Get.back();
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey.shade100,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back(); // close dialog
+                        controller.saveAttendance();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade700,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text(
+                        'Submit',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 
   void _loadMore() {
@@ -212,14 +362,16 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                         ],
                       ),
                       Obx(() => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           '${controller.totalStudentCount} Students',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
                         ),
                       )),
                     ],
@@ -244,21 +396,26 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Date', style: Styles.darkBlueW400.copyWith(fontSize: 10)),
+                              Text('Date',
+                                  style: Styles.darkBlueW400
+                                      .copyWith(fontSize: 10)),
                               const SizedBox(height: 4),
                               Container(
                                 height: 40,
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 8),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(color: Colors.grey.shade300, width: 1),
+                                  border: Border.all(
+                                      color: Colors.grey.shade300, width: 1),
                                 ),
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     currentDate,
-                                    style: Styles.darkBlcW600.copyWith(fontSize: 12),
+                                    style: Styles.darkBlcW600
+                                        .copyWith(fontSize: 12),
                                   ),
                                 ),
                               ),
@@ -275,19 +432,27 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Class', style: Styles.darkBlueW400.copyWith(fontSize: 10)),
+                                  Text('Class',
+                                      style: Styles.darkBlueW400
+                                          .copyWith(fontSize: 10)),
                                   const SizedBox(height: 4),
                                   Container(
                                     height: 40,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                                      border: Border.all(
+                                          color: Colors.grey.shade300,
+                                          width: 1),
                                     ),
                                     child: const Align(
                                       alignment: Alignment.centerLeft,
-                                      child: Text('--', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                      child: Text('--',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey)),
                                     ),
                                   ),
                                 ],
@@ -296,31 +461,47 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Class', style: Styles.darkBlueW400.copyWith(fontSize: 10)),
+                                Text('Class',
+                                    style: Styles.darkBlueW400
+                                        .copyWith(fontSize: 10)),
                                 const SizedBox(height: 4),
                                 Container(
                                   height: 40,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                                    border: Border.all(
+                                        color: Colors.grey.shade300, width: 1),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: controller.selectedClassId.value,
                                       items: classNames.map((classId) {
-                                        final name = controller.classGroups[classId]?.first.className ?? classId;
+                                        final name = controller
+                                            .classGroups[classId]
+                                            ?.first
+                                            .className ??
+                                            classId;
                                         return DropdownMenuItem<String>(
                                           value: classId,
-                                          child: Text(name, style: Styles.darkBlcW600.copyWith(fontSize: 12)),
+                                          child: Text(name,
+                                              style: Styles.darkBlcW600
+                                                  .copyWith(fontSize: 12)),
                                         );
                                       }).toList(),
                                       onChanged: (newId) {
-                                        if (newId != null) controller.onClassSelected(newId);
+                                        if (newId != null) {
+                                          controller.onClassSelected(newId);
+                                        }
                                       },
-                                      icon: const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
-                                      style: Styles.darkBlcW600.copyWith(fontSize: 12),
+                                      icon: const Icon(
+                                          Icons.keyboard_arrow_down,
+                                          size: 16,
+                                          color: Colors.grey),
+                                      style: Styles.darkBlcW600
+                                          .copyWith(fontSize: 12),
                                       isExpanded: true,
                                       underline: const SizedBox(),
                                     ),
@@ -335,53 +516,72 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                         // Section
                         Expanded(
                           child: Obx(() {
-                            final sections = controller.classGroups[controller.selectedClassId.value] ?? [];
+                            final sections = controller.classGroups[
+                            controller.selectedClassId.value] ??
+                                [];
                             if (sections.isEmpty) {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Section', style: Styles.darkBlueW400.copyWith(fontSize: 10)),
+                                  Text('Section',
+                                      style: Styles.darkBlueW400
+                                          .copyWith(fontSize: 10)),
                                   const SizedBox(height: 4),
                                   Container(
                                     height: 40,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                                      border: Border.all(
+                                          color: Colors.grey.shade300,
+                                          width: 1),
                                     ),
                                     child: const Align(
                                       alignment: Alignment.centerLeft,
-                                      child: Text('--', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                      child: Text('--',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey)),
                                     ),
                                   ),
                                 ],
                               );
                             }
                             // Ensure selected section is valid
-                            String currentSection = controller.selectedSectionId.value;
-                            bool isValid = sections.any((item) => item.sectionId == currentSection);
+                            String currentSection =
+                                controller.selectedSectionId.value;
+                            bool isValid = sections.any(
+                                    (item) => item.sectionId == currentSection);
                             if (!isValid && sections.isNotEmpty) {
                               currentSection = sections.first.sectionId;
                               WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (controller.selectedSectionId.value != currentSection) {
-                                  controller.selectedSectionId.value = currentSection;
-                                  controller.selectedSectionName.value = sections.first.sectionName;
+                                if (controller.selectedSectionId.value !=
+                                    currentSection) {
+                                  controller.selectedSectionId.value =
+                                      currentSection;
+                                  controller.selectedSectionName.value =
+                                      sections.first.sectionName;
                                 }
                               });
                             }
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Section', style: Styles.darkBlueW400.copyWith(fontSize: 10)),
+                                Text('Section',
+                                    style: Styles.darkBlueW400
+                                        .copyWith(fontSize: 10)),
                                 const SizedBox(height: 4),
                                 Container(
                                   height: 40,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                                    border: Border.all(
+                                        color: Colors.grey.shade300, width: 1),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
@@ -389,14 +589,22 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                                       items: sections.map((item) {
                                         return DropdownMenuItem<String>(
                                           value: item.sectionId,
-                                          child: Text(item.sectionName, style: Styles.darkBlcW600.copyWith(fontSize: 12)),
+                                          child: Text(item.sectionName,
+                                              style: Styles.darkBlcW600
+                                                  .copyWith(fontSize: 12)),
                                         );
                                       }).toList(),
                                       onChanged: (newId) {
-                                        if (newId != null) controller.onSectionSelected(newId);
+                                        if (newId != null) {
+                                          controller.onSectionSelected(newId);
+                                        }
                                       },
-                                      icon: const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
-                                      style: Styles.darkBlcW600.copyWith(fontSize: 12),
+                                      icon: const Icon(
+                                          Icons.keyboard_arrow_down,
+                                          size: 16,
+                                          color: Colors.grey),
+                                      style: Styles.darkBlcW600
+                                          .copyWith(fontSize: 12),
                                       isExpanded: true,
                                       underline: const SizedBox(),
                                     ),
@@ -415,12 +623,13 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                 // Student List
                 Expanded(
                   child: Obx(() {
-                    // Show loader while either class data or attendance data is loading
-                    if (controller.isLoadingData || controller.isLoading.value) {
+                    // Show loader while data is being fetched (initial or reload)
+                    if (controller.isLoadingData || controller.isLoading.value || controller.isFirstLoad) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
                     final students = controller.attendanceStudents;
+                    // Only show empty state when loading is complete and list is empty
                     if (students == null || students.isEmpty) {
                       return const Center(
                         child: Text(
@@ -435,49 +644,70 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                         // Header row
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 16),
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 12),
                           color: Colors.grey.shade100,
                           child: Row(
                             children: [
-                              SizedBox(width: 40, child: Text('Roll', style: Styles.darkBlackW60012)),
-                              Expanded(flex: 3, child: Text('Student Name', style: Styles.darkBlackW60012)),
-                              Expanded(flex: 2, child: Text('Status', style: Styles.darkBlackW60012)),
+                              SizedBox(
+                                  width: 40,
+                                  child: Text('Roll',
+                                      style: Styles.darkBlackW60012)),
+                              Expanded(
+                                  flex: 3,
+                                  child: Text('Student Name',
+                                      style: Styles.darkBlackW60012)),
+                              Expanded(
+                                  flex: 2,
+                                  child: Text('Status',
+                                      style: Styles.darkBlackW60012)),
                               Expanded(
                                 flex: 2,
                                 child: Align(
                                   alignment: Alignment.centerRight,
-                                  child: Text('Note', style: Styles.darkBlackW60012),
+                                  child: Text('Note',
+                                      style: Styles.darkBlackW60012),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                         Divider(height: 1, color: Colors.grey.shade300),
+                        Divider(height: 1, color: Colors.grey.shade300),
                         Expanded(
                           child: NotificationListener<ScrollNotification>(
                             onNotification: (scroll) {
-                              if (scroll.metrics.pixels == scroll.metrics.maxScrollExtent &&
-                                  controller.hasMorePages && !controller.isLoadingMoreData) {
+                              if (scroll.metrics.pixels ==
+                                  scroll.metrics.maxScrollExtent &&
+                                  controller.hasMorePages &&
+                                  !controller.isLoadingMoreData) {
                                 _loadMore();
                               }
                               return false;
                             },
                             child: ListView.builder(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              itemCount: students.length + (controller.hasMorePages ? 1 : 0),
+                              padding:
+                              const EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: students.length +
+                                  (controller.hasMorePages ? 1 : 0),
                               itemBuilder: (context, index) {
-                                if (index == students.length && controller.hasMorePages) {
+                                if (index == students.length &&
+                                    controller.hasMorePages) {
                                   return const Padding(
                                     padding: EdgeInsets.all(16),
-                                    child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                    child: Center(
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2)),
                                   );
                                 }
                                 final student = students[index];
                                 return Column(
                                   children: [
-                                    _buildStudentRow(student: student, index: index),
+                                    _buildStudentRow(
+                                        student: student, index: index),
                                     if (index < students.length - 1)
-                                       Divider(height: 1, color: Colors.grey.shade200),
+                                      Divider(
+                                          height: 1,
+                                          color: Colors.grey.shade200),
                                   ],
                                 );
                               },
@@ -489,19 +719,39 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                   }),
                 ),
 
-                // Save Button
+                // ---------- SAVE BUTTON (Always enabled unless already marked) ----------
                 Obx(() {
-                  if (controller.isLoadingData || controller.isLoading.value) return const SizedBox.shrink();
+                  if (controller.isLoadingData || controller.isLoading.value) {
+                    return const SizedBox.shrink();
+                  }
                   final students = controller.attendanceStudents;
-                  if (students == null || students.isEmpty) return const SizedBox.shrink();
-                  final bool alreadyMarked = controller.isAttendanceAlreadyMarked.value;
-                  final bool allMarked = students.every((s) => s.currentStatus != null && s.currentStatus!.isNotEmpty);
+                  if (students == null || students.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  final bool alreadyMarked =
+                      controller.isAttendanceAlreadyMarked.value;
+
+                  String buttonText;
+                  VoidCallback? onPressed;
+
+                  if (alreadyMarked) {
+                    buttonText = 'Already Marked ✓';
+                    onPressed = null;
+                  } else {
+                    buttonText = 'Save Attendance';
+                    onPressed = _showConfirmationDialog;
+                  }
 
                   return Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, -4))],
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey.withOpacity(0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, -4))
+                      ],
                     ),
                     child: SizedBox(
                       width: double.infinity,
@@ -509,10 +759,8 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                       child: Opacity(
                         opacity: alreadyMarked ? 0.5 : 1.0,
                         child: GradientButton(
-                          onPressed: alreadyMarked ? (){} : _saveAttendance,
-                          text: alreadyMarked
-                              ? 'Already Marked ✓'
-                              : (allMarked && !_hasAttendanceChanged ? 'All Marked ✓' : 'Save Attendance'),
+                          onPressed: onPressed ?? () {},
+                          text: buttonText,
                         ),
                       ),
                     ),
@@ -527,14 +775,15 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   }
 
   // ========== STUDENT ROW ==========
-  Widget _buildStudentRow({required AttendanceStudent student, required int index}) {
+  Widget _buildStudentRow(
+      {required AttendanceStudent student, required int index}) {
     final options = statusOptions;
-    String? selected = student.currentStatus;
-    if (selected != null && !options.contains(selected.toUpperCase())) {
-      selected = null;
-    }
-    final currentStatus = selected ?? (options.contains('PRESENT') ? 'PRESENT' : options.first);
     final bool alreadyMarked = controller.isAttendanceAlreadyMarked.value;
+
+    // Ensure currentStatus is displayed with proper format
+    final String? selectedStatus = student.currentStatus != null
+        ? _displayStatus(student.currentStatus!)
+        : null;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
@@ -551,7 +800,8 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(student.studentName, style: Styles.darkBlcW60013),
-                Text('Reg: ${student.registrationNumber}', style: Styles.darkBlueW40010),
+                Text('Reg: ${student.registrationNumber}',
+                    style: Styles.darkBlueW40010),
               ],
             ),
           ),
@@ -561,16 +811,23 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
               height: 32,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
-                color: currentStatus != null ? _getStatusBgColor(currentStatus) : Colors.transparent,
+                color: selectedStatus != null
+                    ? _getStatusBgColor(selectedStatus)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: currentStatus != null ? _getStatusColor(currentStatus) : Colors.transparent,
+                  color: selectedStatus != null
+                      ? _getStatusColor(selectedStatus)
+                      : Colors.grey.shade300,
                   width: 1.5,
                 ),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: currentStatus,
+                  value: selectedStatus,
+                  hint: Text('Select',
+                      style: Styles.darkBlcW600.copyWith(
+                          fontSize: 11, color: Colors.grey.shade600)),
                   isExpanded: true,
                   isDense: true,
                   icon: const SizedBox.shrink(),
@@ -578,25 +835,32 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                     fontFamily: GoogleFonts.sora().fontFamily,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: currentStatus != null ? _getStatusColor(currentStatus) : Colors.grey.shade600,
+                    color: selectedStatus != null
+                        ? _getStatusColor(selectedStatus)
+                        : Colors.grey.shade600,
                   ),
                   onChanged: alreadyMarked
                       ? null
                       : (newValue) {
-                    if (newValue != null) _updateAttendance(index, newValue);
+                    if (newValue != null) {
+                      _updateAttendance(index, newValue);
+                    }
                   },
                   items: options.map((status) {
+                    final displayStatus = _displayStatus(status);
                     return DropdownMenuItem<String>(
-                      value: status,
+                      value: displayStatus,
                       child: Center(
                         child: Text(
-                          status,
+                          displayStatus,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: GoogleFonts.sora().fontFamily,
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
-                            color: status == currentStatus ? _getStatusColor(status) : Colors.black87,
+                            color: displayStatus == selectedStatus
+                                ? _getStatusColor(displayStatus)
+                                : Colors.black87,
                           ),
                         ),
                       ),
@@ -609,12 +873,15 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
           Expanded(
             flex: 2,
             child: GestureDetector(
-              onTap: alreadyMarked ? null : () => _showNoteDialog(index, student.remarks ?? ''),
+              onTap: alreadyMarked
+                  ? null
+                  : () => _showNoteDialog(index, student.remarks ?? ''),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Opacity(
                   opacity: alreadyMarked ? 0.5 : 1.0,
-                  child: Icon(Icons.note_alt_outlined, size: 22, color: Colors.grey.shade600),
+                  child: Icon(Icons.note_alt_outlined,
+                      size: 22, color: Colors.grey.shade600),
                 ),
               ),
             ),

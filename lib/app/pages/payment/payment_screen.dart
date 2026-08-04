@@ -2,9 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../app.dart';
-import '../../widgets/dashed_widget.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -56,10 +54,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 Get.back();
                               },
                               child: SvgPicture.asset(
-                                  AssetConstants.icBackBg,
-                                  // height: 20,
-                                  // width: 20,
-                                ),
+                                AssetConstants.icBackBg,
+                                // height: 20,
+                                // width: 20,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Text('Payment', style: Styles.whiteBold),
@@ -210,7 +208,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 'Pay via UPI',
@@ -231,7 +230,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                             groupValue: _selectedPaymentMethod,
                                             onChanged: (value) {
                                               setState(() {
-                                                _selectedPaymentMethod = value.toString();
+                                                _selectedPaymentMethod =
+                                                    value.toString();
                                               });
                                             },
                                             activeColor: Colors.blue.shade700,

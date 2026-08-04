@@ -7,15 +7,12 @@ import 'package:school_app/app/pages/attendance_management/attendance_management
 import 'package:school_app/app/pages/attendance_report/attendance_report.dart';
 import 'package:school_app/app/pages/change_password/change_password.dart';
 import 'package:school_app/app/pages/change_password_successfully/change_password_successfully.dart';
-import 'package:school_app/app/pages/choose_options/choose_options.dart';
 import 'package:school_app/app/pages/create_homework/create_homework.dart';
 import 'package:school_app/app/pages/create_lesson_plan/create_lesson_plan.dart';
 import 'package:school_app/app/pages/dashboard/dashboard.dart';
 import 'package:school_app/app/pages/edit_attendance/edit_attendance.dart';
-import 'package:school_app/app/pages/events/events.dart';
+import 'package:school_app/app/pages/external_marks/external_marks.dart';
 import 'package:school_app/app/pages/fees_details/fees_details.dart';
-import 'package:school_app/app/pages/forgot_password/forgot_password.dart';
-import 'package:school_app/app/pages/home/home.dart';
 import 'package:school_app/app/pages/homework_assignment/homework_assignment.dart';
 import 'package:school_app/app/pages/homework_history/homework_history.dart';
 import 'package:school_app/app/pages/internal_marks/internal_marks.dart';
@@ -25,25 +22,19 @@ import 'package:school_app/app/pages/leave_application_status/leave_application_
 import 'package:school_app/app/pages/leave_balance/leave_balance.dart';
 import 'package:school_app/app/pages/lesson_planning/lesson_planning.dart';
 import 'package:school_app/app/pages/login/login.dart';
-import 'package:school_app/app/pages/login_parent/login_parent.dart';
-import 'package:school_app/app/pages/login_student/login_student.dart';
-import 'package:school_app/app/pages/login_teacher/login_teacher.dart';
 import 'package:school_app/app/pages/mark_attendance/mark_attendance.dart';
 import 'package:school_app/app/pages/my_class_details/my_class_details.dart';
 import 'package:school_app/app/pages/my_classes/my_classes.dart';
-import 'package:school_app/app/pages/my_classes/my_classes_screen.dart';
 import 'package:school_app/app/pages/my_student_list/my_student_list.dart';
 import 'package:school_app/app/pages/new_forgot_password/new_forgot_password.dart';
 import 'package:school_app/app/pages/new_otp_verification/new_otp_verification.dart';
 import 'package:school_app/app/pages/notice_board/notice_board.dart';
-import 'package:school_app/app/pages/notifications/notifications.dart';
-import 'package:school_app/app/pages/otp_verification/otp_verification.dart';
 import 'package:school_app/app/pages/payment/payment.dart';
-import 'package:school_app/app/pages/profile/profile.dart';
-import 'package:school_app/app/pages/reset_password/reset_password.dart';
 import 'package:school_app/app/pages/staff_apply_leave/staff_apply_leave.dart';
 import 'package:school_app/app/pages/staff_leave/staff_leave.dart';
+import 'package:school_app/app/pages/staff_leave_history/staff_leave_history.dart';
 import 'package:school_app/app/pages/staff_reset_password/staff_reset_password.dart';
+import 'package:school_app/app/pages/student_fee_list/student_fee_list.dart';
 import 'package:school_app/app/pages/student_profile/student_profile.dart';
 import 'package:school_app/app/pages/teacher_dashboard/teacher_dashboard_screen.dart';
 import 'package:school_app/app/pages/team_live_classes/team_live_classes.dart';
@@ -55,7 +46,6 @@ import '../pages/create_live_class/create_live_class_binding.dart';
 import '../pages/create_live_class/create_live_class_screen.dart';
 import '../pages/daily_teaching_log/daily_teaching_log_binding.dart';
 import '../pages/daily_teaching_log/daily_teaching_log_screen.dart';
-import '../pages/dashboard/dashboard_screen.dart';
 import '../pages/defaulter_list/defaulter_list_binding.dart';
 import '../pages/defaulter_list/defaulter_list_screen.dart';
 import '../pages/examination/examination_binding.dart';
@@ -72,8 +62,6 @@ import '../pages/my_student_class/my_student_class_binding.dart';
 import '../pages/my_student_class/my_student_class_screen.dart';
 import '../pages/share_material/share_material_binding.dart';
 import '../pages/share_material/share_material_screen.dart';
-import '../pages/student_fee_list/student_fee_list_binding.dart';
-import '../pages/student_fee_list/student_fee_list_screen.dart';
 import '../pages/syllabus_tracking/syllabus_tracking_binding.dart';
 import '../pages/syllabus_tracking/syllabus_tracking_screen.dart';
 import '../pages/teacher_dashboard/teacher_dashboard_binding.dart';
@@ -90,7 +78,7 @@ part 'app_routes.dart';
 class AppPages {
   static var transitionDuration = const Duration(milliseconds: 300);
 
-  static const initial = Routes.teacherHome;
+  static const initial = Routes.splash;
 
   static final pages = [
     GetPage<SplashScreen>(
@@ -100,75 +88,12 @@ class AppPages {
       binding: SplashBinding(),
       transition: Transition.cupertino,
     ),
-    GetPage<ChooseOptionsScreen>(
-      name: _Paths.chooseOptions,
-      transitionDuration: transitionDuration,
-      page: ChooseOptionsScreen.new,
-      binding: ChooseOptionsBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<LoginTeacherScreen>(
-      name: _Paths.loginTeacher,
-      transitionDuration: transitionDuration,
-      page: LoginTeacherScreen.new,
-      binding: LoginTeacherBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<LoginStudentScreen>(
-      name: _Paths.loginStudent,
-      transitionDuration: transitionDuration,
-      page: LoginStudentScreen.new,
-      binding: LoginStudentBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<LoginParentScreen>(
-      name: _Paths.loginParent,
-      transitionDuration: transitionDuration,
-      page: LoginParentScreen.new,
-      binding: LoginParentBinding(),
-      transition: Transition.cupertino,
-    ),
+
     GetPage<DashboardScreen>(
       name: _Paths.home,
       transitionDuration: transitionDuration,
       page: DashboardScreen.new,
       binding: DashboardBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<ForgotPasswordScreen>(
-      name: _Paths.forgotPassword,
-      transitionDuration: transitionDuration,
-      page: ForgotPasswordScreen.new,
-      binding: ForgotPasswordBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<OtpVerificationScreen>(
-      name: _Paths.otpVerification,
-      transitionDuration: transitionDuration,
-      page: OtpVerificationScreen.new,
-      binding: OtpVerificationBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<NotificationsScreen>(
-      name: _Paths.notifications,
-      transitionDuration: transitionDuration,
-      page: NotificationsScreen.new,
-      binding: NotificationsBinding(),
-      transition: Transition.cupertino,
-    ),
-    GetPage<EventsScreen>(
-      name: _Paths.events,
-      transitionDuration: transitionDuration,
-      page: EventsScreen.new,
-      binding: EventsBinding(),
-      transition: Transition.cupertino,
-    ),
-
-    GetPage<ResetPasswordScreen>(
-      name: _Paths.resetPassword,
-      transitionDuration: transitionDuration,
-      page: ResetPasswordScreen.new,
-      binding: ResetPasswordBinding(),
       transition: Transition.cupertino,
     ),
     GetPage<LoginScreen>(
@@ -311,7 +236,6 @@ class AppPages {
       binding: MyStudentListBinding(),
       transition: Transition.cupertino,
     ),
-
     GetPage<MarkAttendanceScreen>(
       name: _Paths.markAttendance,
       transitionDuration: transitionDuration,
@@ -319,7 +243,6 @@ class AppPages {
       binding: MarkAttendanceBinding(),
       transition: Transition.cupertino,
     ),
-
     GetPage<MyStudentClassScreen>(
       name: _Paths.myStudentClass,
       transitionDuration: transitionDuration,
@@ -327,7 +250,6 @@ class AppPages {
       binding: MyStudentClassBinding(),
       transition: Transition.cupertino,
     ),
-
     GetPage<TermAttendanceScreen>(
       name: _Paths.termAttendance,
       transitionDuration: transitionDuration,
@@ -482,6 +404,13 @@ class AppPages {
       binding: JoinMeetingBinding(),
       transition: Transition.cupertino,
     ),
+    GetPage<StudentFeeListScreen>(
+      name: _Paths.studentFeeList,
+      transitionDuration: transitionDuration,
+      page: StudentFeeListScreen.new,
+      binding: StudentFeeListBinding(),
+      transition: Transition.cupertino,
+    ),
     GetPage<ShareMaterialScreen>(
       name: _Paths.shareMaterial,
       transitionDuration: transitionDuration,
@@ -510,6 +439,19 @@ class AppPages {
       binding: StaffResetPasswordBinding(),
       transition: Transition.cupertino,
     ),
+    GetPage<StaffLeaveHistoryScreen>(
+      name: _Paths.staffLeaveHistory,
+      transitionDuration: transitionDuration,
+      page: StaffLeaveHistoryScreen.new,
+      binding: StaffLeaveHistoryBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<ExternalMarksScreen>(
+      name: _Paths.externalMarks,
+      transitionDuration: transitionDuration,
+      page: ExternalMarksScreen.new,
+      binding: ExternalMarksBinding(),
+      transition: Transition.cupertino,
+    ),
   ];
-
 }

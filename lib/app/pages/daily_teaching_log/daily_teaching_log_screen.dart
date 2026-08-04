@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../app.dart';
 import '../../widgets/gradient_button.dart';
 
@@ -103,7 +102,8 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                 // ========== SCROLLABLE CONTENT ==========
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -114,7 +114,8 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -158,7 +159,8 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -191,7 +193,8 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -225,7 +228,8 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -254,7 +258,8 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -290,19 +295,23 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                                 width: 22,
                                 height: 22,
                                 decoration: BoxDecoration(
-                                  color: isTopicCompleted ? Colors.blue.shade700 : Colors.white,
+                                  color: isTopicCompleted
+                                      ? Colors.blue.shade700
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(4),
                                   border: Border.all(
-                                    color: isTopicCompleted ? Colors.blue.shade700 : Colors.grey.shade400,
+                                    color: isTopicCompleted
+                                        ? Colors.blue.shade700
+                                        : Colors.grey.shade400,
                                     width: 2,
                                   ),
                                 ),
                                 child: isTopicCompleted
                                     ? const Icon(
-                                  Icons.check,
-                                  size: 16,
-                                  color: Colors.white,
-                                )
+                                        Icons.check,
+                                        size: 16,
+                                        color: Colors.white,
+                                      )
                                     : null,
                               ),
                             ),
@@ -313,7 +322,9 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: isTopicCompleted ? Colors.blue.shade700 : Colors.grey.shade700,
+                                  color: isTopicCompleted
+                                      ? Colors.blue.shade700
+                                      : Colors.grey.shade700,
                                 ),
                               ),
                             ),
@@ -380,7 +391,7 @@ class _DailyTeachingLogScreenState extends State<DailyTeachingLogScreen> {
     if (picked != null) {
       setState(() {
         dateController.text =
-        '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
+            '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
       });
     }
   }

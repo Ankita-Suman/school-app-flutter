@@ -5,10 +5,6 @@ part of 'app_pages.dart';
 /// routes in [AppPages].
 abstract class Routes {
   static const splash = _Paths.splash;
-  static const chooseOptions = _Paths.chooseOptions;
-  static const loginTeacher = _Paths.loginTeacher;
-  static const loginStudent = _Paths.loginStudent;
-  static const loginParent = _Paths.loginParent;
   static const home = _Paths.home;
   static const forgotPassword = _Paths.forgotPassword;
   static const otpVerification = _Paths.otpVerification;
@@ -65,6 +61,8 @@ abstract class Routes {
   static const defaulterList = _Paths.defaulterList;
   static const myStudentClass = _Paths.myStudentClass;
   static const staffResetPassword = _Paths.staffResetPassword;
+  static const staffLeaveHistory = _Paths.staffLeaveHistory;
+  static const externalMarks = _Paths.externalMarks;
 
 }
 
@@ -130,5 +128,7 @@ abstract class _Paths {
   static const defaulterList= '/Defaulter-List-Screen';
   static const myStudentClass= '/My-Student-Class-Screen';
   static const staffResetPassword= '/Staff-Reset-Password-Screen';
+  static const staffLeaveHistory= '/Staff-Leave-History-Screen';
+  static const externalMarks = '/External-Marks-Screen';
 
 }

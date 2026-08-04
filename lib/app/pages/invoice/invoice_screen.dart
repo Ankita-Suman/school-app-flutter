@@ -98,9 +98,9 @@ class InvoiceScreen extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () => Get.back(),
                                   child: SvgPicture.asset(
-                                      AssetConstants.icBackBg,
-                                      // height: 20,
-                                      // width: 20,
+                                    AssetConstants.icBackBg,
+                                    // height: 20,
+                                    // width: 20,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -115,12 +115,14 @@ class InvoiceScreen extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: Colors.blue.shade600,
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 2),
+                                    border: Border.all(
+                                        color: Colors.white, width: 2),
                                   ),
                                   child: Center(
                                     child: Text(
                                       invoice.student?.name?.isNotEmpty == true
-                                          ? invoice.student!.name![0].toUpperCase()
+                                          ? invoice.student!.name![0]
+                                              .toUpperCase()
                                           : 'S',
                                       style: const TextStyle(
                                         color: Colors.white,
@@ -161,7 +163,7 @@ class InvoiceScreen extends StatelessWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   invoice.invoice?.invoiceNumber ?? 'N/A',
-                                  style: Styles.whiteBold12,
+                                  style: Styles.whiteExBold22,
                                 ),
                               ],
                             ),
@@ -177,13 +179,16 @@ class InvoiceScreen extends StatelessWidget {
                               ],
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color: invoice.invoice?.status?.toUpperCase() == 'PAID'
+                                color: invoice.invoice?.status?.toUpperCase() ==
+                                        'PAID'
                                     ? Colors.green
-                                    : invoice.invoice?.status?.toUpperCase() == 'PARTIAL'
-                                    ? Colors.orange
-                                    : Colors.red,
+                                    : invoice.invoice?.status?.toUpperCase() ==
+                                            'PARTIAL'
+                                        ? Colors.orange
+                                        : Colors.red,
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Text(
@@ -221,14 +226,23 @@ class InvoiceScreen extends StatelessWidget {
 // InvoiceCard class - No changes to styles
 class InvoiceCard extends StatelessWidget {
   final InvoiceData invoice;
+
   const InvoiceCard({super.key, required this.invoice});
 
   String getMonthName(String period) {
     final Map<String, String> monthMap = {
-      'M1': 'April', 'M2': 'May', 'M3': 'June', 'M4': 'July',
-      'M5': 'August', 'M6': 'September', 'M7': 'October',
-      'M8': 'November', 'M9': 'December', 'M10': 'January',
-      'M11': 'February', 'M12': 'March',
+      'M1': 'April',
+      'M2': 'May',
+      'M3': 'June',
+      'M4': 'July',
+      'M5': 'August',
+      'M6': 'September',
+      'M7': 'October',
+      'M8': 'November',
+      'M9': 'December',
+      'M10': 'January',
+      'M11': 'February',
+      'M12': 'March',
     };
     return monthMap[period] ?? period;
   }
@@ -295,7 +309,8 @@ class InvoiceCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: ColorsValue.navSelectColor,
                     borderRadius: BorderRadius.circular(12),
@@ -338,35 +353,38 @@ class InvoiceCard extends StatelessWidget {
             ),
           ),
 
-          const Divider(thickness: 1, color: ColorsValue.bgSkyColors, height: 0),
+          const Divider(
+              thickness: 1, color: ColorsValue.bgSkyColors, height: 0),
 
           // Fee Items
           ...feeItems.map((item) => Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.feeTitle ?? '',
-                        style: Styles.darkBlcW50012,
-                      ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 10, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.feeTitle ?? '',
+                            style: Styles.darkBlcW50012,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          '₹${item.finalAmount ?? 0}',
+                          style: Styles.darkBlcW600,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      '₹${item.finalAmount ?? 0}',
-                      style: Styles.darkBlcW600,
-                    ),
-                  ],
-                ),
-              ),
-              Divider(thickness: 1, color: Colors.grey.shade200, height: 0),
-            ],
-          )),
+                  ),
+                  Divider(thickness: 1, color: Colors.grey.shade200, height: 0),
+                ],
+              )),
 
-          const Divider(thickness: 2, color: ColorsValue.lightBorderBlueColor, height: 0),
+          const Divider(
+              thickness: 2, color: ColorsValue.lightBorderBlueColor, height: 0),
 
           // Net Amount
           Container(
@@ -394,7 +412,8 @@ class InvoiceCard extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, top: 10, bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -405,7 +424,8 @@ class InvoiceCard extends StatelessWidget {
                 ),
                 Divider(thickness: 1, color: Colors.grey.shade300, height: 0),
                 Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, top: 10, bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -429,7 +449,8 @@ class InvoiceCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ColorsValue.lightBgOrangeClrss,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: ColorsValue.lightOrangeClrss, width: 1),
+                border:
+                    Border.all(color: ColorsValue.lightOrangeClrss, width: 1),
               ),
               child: Row(
                 children: [
@@ -439,7 +460,9 @@ class InvoiceCard extends StatelessWidget {
                         style: Styles.darkOrangeW400,
                         children: [
                           const TextSpan(text: '⚠️ '),
-                          TextSpan(text: invoice.warning ?? '', style: Styles.darkOrangeW400),
+                          TextSpan(
+                              text: invoice.warning ?? '',
+                              style: Styles.darkOrangeW400),
                         ],
                       ),
                     ),
@@ -458,6 +481,7 @@ class InvoiceCard extends StatelessWidget {
 // ReceiptHistoryCard - No changes to styles
 class ReceiptHistoryCard extends StatelessWidget {
   final List<PaymentHistory> paymentHistory;
+
   const ReceiptHistoryCard({super.key, required this.paymentHistory});
 
   @override
@@ -490,11 +514,26 @@ class ReceiptHistoryCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Expanded(child: Text('Recpt No.', style: Styles.darkBlkW400, textAlign: TextAlign.center)),
-                Expanded(child: Text('Date', style: Styles.darkBlkW400, textAlign: TextAlign.center)),
-                Expanded(child: Text('Collected', style: Styles.darkBlkW400, textAlign: TextAlign.center)),
-                Expanded(child: Text('Mode', style: Styles.darkBlkW400, textAlign: TextAlign.center)),
-                Expanded(child: Text('Action', style: Styles.darkBlkW400, textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text('Recpt No.',
+                        style: Styles.darkBlkW400,
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text('Date',
+                        style: Styles.darkBlkW400,
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text('Collected',
+                        style: Styles.darkBlkW400,
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text('Mode',
+                        style: Styles.darkBlkW400,
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text('Action',
+                        style: Styles.darkBlkW400,
+                        textAlign: TextAlign.center)),
               ],
             ),
           ),
@@ -509,69 +548,70 @@ class ReceiptHistoryCard extends StatelessWidget {
             ),
             child: paymentHistory.isEmpty
                 ? const Padding(
-              padding: EdgeInsets.all(20),
-              child: Center(child: Text('No payment history')),
-            )
+                    padding: EdgeInsets.all(20),
+                    child: Center(child: Text('No payment history')),
+                  )
                 : ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: paymentHistory.length,
-              separatorBuilder: (context, index) => const Divider(height: 1, thickness: 1, color: Colors.grey),
-              itemBuilder: (context, index) {
-                final receipt = paymentHistory[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          receipt.receiptNumber ?? 'N/A',
-                          style: Styles.darkBlkW600,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          receipt.collectionDate ?? 'N/A',
-                          style: Styles.darkBlkW600,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          '₹${receipt.amountCollected ?? 0}',
-                          style: Styles.darkBlkW600,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          receipt.collectionMode ?? 'N/A',
-                          style: Styles.darkBlkW600,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            child: SvgPicture.asset(
-                              AssetConstants.download,
-                              height: 20,
-                              width: 20,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: paymentHistory.length,
+                    separatorBuilder: (context, index) => const Divider(
+                        height: 1, thickness: 1, color: Colors.grey),
+                    itemBuilder: (context, index) {
+                      final receipt = paymentHistory[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                receipt.receiptNumber ?? 'N/A',
+                                style: Styles.darkBlkW600,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
+                            Expanded(
+                              child: Text(
+                                receipt.collectionDate ?? 'N/A',
+                                style: Styles.darkBlkW600,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '₹${receipt.amountCollected ?? 0}',
+                                style: Styles.darkBlkW600,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                receipt.collectionMode ?? 'N/A',
+                                style: Styles.darkBlkW600,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  child: SvgPicture.asset(
+                                    AssetConstants.download,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),

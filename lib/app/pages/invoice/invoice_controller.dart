@@ -31,8 +31,6 @@ class InvoiceController extends GetxController {
           invoiceId = Get.arguments as String;
         }
       }
-      print("📄 Invoice ID: $invoiceId");
-
       if (invoiceId.isNotEmpty) {
         getInvoiceDetails();
       } else {
@@ -53,20 +51,15 @@ class InvoiceController extends GetxController {
 
       var res = await invoicePresenter.getInvoiceDetailsAPI(
         isLoading: false,
-        token: token?.toString() ?? '',
-        branchId: branchId?.toString() ?? '',
+        token: token.toString(),
+        branchId: branchId.toString(),
         invoiceId: invoiceId,
       );
 
-      print("📡 API Status: ${res?.status}");
-
       if (res != null && res.status == true && res.data != null) {
-
         // Convert to JSON
         final jsonString = jsonEncode(res.data);
         final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-
-        print("📡 JSON Keys: ${jsonMap.keys}");
 
         // ✅ Create invoice object
         final invoice = jsonMap['invoice'] != null
@@ -97,7 +90,8 @@ class InvoiceController extends GetxController {
         if (jsonMap['payment_history'] != null) {
           final paymentList = jsonMap['payment_history'] as List;
           for (var payment in paymentList) {
-            paymentHistory.add(PaymentHistory.fromJson(payment as Map<String, dynamic>));
+            paymentHistory
+                .add(PaymentHistory.fromJson(payment as Map<String, dynamic>));
           }
         }
 
@@ -119,20 +113,11 @@ class InvoiceController extends GetxController {
           message: "Success",
           data: invoiceDataObj,
         );
-
-        print("✅ Success! Invoice Number: ${invoiceData.value?.data?.invoice?.invoiceNumber}");
-        print("✅ Student Name: ${invoiceData.value?.data?.student?.name}");
-        print("✅ Net Amount: ${invoiceData.value?.data?.summary?.netAmount}");
-        print("✅ Fee Items Count: ${invoiceData.value?.data?.feeItems?.length}");
-        print("✅ Payment History Count: ${invoiceData.value?.data?.paymentHistory?.length}");
-
       } else {
         errorMessage.value = res?.message ?? "Failed to load invoice";
       }
     } catch (e, stackTrace) {
       errorMessage.value = "Error: $e";
-      print("❌ Error: $e");
-      print("StackTrace: $stackTrace");
     }
   }
 

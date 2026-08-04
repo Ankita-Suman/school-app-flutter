@@ -1,79 +1,100 @@
 // pages/login/new_otp_verification_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../device/device_constants.dart';
+import '../../../device/repositories/device_repositories.dart';
+import '../../../domain/models/leave_balance_response.dart';
+import 'leave_balance_presenter.dart';
 
-class  LeaveBalanceController extends GetxController {
-  var selectedTab = 0.obs;
+class LeaveBalanceController extends GetxController {
+  LeaveBalanceController(this.leaveBalancePresenter);
 
-  // Text Controllers
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final LeaveBalancePresenter leaveBalancePresenter;
 
-  // Focus Nodes
-  FocusNode emailFocusNode = FocusNode();
-  FocusNode passwordFocusNode = FocusNode();
-
-  // Focus States
-  var isEmailFocused = false.obs;
-  var isPasswordFocused = false.obs;
-  var isPasswordVisible = false.obs;
+  var isLoading = false.obs;
+  var leaveBalanceData = Rxn<LeaveBalanceResponse>();
 
   @override
   void onInit() {
     super.onInit();
-
-    // Add listeners for focus changes
-    emailFocusNode.addListener(() {
-      isEmailFocused.value = emailFocusNode.hasFocus;
-    });
-
-    passwordFocusNode.addListener(() {
-      isPasswordFocused.value = passwordFocusNode.hasFocus;
-    });
+    getLeaveBalanceAPI();
   }
 
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  }
+  // ========== FETCH LEAVE BALANCE ==========
+  Future<void> getLeaveBalanceAPI() async {
+    try {
+      isLoading.value = true;
 
-  void changeTab(int index) {
-    selectedTab.value = index;
-  }
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
 
-  void login() {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
+      if (token.isEmpty || branchId.isEmpty) {
+        isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
-    if (email.isEmpty) {
+      var res = await leaveBalancePresenter.getLeaveBalanceAPI(
+        isLoading: false,
+        token: token, // ✅ dynamic
+        branchId: branchId, // ✅ dynamic
+      );
+
+      if (res != null && res.status == true && res.data != null) {
+        leaveBalanceData.value = res;
+      } else {
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load leave balance data.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
       Get.snackbar(
         'Error',
-        'Please enter email address',
-        snackPosition: SnackPosition.BOTTOM,
+        'Something went wrong while loading leave balance.',
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      return;
+    } finally {
+      isLoading.value = false;
     }
-    if (password.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter password',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    print('Login with: $email, Password: $password, Tab: ${selectedTab.value}');
   }
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    emailFocusNode.dispose();
-    passwordFocusNode.dispose();
-    super.onClose();
+  // ========== GETTERS ==========
+  bool get hasData => leaveBalanceData.value?.data != null;
+  int get totalRemaining => leaveBalanceData.value?.data?.totalRemaining ?? 0;
+  int get totalQuota => leaveBalanceData.value?.data?.totalQuota ?? 0;
+  int get totalUsed => leaveBalanceData.value?.data?.totalUsed ?? 0;
+  List<LeaveBreakdown> get breakdown => leaveBalanceData.value?.data?.breakdown ?? [];
+
+  // Helper to get specific leave type
+  LeaveBreakdown? getLeaveByType(String type) {
+    return breakdown.firstWhereOrNull(
+          (item) => item.leaveType.toUpperCase() == type.toUpperCase(),
+    );
   }
+
+  // Quick access for common types (with fallback)
+  int get casualLeave => getLeaveByType('CASUAL')?.quota ?? 0;
+  int get casualUsed => getLeaveByType('CASUAL')?.used ?? 0;
+  int get casualRemaining => getLeaveByType('CASUAL')?.remaining ?? 0;
+
+  int get sickLeave => getLeaveByType('SICK')?.quota ?? 0;
+  int get sickUsed => getLeaveByType('SICK')?.used ?? 0;
+  int get sickRemaining => getLeaveByType('SICK')?.remaining ?? 0;
+
+  int get earnedLeave => getLeaveByType('EARNED')?.quota ?? 0;
+  int get earnedUsed => getLeaveByType('EARNED')?.used ?? 0;
+  int get earnedRemaining => getLeaveByType('EARNED')?.remaining ?? 0;
 }

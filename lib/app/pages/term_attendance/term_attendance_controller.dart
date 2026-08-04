@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../device/device_constants.dart';
+import '../../../device/repositories/device_repositories.dart';
 import '../../../domain/models/exam_group_response.dart';
 import '../../../domain/models/exam_term_response.dart';
 import '../../../domain/models/term_attendance_student_response.dart';
@@ -45,10 +46,7 @@ class TermAttendanceController extends GetxController {
   // ========== ATTENDANCE MAP (student_id -> attendance days) ==========
   var attendanceMap = <String, int>{}.obs;
 
-  // ========== HARDCODED (replace later) ==========
-  final String hardcodedToken =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3ODQxODA2ODgsImV4cCI6MTc4NDM1MzQ4OCwibmJmIjoxNzg0MTgwNjg4LCJqdGkiOiJKY3IzSmVOdmVWVk5TMllMIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZjZTg0MjJlLWFhOTItNGQ2OS1hZjZhLTIxNTlmZDBjOGM2YSIsInJvbGVfaWQiOiI4MmY4MGE0Yi03ZWIxLTRiNWMtYmIxMS03Yjk5ODczMjY4ZjUifQ.Mdpb7QcnglMLL5B5cph0vKDQQ546iY0I_YkJA-Cl82E';
-  final String hardcodedBranchId = '6ce8422e-aa92-4d69-af6a-2159fd0c8c6a';
+  // ========== HARDCODED REMOVED – now dynamic ==========
 
   @override
   void onInit() {
@@ -68,27 +66,52 @@ class TermAttendanceController extends GetxController {
   Future<void> getExamGroupData() async {
     try {
       isLoading.value = true;
-      print("📡📡📡 getExamGroupData START");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await termAttendancePresenter.getExamGroupData(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
       );
 
-      if (res != null && res.status == true && res.data != null) {
+      if (res != null && res.status == true) {
         examGroupData.value = res;
-        print("✅ Exam Groups loaded: ${res.data.length}");
         if (res.data.isNotEmpty) {
           selectedExamGroupId.value = res.data.first.id;
           selectedExamGroupName.value = res.data.first.groupName;
           await getExamTermData(examinationGroupId: selectedExamGroupId.value);
         }
       } else {
-        print("❌ Failed to load exam groups: ${res?.message}");
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load exam groups.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getExamGroupData: $e");
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading exam groups.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -98,27 +121,52 @@ class TermAttendanceController extends GetxController {
   Future<void> getExamTermData({required String examinationGroupId}) async {
     try {
       isLoading.value = true;
-      print("📡📡📡 getExamTermData START for group: $examinationGroupId");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await termAttendancePresenter.getExamTermData(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         examinationGroupId: examinationGroupId,
       );
 
-      if (res != null && res.status == true && res.data != null) {
+      if (res != null && res.status == true) {
         examTermData.value = res;
-        print("✅ Exam Terms loaded: ${res.data.length}");
         if (res.data.isNotEmpty) {
           selectedTermId.value = res.data.first.id;
           selectedTermName.value = res.data.first.term;
         }
       } else {
-        print("❌ Failed to load exam terms: ${res?.message}");
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load exam terms.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getExamTermData: $e");
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading exam terms.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -128,17 +176,30 @@ class TermAttendanceController extends GetxController {
   Future<void> getTermClassData() async {
     try {
       isLoading.value = true;
-      print("📡📡📡 getTermClassData START");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await termAttendancePresenter.getTermClassData(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
       );
 
-      if (res != null && res.status == true && res.data != null) {
+      if (res != null && res.status == true) {
         termClassData.value = res;
-        print("✅ Classes loaded: ${res.data.length}");
         classNames.value = res.data.map((e) => e.name).toList();
         if (res.data.isNotEmpty) {
           selectedClassId.value = res.data.first.id;
@@ -146,10 +207,22 @@ class TermAttendanceController extends GetxController {
           await getTermSectionData(classId: selectedClassId.value);
         }
       } else {
-        print("❌ Failed to load classes: ${res?.message}");
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load classes.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getTermClassData: $e");
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading classes.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -159,28 +232,53 @@ class TermAttendanceController extends GetxController {
   Future<void> getTermSectionData({required String classId}) async {
     try {
       isLoading.value = true;
-      print("📡📡📡 getTermSectionData START for class: $classId");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await termAttendancePresenter.getTermSectionData(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         classId: classId,
       );
 
-      if (res != null && res.status == true && res.data != null) {
+      if (res != null && res.status == true) {
         termSectionData.value = res;
-        print("✅ Sections loaded: ${res.data.length}");
         sectionNames.value = res.data.map((e) => e.name).toList();
         if (res.data.isNotEmpty) {
           selectedSectionId.value = res.data.first.id;
           selectedSectionName.value = res.data.first.name;
         }
       } else {
-        print("❌ Failed to load sections: ${res?.message}");
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load sections.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getTermSectionData: $e");
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading sections.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -194,7 +292,7 @@ class TermAttendanceController extends GetxController {
         selectedSectionId.isNotEmpty) {
       await getTermAttendanceStudents();
     } else {
-      print("⚠️ Missing required selections");
+      debugPrint("⚠️ Missing required selections");
     }
   }
 
@@ -204,17 +302,30 @@ class TermAttendanceController extends GetxController {
           selectedTermId.isEmpty ||
           selectedClassId.isEmpty ||
           selectedSectionId.isEmpty) {
-        print("⚠️ Missing required selections to fetch students");
         return;
       }
 
       isLoading.value = true;
-      print("📡📡📡 getTermAttendanceStudents START");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await termAttendancePresenter.getTermAttendanceStudents(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         examinationGroupId: selectedExamGroupId.value,
         examinationTermId: selectedTermId.value,
         classId: selectedClassId.value,
@@ -225,23 +336,19 @@ class TermAttendanceController extends GetxController {
         studentData.value = res;
         if (res.data!.students.isNotEmpty) {
           studentList.value = res.data!.students;
-          // ✅ Initialize attendance map with existing values or 0
+          // Initialize attendance map with existing values or 0
           for (var student in res.data!.students) {
             attendanceMap[student.studentId] = student.existingAttendance ?? 0;
           }
-          print("✅ Students loaded: ${studentList.length}");
         } else {
           studentList.clear();
           attendanceMap.clear();
-          print("⚠️ No students found");
         }
       } else {
-        print("❌ Failed to load students: ${res?.message}");
         studentList.clear();
         attendanceMap.clear();
       }
     } catch (e) {
-      print("❌ Error in getTermAttendanceStudents: $e");
       studentList.clear();
       attendanceMap.clear();
     } finally {
@@ -262,13 +369,17 @@ class TermAttendanceController extends GetxController {
           selectedClassId.isEmpty ||
           selectedSectionId.isEmpty) {
         Get.snackbar('Error', 'Please select all criteria before saving.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
       if (studentList.isEmpty) {
         Get.snackbar('Error', 'No students to save.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
@@ -290,29 +401,50 @@ class TermAttendanceController extends GetxController {
         'attendances': attendances,
       };
 
-      print("📤 Sending Term Attendance Payload: $payload");
-
       isLoading.value = true;
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await termAttendancePresenter.saveTermAttendance(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         payload: payload,
       );
 
       if (res != null && res.status == true) {
-        Get.snackbar('Success', res.message ?? 'Attendance saved successfully!',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar('Success', res.message,
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green,
+            colorText: Colors.white);
         // Optionally, refresh data or navigate back
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Get.back(closeOverlays: true);
+        });
       } else {
         Get.snackbar('Error', res?.message ?? 'Failed to save attendance.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
       }
     } catch (e) {
-      print("❌ Error saving term attendance: $e");
       Get.snackbar('Error', 'Something went wrong.',
-          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }
@@ -321,10 +453,12 @@ class TermAttendanceController extends GetxController {
   // ========== HANDLE EXAM GROUP CHANGE ==========
   void onExamGroupChanged(String newGroupId) {
     selectedExamGroupId.value = newGroupId;
-    final group = examGroupData.value?.data.firstWhere((g) => g.id == newGroupId);
+    final group =
+    examGroupData.value?.data.firstWhere((g) => g.id == newGroupId);
     if (group != null) {
       selectedExamGroupName.value = group.groupName;
-      getExamTermData(examinationGroupId: newGroupId).then((_) => _checkAndFetchStudents());
+      getExamTermData(examinationGroupId: newGroupId)
+          .then((_) => _checkAndFetchStudents());
     }
   }
 
@@ -339,16 +473,19 @@ class TermAttendanceController extends GetxController {
 
   void onClassChanged(String newClassId) {
     selectedClassId.value = newClassId;
-    final classItem = termClassData.value?.data.firstWhere((c) => c.id == newClassId);
+    final classItem =
+    termClassData.value?.data.firstWhere((c) => c.id == newClassId);
     if (classItem != null) {
       selectedClassName.value = classItem.name;
-      getTermSectionData(classId: newClassId).then((_) => _checkAndFetchStudents());
+      getTermSectionData(classId: newClassId)
+          .then((_) => _checkAndFetchStudents());
     }
   }
 
   void onSectionChanged(String newSectionId) {
     selectedSectionId.value = newSectionId;
-    final section = termSectionData.value?.data.firstWhere((s) => s.id == newSectionId);
+    final section =
+    termSectionData.value?.data.firstWhere((s) => s.id == newSectionId);
     if (section != null) {
       selectedSectionName.value = section.name;
       _checkAndFetchStudents();
@@ -361,4 +498,8 @@ class TermAttendanceController extends GetxController {
   List<SimpleClass> get termClasses => termClassData.value?.data ?? [];
   List<SimpleSection> get termSections => termSectionData.value?.data ?? [];
   bool get isLoadingData => isLoading.value;
+
+  // ========== MAX ATTENDANCE ==========
+  int? get maxAttendance => studentData.value?.data?.maxAttendance;
+  String get maxAttendanceDisplay => maxAttendance != null ? maxAttendance.toString() : '--';
 }

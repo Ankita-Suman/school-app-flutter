@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:school_app/app/pages/new_forgot_password/new_forgot_password.dart';
 import 'package:school_app/app/pages/new_otp_verification/new_otp_verification.dart';
 import '../../app.dart';
 import '../../widgets/gradient_button.dart';
@@ -38,7 +37,8 @@ class NewOtpVerificationScreen extends StatelessWidget {
                 children: [
                   // Top Content
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -121,15 +121,16 @@ class NewOtpVerificationScreen extends StatelessWidget {
 
                         // Verify Button
                         Obx(
-                              () => Opacity(
+                          () => Opacity(
                             opacity: controller.isOtpComplete.value ? 1.0 : 0.5,
                             child: GradientButton(
-                              onPressed: controller.isOtpComplete.value && !controller.isLoading.value
+                              onPressed: controller.isOtpComplete.value &&
+                                      !controller.isLoading.value
                                   ? () {
-                                FocusScope.of(context).unfocus();
-                                controller.verifyOtpAPI();
-                              }
-                                  : (){},
+                                      FocusScope.of(context).unfocus();
+                                      controller.verifyOtpAPI();
+                                    }
+                                  : () {},
                               text: 'Verify OTP',
                               icon: SvgPicture.asset(
                                 AssetConstants.icTik,
@@ -143,11 +144,14 @@ class NewOtpVerificationScreen extends StatelessWidget {
 
                         // Resend OTP Timer Container - ✅ Fixed timer display
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: screenHeight * 0.015),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.04,
+                              vertical: screenHeight * 0.015),
                           decoration: BoxDecoration(
                             color: ColorsValue.navSelectColor,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: ColorsValue.darkFillBlueColor),
+                            border: Border.all(
+                                color: ColorsValue.darkFillBlueColor),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -156,23 +160,29 @@ class NewOtpVerificationScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    controller.enableResend ? 'Resend OTP' : 'Resend OTP in',
+                                    controller.enableResend
+                                        ? 'Resend OTP'
+                                        : 'Resend OTP in',
                                     style: Styles.darkBlackW70011,
                                   ),
                                   SizedBox(height: screenHeight * 0.005),
                                   // ✅ Fixed: Show timer only when enableResend is false AND counter > 0
-                                   (!controller.enableResend && controller.counter > 0)?
-                                    Text(
-                                      '00:${controller.counter.toString().padLeft(2, '0')}',
-                                      style: Styles.blueExBold,
-                                    ):Text(
-                                     '00:00',
-                                     style: Styles.blueExBold,
-                                   )
+                                  (!controller.enableResend &&
+                                          controller.counter > 0)
+                                      ? Text(
+                                          '00:${controller.counter.toString().padLeft(2, '0')}',
+                                          style: Styles.blueExBold,
+                                        )
+                                      : Text(
+                                          '00:00',
+                                          style: Styles.blueExBold,
+                                        )
                                 ],
                               ),
                               GestureDetector(
-                                onTap: controller.enableResend ? controller.resendOTP : null,
+                                onTap: controller.enableResend
+                                    ? controller.resendOTP
+                                    : null,
                                 child: SvgPicture.asset(
                                   AssetConstants.icResend,
                                 ),
@@ -191,8 +201,8 @@ class NewOtpVerificationScreen extends StatelessWidget {
                             child: RichText(
                               text: TextSpan(
                                 style: Styles.darkBlackW700,
-                                children:  [
-                                  TextSpan(
+                                children: [
+                                  const TextSpan(
                                     text: 'Entered wrong email? ',
                                   ),
                                   TextSpan(

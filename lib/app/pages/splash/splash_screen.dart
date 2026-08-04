@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../app.dart';
-import '../login/login_screen.dart';
 
 // splash_screen.dart
 class SplashScreen extends StatefulWidget {
@@ -14,10 +13,11 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  bool _navigated = false;  // ✅ Add this flag
+  bool _navigated = false; // ✅ Add this flag
 
   @override
   void initState() {

@@ -1,5 +1,4 @@
 // screens/dashboard_home_screen.dart
-import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -122,13 +121,15 @@ class DashboardHomeScreen extends StatelessWidget {
                                   style: Styles.whiteW60010,
                                 ),
                                 Obx(() => Text(
-                                  controller.profileData.value?.personal?.name ?? 'Olivier Thomas',
-                                  style: Styles.whiteBold,
-                                )),
+                                      controller.profileData.value?.personal
+                                              .name ??
+                                          'Olivier Thomas',
+                                      style: Styles.whiteBold,
+                                    )),
                                 Obx(() => Text(
-                                  'Class ${controller.profileData.value?.personal?.classInfo?.name ?? '1'} – ${controller.profileData.value?.personal?.section?.name ?? 'A'}',
-                                  style: Styles.whiteW400011,
-                                )),
+                                      'Class ${controller.profileData.value?.personal.classInfo.name ?? '1'} – ${controller.profileData.value?.personal.section.name ?? 'A'}',
+                                      style: Styles.whiteW400011,
+                                    )),
                               ],
                             ),
                           ),
@@ -144,7 +145,8 @@ class DashboardHomeScreen extends StatelessWidget {
                             ),
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.notifications, color: Colors.white, size: 20),
+                            icon: const Icon(Icons.notifications,
+                                color: Colors.white, size: 20),
                             onPressed: () {},
                           ),
                         ),
@@ -152,7 +154,7 @@ class DashboardHomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     // Credit Score Card
-                    CreditScoreCard(),
+                    const CreditScoreCard(),
                   ],
                 ),
               ),
@@ -173,8 +175,8 @@ class DashboardHomeScreen extends StatelessWidget {
   }
 
   Widget _buildAvatar(DashboardController controller) {
-    String? photoUrl = controller.profileData.value?.personal?.photo;
-    String? fullName = controller.profileData.value?.personal?.name;
+    String? photoUrl = controller.profileData.value?.personal.photo;
+    String? fullName = controller.profileData.value?.personal.name;
 
     // Agar image hai to show image
     if (photoUrl != null && photoUrl.isNotEmpty) {
@@ -200,7 +202,7 @@ class DashboardHomeScreen extends StatelessWidget {
     return Container(
       width: 55,
       height: 55,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: ColorsValue.bgColors,
         shape: BoxShape.circle,
       ),
@@ -235,7 +237,8 @@ class CreditScoreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DashboardController controller = Get.find<DashboardController>();
-    final percentage = controller.profileData.value?.other?.grade?.averagePercentage ?? 0;
+    final percentage =
+        controller.profileData.value?.other.grade.averagePercentage ?? 0;
     return Row(
       children: [
         // Credit Score Circle
@@ -253,10 +256,7 @@ class CreditScoreCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Text(
-                    'STUDENT PR',
-                    style: Styles.whiteW70010
-                ),
+                Text('STUDENT PR', style: Styles.whiteW70010),
                 const SizedBox(height: 8),
                 DynamicProgressBar(
                   percentage: 50.0,
@@ -269,14 +269,10 @@ class CreditScoreCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                        '${controller.profileData.value?.other?.grade?.averagePercentage ?? 0}',
-                        style: Styles.whiteBold
-                    ),
+                        '${controller.profileData.value?.other.grade.averagePercentage ?? 0}',
+                        style: Styles.whiteBold),
                     const SizedBox(width: 5),
-                    Text(
-                        '/100',
-                        style: Styles.whiteW4009
-                    ),
+                    Text('/100', style: Styles.whiteW4009),
                   ],
                 ),
               ],
@@ -288,39 +284,35 @@ class CreditScoreCard extends StatelessWidget {
         Expanded(
           flex: 2,
           child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
-                  ),
+            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  AssetConstants.icUserProfile,
+                  height: 25,
+                  width: 25,
                 ),
-                child: Row(
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(
-                      AssetConstants.icUserProfile,
-                      height: 25,
-                      width: 25,
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            '${controller.profileData.value?.other.attendance?.percentage ?? 0}%',
-                            style: Styles.whiteBold15
-                        ),
-                        Text(
-                            'Attendance',
-                            style: Styles.whiteW400010
-                        ),
-                      ],
-                    ),
+                    Text(
+                        '${controller.profileData.value?.other.attendance.percentage ?? 0}%',
+                        style: Styles.whiteBold15),
+                    Text('Attendance', style: Styles.whiteW400010),
                   ],
                 ),
-              ),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -328,7 +320,6 @@ class CreditScoreCard extends StatelessWidget {
 }
 
 // Announcements Tabs Widget (Scrollable)
-// Announcements Tabs Widget (Scrollable) - Fixed spacing
 class AnnouncementsTabs extends StatelessWidget {
   AnnouncementsTabs({super.key});
 
@@ -371,12 +362,25 @@ class AnnouncementsTabs extends StatelessWidget {
       }
       return date;
     } catch (e) {
-      return date ?? 'Event Date';
+      return date;
     }
   }
 
   String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return months[month - 1];
   }
 
@@ -385,7 +389,7 @@ class AnnouncementsTabs extends StatelessWidget {
     final DashboardController controller = Get.find<DashboardController>();
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14,vertical: 0),
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
@@ -413,7 +417,8 @@ class AnnouncementsTabs extends StatelessWidget {
                     alignment: Alignment.topRight,
                     child: Builder(
                       builder: (context) {
-                        final TabController tabController = DefaultTabController.of(context);
+                        final TabController tabController =
+                            DefaultTabController.of(context);
                         return TextButton(
                           onPressed: () {
                             if (tabController.index == 0) {
@@ -461,9 +466,12 @@ class AnnouncementsTabs extends StatelessWidget {
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // ✅ Reduced vertical padding
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 12),
+                          // ✅ Reduced vertical padding
                           itemCount: announcementsList.length,
-                          itemBuilder: (context, index) => _buildEventCard(announcementsList[index], index),
+                          itemBuilder: (context, index) =>
+                              _buildEventCard(announcementsList[index], index),
                         ),
                         const SizedBox(height: 8), // ✅ Reduced from 15
                       ],
@@ -564,7 +572,8 @@ class AnnouncementsTabs extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.9),
                                     borderRadius: BorderRadius.circular(15),
@@ -575,10 +584,12 @@ class AnnouncementsTabs extends StatelessWidget {
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.3),
-                                    border: Border.all(color: Colors.grey.shade500, width: 1),
+                                    border: Border.all(
+                                        color: Colors.grey.shade500, width: 1),
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                   child: Text(
@@ -647,7 +658,9 @@ class AnnouncementsTabs extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: _currentIndex == entry.key ? Colors.blue : Colors.grey.shade300,
+                  color: _currentIndex == entry.key
+                      ? Colors.blue
+                      : Colors.grey.shade300,
                 ),
               );
             }).toList(),
@@ -692,16 +705,20 @@ class AnnouncementsTabs extends StatelessWidget {
           Container(
             width: 20,
             height: 20,
-            margin: const EdgeInsets.only(left: 12, top: 20), // ✅ Reduced from 25
+            margin: const EdgeInsets.only(left: 12, top: 20),
+            // ✅ Reduced from 25
             decoration: BoxDecoration(
               color: (event['color'] as Color).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              event['type'] == 'URGENT' ? Icons.priority_high :
-              event['type'] == 'ACADEMIC' ? Icons.school :
-              event['type'] == 'Holiday' ? Icons.beach_access :
-              Icons.person,
+              event['type'] == 'URGENT'
+                  ? Icons.priority_high
+                  : event['type'] == 'ACADEMIC'
+                      ? Icons.school
+                      : event['type'] == 'Holiday'
+                          ? Icons.beach_access
+                          : Icons.person,
               color: event['color'],
               size: 18, // ✅ Reduced from 20
             ),
@@ -719,7 +736,13 @@ class AnnouncementsTabs extends StatelessWidget {
                     children: [
                       Text(
                         event['type'],
-                        style: index == 0 ? Styles.orangeBold700 : index == 1 ? Styles.blueBold70009 : index == 2 ? Styles.greenBold70009 : Styles.rdBold70009,
+                        style: index == 0
+                            ? Styles.orangeBold700
+                            : index == 1
+                                ? Styles.blueBold70009
+                                : index == 2
+                                    ? Styles.greenBold70009
+                                    : Styles.rdBold70009,
                       ),
                       Text(
                         event['date'],
@@ -746,6 +769,7 @@ class AnnouncementsTabs extends StatelessWidget {
     );
   }
 }
+
 class DynamicProgressBar extends StatelessWidget {
   final double percentage; // 0 to 100
   final double height;

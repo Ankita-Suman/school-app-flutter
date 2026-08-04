@@ -47,8 +47,8 @@ class AddLeaveScreen extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => Get.back(),
-                                child:  SvgPicture.asset(
-                                    AssetConstants.icBackBg,
+                                child: SvgPicture.asset(
+                                  AssetConstants.icBackBg,
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -63,7 +63,6 @@ class AddLeaveScreen extends StatelessWidget {
                     const SizedBox(height: 30),
                   ],
                 ),
-
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(12),
@@ -83,7 +82,6 @@ class AddLeaveScreen extends StatelessWidget {
               ],
             ),
           ),
-
           Positioned(
             bottom: 0,
             left: 0,
@@ -113,52 +111,61 @@ class AddLeaveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildApplyDateField(AddLeaveController controller, BuildContext context) {
+  Widget _buildApplyDateField(
+      AddLeaveController controller, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Text('APPLY DATE', style: Styles.darkGryW700),
+          Text('APPLY DATE', style: Styles.darkGryW700),
           const SizedBox(height: 5),
           Obx(
-                () => Container(
+            () => Container(
               decoration: BoxDecoration(
                 color: controller.isApplyDateFocused.value
                     ? Colors.white
                     : (controller.applyDate.value.isNotEmpty
-                    ? Colors.blue.shade50
-                    : Colors.grey.shade50),
+                        ? Colors.blue.shade50
+                        : Colors.grey.shade50),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: (controller.isApplyDateFocused.value || controller.applyDate.value.isNotEmpty)
+                  color: (controller.isApplyDateFocused.value ||
+                          controller.applyDate.value.isNotEmpty)
                       ? Colors.blue.shade700
                       : Colors.grey.shade300,
-                  width: (controller.isApplyDateFocused.value || controller.applyDate.value.isNotEmpty) ? 1.5 : 1,
+                  width: (controller.isApplyDateFocused.value ||
+                          controller.applyDate.value.isNotEmpty)
+                      ? 1.5
+                      : 1,
                 ),
               ),
               child: GestureDetector(
                 onTap: () => controller.selectApplyDate(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                   child: Row(
                     children: [
                       Icon(
                         Icons.calendar_today,
                         size: 18,
-                        color: (controller.isApplyDateFocused.value || controller.applyDate.value.isNotEmpty)
+                        color: (controller.isApplyDateFocused.value ||
+                                controller.applyDate.value.isNotEmpty)
                             ? Colors.blue.shade700
                             : Colors.grey.shade500,
                       ),
                       const SizedBox(width: 8),
                       Obx(() => Text(
-                        controller.applyDate.value.isEmpty ? 'Select Date' : controller.applyDate.value,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )),
+                            controller.applyDate.value.isEmpty
+                                ? 'Select Date'
+                                : controller.applyDate.value,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )),
                     ],
                   ),
                 ),
@@ -170,7 +177,8 @@ class AddLeaveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDateRangeFields(AddLeaveController controller, BuildContext context) {
+  Widget _buildDateRangeFields(
+      AddLeaveController controller, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
       child: Row(
@@ -179,49 +187,57 @@ class AddLeaveScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Text('FROM DATE', style: Styles.darkGryW600),
+                Text('FROM DATE', style: Styles.darkGryW600),
                 const SizedBox(height: 4),
                 Obx(
-                      () => GestureDetector(
+                  () => GestureDetector(
                     onTap: () {
                       controller.fromDateFocusNode.requestFocus();
                       controller.selectFromDate(context);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 8),
                       decoration: BoxDecoration(
                         color: controller.isFromDateFocused.value
                             ? Colors.white
                             : (controller.fromDate.value.isNotEmpty
-                            ? Colors.blue.shade50
-                            : Colors.grey.shade50),
+                                ? Colors.blue.shade50
+                                : Colors.grey.shade50),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: (controller.isFromDateFocused.value || controller.fromDate.value.isNotEmpty)
+                          color: (controller.isFromDateFocused.value ||
+                                  controller.fromDate.value.isNotEmpty)
                               ? Colors.blue.shade700
                               : Colors.grey.shade300,
-                          width: (controller.isFromDateFocused.value || controller.fromDate.value.isNotEmpty) ? 1.5 : 1,
+                          width: (controller.isFromDateFocused.value ||
+                                  controller.fromDate.value.isNotEmpty)
+                              ? 1.5
+                              : 1,
                         ),
                       ),
                       child: Obx(() => Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            size: 18,
-                            color: (controller.isFromDateFocused.value || controller.fromDate.value.isNotEmpty)
-                                ? Colors.blue.shade700
-                                : Colors.grey.shade500,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            controller.fromDate.value.isEmpty ? 'From Date' : controller.fromDate.value,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      )),
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                size: 18,
+                                color: (controller.isFromDateFocused.value ||
+                                        controller.fromDate.value.isNotEmpty)
+                                    ? Colors.blue.shade700
+                                    : Colors.grey.shade500,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                controller.fromDate.value.isEmpty
+                                    ? 'From Date'
+                                    : controller.fromDate.value,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          )),
                     ),
                   ),
                 ),
@@ -233,49 +249,57 @@ class AddLeaveScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Text('TO DATE', style: Styles.darkGryW600),
+                Text('TO DATE', style: Styles.darkGryW600),
                 const SizedBox(height: 4),
                 Obx(
-                      () => GestureDetector(
+                  () => GestureDetector(
                     onTap: () {
                       controller.toDateFocusNode.requestFocus();
                       controller.selectToDate(context);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 8),
                       decoration: BoxDecoration(
                         color: controller.isToDateFocused.value
                             ? Colors.white
                             : (controller.toDate.value.isNotEmpty
-                            ? Colors.blue.shade50
-                            : Colors.grey.shade50),
+                                ? Colors.blue.shade50
+                                : Colors.grey.shade50),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: (controller.isToDateFocused.value || controller.toDate.value.isNotEmpty)
+                          color: (controller.isToDateFocused.value ||
+                                  controller.toDate.value.isNotEmpty)
                               ? Colors.blue.shade700
                               : Colors.grey.shade300,
-                          width: (controller.isToDateFocused.value || controller.toDate.value.isNotEmpty) ? 1.5 : 1,
+                          width: (controller.isToDateFocused.value ||
+                                  controller.toDate.value.isNotEmpty)
+                              ? 1.5
+                              : 1,
                         ),
                       ),
                       child: Obx(() => Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            size: 18,
-                            color: (controller.isToDateFocused.value || controller.toDate.value.isNotEmpty)
-                                ? Colors.blue.shade700
-                                : Colors.grey.shade500,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            controller.toDate.value.isEmpty ? 'To Date' : controller.toDate.value,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      )),
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                size: 18,
+                                color: (controller.isToDateFocused.value ||
+                                        controller.toDate.value.isNotEmpty)
+                                    ? Colors.blue.shade700
+                                    : Colors.grey.shade500,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                controller.toDate.value.isEmpty
+                                    ? 'To Date'
+                                    : controller.toDate.value,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          )),
                     ),
                   ),
                 ),
@@ -294,10 +318,10 @@ class AddLeaveScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Text('REASON FOR LEAVE', style: Styles.darkGryW600),
+          Text('REASON FOR LEAVE', style: Styles.darkGryW600),
           const SizedBox(height: 4),
           Obx(
-                () => TextField(
+            () => TextField(
               controller: controller.reasonController,
               focusNode: controller.reasonFocusNode,
               maxLines: 4,
@@ -317,24 +341,32 @@ class AddLeaveScreen extends StatelessWidget {
                 fillColor: controller.isReasonFocused.value
                     ? Colors.white
                     : (controller.reasonController.text.isNotEmpty
-                    ? Colors.blue.shade50
-                    : Colors.grey.shade50),
+                        ? Colors.blue.shade50
+                        : Colors.grey.shade50),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: controller.isReasonFocused.value || controller.reasonController.text.isNotEmpty
+                    color: controller.isReasonFocused.value ||
+                            controller.reasonController.text.isNotEmpty
                         ? Colors.blue.shade700
                         : Colors.grey.shade300,
-                    width: (controller.isReasonFocused.value || controller.reasonController.text.isNotEmpty) ? 1.5 : 1,
+                    width: (controller.isReasonFocused.value ||
+                            controller.reasonController.text.isNotEmpty)
+                        ? 1.5
+                        : 1,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: controller.isReasonFocused.value || controller.reasonController.text.isNotEmpty
+                    color: controller.isReasonFocused.value ||
+                            controller.reasonController.text.isNotEmpty
                         ? Colors.blue.shade700
                         : Colors.grey.shade300,
-                    width: (controller.isReasonFocused.value || controller.reasonController.text.isNotEmpty) ? 1.5 : 1,
+                    width: (controller.isReasonFocused.value ||
+                            controller.reasonController.text.isNotEmpty)
+                        ? 1.5
+                        : 1,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -350,7 +382,8 @@ class AddLeaveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFileUploadSection(AddLeaveController controller, BuildContext context) {
+  Widget _buildFileUploadSection(
+      AddLeaveController controller, BuildContext context) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(12, 4, 12, 12),
@@ -391,34 +424,36 @@ class AddLeaveScreen extends StatelessWidget {
                 const SizedBox(height: 6),
                 Obx(() => controller.selectedFileName.value.isNotEmpty
                     ? Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width - 80,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green.shade200),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.check_circle, size: 16, color: Colors.green.shade600),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          controller.selectedFileName.value,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.green,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width - 80,
                         ),
-                      ),
-                    ],
-                  ),
-                )
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.green.shade200),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.check_circle,
+                                size: 16, color: Colors.green.shade600),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                controller.selectedFileName.value,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.green,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     : const SizedBox.shrink()),
                 const SizedBox(height: 10),
                 ElevatedButton.icon(
@@ -431,7 +466,8 @@ class AddLeaveScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorsValue.blcColors,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -445,20 +481,22 @@ class AddLeaveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSubmitButton(AddLeaveController controller, BuildContext context) {
+  Widget _buildSubmitButton(
+      AddLeaveController controller, BuildContext context) {
     return Obx(
-          () => Opacity(
+      () => Opacity(
         opacity: controller.isFormValid.value ? 1.0 : 0.5,
         child: SizedBox(
           width: double.infinity,
           height: 50,
           child: GradientButton(
-            onPressed: controller.isFormValid.value && !controller.isLoading.value
-                ? () {
-              FocusScope.of(context).unfocus();
-              controller.submitLeave(context);
-            }
-                : (){},
+            onPressed:
+                controller.isFormValid.value && !controller.isLoading.value
+                    ? () {
+                        FocusScope.of(context).unfocus();
+                        controller.submitLeave(context);
+                      }
+                    : () {},
             text: controller.isLoading.value ? 'Submitting...' : 'Submit Leave',
           ),
         ),
@@ -467,8 +505,8 @@ class AddLeaveScreen extends StatelessWidget {
   }
 
   Widget _buildYourAppliedLeavesWidget() {
-    return  Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Column(

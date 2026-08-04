@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../app.dart';
+// ✅ Import RouteManagement
 
 class StaffLeaveScreen extends StatelessWidget {
   StaffLeaveScreen({super.key});
@@ -33,6 +34,22 @@ class StaffLeaveScreen extends StatelessWidget {
       'color': Colors.purple,
     },
   ];
+
+  // ========== GET NAVIGATION METHOD BY INDEX (returns a function) ==========
+  VoidCallback getNavigationCallback(int index) {
+    switch (index) {
+      case 0:
+        return RouteManagement.goToApplyLeave;      // ✅ returns function
+      case 1:
+        return RouteManagement.goToLeaveBalance;    // ✅ returns function
+      case 2:
+        return RouteManagement.goToApprovalStatus;  // ✅ returns function
+      case 3:
+        return RouteManagement.goToStaffLeaveHistory;    // ✅ returns function
+      default:
+        return () {};                               // empty fallback
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +89,7 @@ class StaffLeaveScreen extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () => Get.back(),
-                            child: SvgPicture.asset(
-                              AssetConstants.icBackBg,
-                            ),
+                            child: SvgPicture.asset(AssetConstants.icBackBg),
                           ),
                           const SizedBox(width: 8),
                           Text('Leave Management', style: Styles.whiteBold),
@@ -106,9 +121,10 @@ class StaffLeaveScreen extends StatelessWidget {
                               ),
                             ),
                             // Items
-                            ...leaveManagement.map((item) {
-                              final isLast = leaveManagement.indexOf(item) ==
-                                  leaveManagement.length - 1;
+                            ...leaveManagement.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final item = entry.value;
+                              final isLast = index == leaveManagement.length - 1;
                               return Padding(
                                 padding: EdgeInsets.only(
                                   left: 16,
@@ -121,12 +137,12 @@ class StaffLeaveScreen extends StatelessWidget {
                                   subtitle: item['subtitle'] as String,
                                   icon: item['icon'] as IconData,
                                   color: item['color'] as Color,
+                                  onTap: getNavigationCallback(index), // ✅ fixed
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
-
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -146,62 +162,66 @@ class StaffLeaveScreen extends StatelessWidget {
     required String subtitle,
     required IconData icon,
     required Color color,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          // ========== COLORED CONTAINER WITH ICON ==========
-          Container(
-            width: 45,
-            height: 45,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
+        child: Row(
+          children: [
+            // ========== COLORED CONTAINER WITH ICON ==========
+            Container(
+              width: 45,
+              height: 45,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
 
-          // ========== TITLE & SUBTITLE ==========
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Styles.darkBlcW60015,
-                ),
-                if (subtitle.isNotEmpty)
+            // ========== TITLE & SUBTITLE ==========
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    subtitle,
-                    style: Styles.darkBlueW400,
+                    title,
+                    style: Styles.darkBlcW60015,
                   ),
-              ],
+                  if (subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      style: Styles.darkBlueW400,
+                    ),
+                ],
+              ),
             ),
-          ),
 
-          // ========== ARROW ICON ==========
-          Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.grey.shade400,
-            size: 16,
-          ),
-        ],
+            // ========== ARROW ICON ==========
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 16,
+            ),
+          ],
+        ),
       ),
     );
   }

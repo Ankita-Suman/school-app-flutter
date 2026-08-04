@@ -297,7 +297,7 @@ abstract class Utility {
   }) async {
     await Get.dialog<void>(
       CupertinoAlertDialog(
-        content: Text('$message',style: Styles.blackEBold15,),
+        content: Text('$message',style: Styles.blackDark16,),
         actions: <Widget>[
           CupertinoDialogAction(
             isDestructiveAction: false,
@@ -558,7 +558,7 @@ abstract class Utility {
                           title!,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: Styles.white23,
+                          style: Styles.whiteExBold22,
                         ),
                       ),
                       GestureDetector(
@@ -574,7 +574,7 @@ abstract class Utility {
                   Dimens.boxHeight30,
                   Text(
                     text!,
-                    style: Styles.white14,
+                    style: Styles.whiteBold14600,
                   ),
                   Dimens.boxHeight10,
                 ],
@@ -618,7 +618,7 @@ abstract class Utility {
           children: [
             Text(
               '$message',
-              style: Styles.blackBold16.copyWith(
+              style: Styles.blackDark16.copyWith(
                 color: const Color.fromRGBO(235, 87, 87, 1),
               ),
             ),

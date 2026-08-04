@@ -33,10 +33,9 @@ class EditAttendanceController extends GetxController {
   String? storedSectionId;
   String? storedDate;
 
-  // ========== HARDCODED (replace later) ==========
-  final String hardcodedToken =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3ODQxODA2ODgsImV4cCI6MTc4NDM1MzQ4OCwibmJmIjoxNzg0MTgwNjg4LCJqdGkiOiJKY3IzSmVOdmVWVk5TMllMIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZjZTg0MjJlLWFhOTItNGQ2OS1hZjZhLTIxNTlmZDBjOGM2YSIsInJvbGVfaWQiOiI4MmY4MGE0Yi03ZWIxLTRiNWMtYmIxMS03Yjk5ODczMjY4ZjUifQ.Mdpb7QcnglMLL5B5cph0vKDQQ546iY0I_YkJA-Cl82E';
-  final String hardcodedBranchId = '6ce8422e-aa92-4d69-af6a-2159fd0c8c6a';
+  // ========== ORIGINAL STATUSES & REMARKS FOR REVERT ==========
+  final Map<String, String> originalStatuses = {};
+  final Map<String, String> originalRemarks = {};
 
   @override
   void onInit() {
@@ -49,22 +48,48 @@ class EditAttendanceController extends GetxController {
   Future<void> getMyClassData() async {
     try {
       isLoading.value = true;
-      print("📡📡📡 EditAttendance - getMyClassData START");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await editAttendancePresenter.getMyClassData(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
       );
 
       if (res != null && res.status == true && res.data != null) {
         teacherClassData.value = res;
-        print("✅ My Classes loaded successfully");
       } else {
-        print("❌ Failed to load classes: ${res?.message}");
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load classes.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getMyClassData: $e");
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading classes.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -74,7 +99,7 @@ class EditAttendanceController extends GetxController {
   void buildClassGroups() {
     final classes = teacherClassData.value?.data?.classes;
     if (classes == null || classes.isEmpty) {
-      print("⚠️ No classes found to group");
+      debugPrint("⚠️ No classes found to group");
       return;
     }
     Map<String, List<ClassItem>> map = {};
@@ -86,7 +111,35 @@ class EditAttendanceController extends GetxController {
     }
     classGroups.value = map;
     classNames.value = map.keys.toList();
-    print("📦 Class groups built: ${classNames.length} classes");
+
+    if (classNames.isNotEmpty) {
+      if (selectedClassId.value.isEmpty || !classNames.contains(selectedClassId.value)) {
+        selectedClassId.value = classNames.first;
+      }
+      final sections = map[selectedClassId.value]!;
+      if (sections.isNotEmpty) {
+        bool sectionValid = sections.any((s) => s.sectionId == selectedSectionId.value);
+        if (!sectionValid) {
+          selectedSectionId.value = sections.first.sectionId;
+          selectedSectionName.value = sections.first.sectionName;
+          selectedClassName.value = sections.first.className;
+        } else {
+          final selected = sections.firstWhere((s) => s.sectionId == selectedSectionId.value);
+          selectedClassName.value = selected.className;
+          selectedSectionName.value = selected.sectionName;
+        }
+        _fetchAttendanceForCurrentSelection();
+      } else {
+        selectedSectionId.value = '';
+        selectedClassName.value = '';
+        selectedSectionName.value = '';
+      }
+    } else {
+      selectedClassId.value = '';
+      selectedSectionId.value = '';
+      selectedClassName.value = '';
+      selectedSectionName.value = '';
+    }
 
     _loadStoredDataAndSetSelection();
   }
@@ -95,63 +148,48 @@ class EditAttendanceController extends GetxController {
   Future<void> _loadStoredDataAndSetSelection() async {
     try {
       var deviceRepo = Get.find<DeviceRepository>();
-      storedClassId = await deviceRepo.getSecuredValue(DeviceConstants.lastAttendanceClassId) ?? '';
-      storedSectionId = await deviceRepo.getSecuredValue(DeviceConstants.lastAttendanceSectionId) ?? '';
-      storedDate = await deviceRepo.getSecuredValue(DeviceConstants.lastAttendanceDate) ?? '';
+      storedClassId = await deviceRepo.getSecuredValue(DeviceConstants.lastAttendanceClassId);
+      storedSectionId = await deviceRepo.getSecuredValue(DeviceConstants.lastAttendanceSectionId);
+      storedDate = await deviceRepo.getSecuredValue(DeviceConstants.lastAttendanceDate);
 
-      print("📦📦📦 Stored Data Loaded:");
-      print("Class ID: $storedClassId");
-      print("Section ID: $storedSectionId");
-      print("Date: $storedDate");
-
-      if (classNames.isEmpty) {
-        print("❌ No classes available");
-        return;
-      }
+      if (classNames.isEmpty) return;
 
       if (storedClassId != null && storedClassId!.isNotEmpty && classGroups.containsKey(storedClassId)) {
-        selectedClassId.value = storedClassId!;
         final sections = classGroups[storedClassId]!;
         if (sections.isNotEmpty) {
-          if (storedSectionId != null && storedSectionId!.isNotEmpty) {
-            final sectionExists = sections.any((item) => item.sectionId == storedSectionId);
-            if (sectionExists) {
-              selectedSectionId.value = storedSectionId!;
-              final selected = sections.firstWhere((item) => item.sectionId == storedSectionId);
-              selectedClassName.value = selected.className;
-              selectedSectionName.value = selected.sectionName;
-            } else {
-              selectedSectionId.value = sections.first.sectionId;
-              selectedClassName.value = sections.first.className;
-              selectedSectionName.value = sections.first.sectionName;
-            }
+          selectedClassId.value = storedClassId!;
+          if (storedSectionId != null && storedSectionId!.isNotEmpty && sections.any((s) => s.sectionId == storedSectionId)) {
+            selectedSectionId.value = storedSectionId!;
+            final selected = sections.firstWhere((s) => s.sectionId == storedSectionId);
+            selectedClassName.value = selected.className;
+            selectedSectionName.value = selected.sectionName;
           } else {
             selectedSectionId.value = sections.first.sectionId;
             selectedClassName.value = sections.first.className;
             selectedSectionName.value = sections.first.sectionName;
           }
-        }
-      } else {
-        final firstClassId = classNames.first;
-        selectedClassId.value = firstClassId;
-        final sections = classGroups[firstClassId]!;
-        if (sections.isNotEmpty) {
-          selectedSectionId.value = sections.first.sectionId;
-          selectedClassName.value = sections.first.className;
-          selectedSectionName.value = sections.first.sectionName;
+          _fetchAttendanceForCurrentSelection();
+          return;
         }
       }
 
-      print("✅ Default selection set: ${selectedClassName.value} - ${selectedSectionName.value}");
-      _fetchAttendanceForCurrentSelection();
-
+      final firstClassId = classNames.first;
+      selectedClassId.value = firstClassId;
+      final sections = classGroups[firstClassId]!;
+      if (sections.isNotEmpty) {
+        selectedSectionId.value = sections.first.sectionId;
+        selectedClassName.value = sections.first.className;
+        selectedSectionName.value = sections.first.sectionName;
+        _fetchAttendanceForCurrentSelection();
+      }
     } catch (e) {
-      print("❌ Error loading stored data: $e");
+      debugPrint("❌ Error loading stored data: $e");
     }
   }
 
   // ========== CLASS SELECTION ==========
   void onClassSelected(String classId) {
+    if (!classGroups.containsKey(classId)) return;
     selectedClassId.value = classId;
     final sections = classGroups[classId]!;
     if (sections.isNotEmpty) {
@@ -167,10 +205,10 @@ class EditAttendanceController extends GetxController {
   }
 
   void onSectionSelected(String sectionId) {
-    selectedSectionId.value = sectionId;
     final classItems = classGroups[selectedClassId.value];
     if (classItems != null) {
       final selected = classItems.firstWhere((item) => item.sectionId == sectionId);
+      selectedSectionId.value = sectionId;
       selectedClassName.value = selected.className;
       selectedSectionName.value = selected.sectionName;
       _fetchAttendanceForCurrentSelection();
@@ -178,7 +216,8 @@ class EditAttendanceController extends GetxController {
   }
 
   void _fetchAttendanceForCurrentSelection() {
-    if (selectedClassId.value.isNotEmpty && selectedSectionId.value.isNotEmpty) {
+    if (selectedClassId.value.isNotEmpty &&
+        selectedSectionId.value.isNotEmpty) {
       final date = storedDate ?? _getCurrentDate();
       getClassAttendanceData(
         classId: selectedClassId.value,
@@ -201,13 +240,27 @@ class EditAttendanceController extends GetxController {
   }) async {
     try {
       isLoading.value = true;
-      print("📡📡📡 EditAttendance - getClassAttendanceData START");
-      print("📚 Class ID: $classId, Section ID: $sectionId, Date: $date");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await editAttendancePresenter.getStudentListData(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         classId: classId,
         sectionId: sectionId,
         date: date,
@@ -215,12 +268,21 @@ class EditAttendanceController extends GetxController {
 
       if (res != null && res.status == true && res.data != null) {
         allStudents.value = res.data!;
-        print("✅ Students loaded: ${allStudents.length}");
+
+        // ---------- STORE ORIGINAL STATUSES & REMARKS ----------
+        originalStatuses.clear();
+        originalRemarks.clear();
         for (var student in allStudents) {
-          print("📚 ${student.fullName}: ${student.attendance?.status ?? 'Not Marked'}");
+          final status = student.attendance?.status ?? '';
+          final remarks = student.attendance?.remarks ?? '';
+          originalStatuses[student.studentId] = status;
+          originalRemarks[student.studentId] = remarks;
+        }
+
+        for (var student in allStudents) {
+          debugPrint("📚 ${student.fullName}: ${student.attendance?.status ?? 'Not Marked'}");
         }
       } else {
-        print("❌ Failed to load attendance: ${res?.message}");
         Get.snackbar(
           'Error',
           res?.message ?? 'Failed to load attendance data.',
@@ -230,7 +292,6 @@ class EditAttendanceController extends GetxController {
         );
       }
     } catch (e) {
-      print("❌ Error in getClassAttendanceData: $e");
       Get.snackbar(
         'Error',
         'Something went wrong while loading attendance.',
@@ -279,35 +340,120 @@ class EditAttendanceController extends GetxController {
     }
   }
 
-  // ========== UPDATE ATTENDANCE (no orange alert) ==========
+  // ---------- REVERT ALL CHANGES (FIXED) ----------
+// ---------- REVERT ALL CHANGES (FIXED: replace student object) ----------
+  void revertChanges() {
+    for (int i = 0; i < allStudents.length; i++) {
+      final student = allStudents[i];
+      final originalStatus = originalStatuses[student.studentId] ?? '';
+      final originalRemarksValue = originalRemarks[student.studentId] ?? '';
+
+      AttendanceInfo? newAttendance;
+      if (originalStatus.isEmpty && originalRemarksValue.isEmpty) {
+        // No attendance data originally – set to null
+        newAttendance = null;
+      } else {
+        // Preserve the original attendanceId and other info if they exist
+        final currentAttendance = student.attendance; // may be null
+        newAttendance = AttendanceInfo(
+          attendanceId: currentAttendance?.attendanceId,
+          attendanceDate: currentAttendance?.attendanceDate,
+          status: originalStatus,
+          remarks: originalRemarksValue,
+          markedAt: currentAttendance?.markedAt,
+        );
+      }
+
+      // Create a new StudentAttendance object with the reverted attendance
+      final updatedStudent = StudentAttendance(
+        studentId: student.studentId,
+        registrationNumber: student.registrationNumber,
+        admissionNumber: student.admissionNumber,
+        rollNumber: student.rollNumber,
+        fullName: student.fullName,
+        photo: student.photo,
+        classInfo: student.classInfo,
+        sectionInfo: student.sectionInfo,
+        attendance: newAttendance,
+      );
+
+      allStudents[i] = updatedStudent;
+    }
+    allStudents.refresh();
+  }
+
+  // ---------- COMPUTE STATUS COUNTS FOR DIALOG ----------
+  Map<String, int> getStatusCounts() {
+    Map<String, int> counts = {};
+    for (var student in allStudents) {
+      final status = student.attendance?.status;
+      if (status != null && status.isNotEmpty) {
+        counts[status] = (counts[status] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }
+
+  // ---------- CHECK IF ANY CHANGES ----------
+  bool hasChanges() {
+    for (var student in allStudents) {
+      final currentStatus = student.attendance?.status ?? '';
+      final originalStatus = originalStatuses[student.studentId] ?? '';
+      final currentRemarks = student.attendance?.remarks ?? '';
+      final originalRemarksValue = originalRemarks[student.studentId] ?? '';
+      if (currentStatus != originalStatus || currentRemarks != originalRemarksValue) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // ========== UPDATE ATTENDANCE (FIXED: status conversion) ==========
   Future<void> updateAttendance() async {
     try {
       if (selectedClassId.isEmpty || selectedSectionId.isEmpty) {
         Get.snackbar('Error', 'Class or Section not selected.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
       final students = allStudents;
       if (students.isEmpty) {
         Get.snackbar('Error', 'No students found.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
-      // ✅ No unmarked check – all students are guaranteed to have a status
-      // (either from API or defaulted to PRESENT)
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       final now = DateTime.now();
       final attendanceDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
       final List<Map<String, dynamic>> attendanceData = [];
       for (var student in students) {
-        // Use the status from attendance object; if null (shouldn't happen), fallback to PRESENT
-        final status = student.attendance?.status ?? 'PRESENT';
+        String status = student.attendance?.status ?? '';
+        if (status.isEmpty) status = 'PRESENT';
+        // ✅ Convert status to backend format
         attendanceData.add({
           'student_id': student.studentId,
-          'status': status,
+          'status': _getBackendStatus(status),
           'remarks': student.attendance?.remarks ?? '',
         });
       }
@@ -323,31 +469,57 @@ class EditAttendanceController extends GetxController {
 
       var res = await editAttendancePresenter.updateAttendance(
         isLoading: true,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         payload: payload,
       );
 
       if (res == null) {
         Get.snackbar('Error', 'No response from server.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
       if (res.status == true) {
         Get.back();
-        Get.snackbar('Success', res.message ?? 'Attendance updated successfully!',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar('Success', res.message,
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green,
+            colorText: Colors.white);
       } else {
-        Get.snackbar('Error', res.message ?? 'Failed to update attendance.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar('Error', res.message,
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
       }
     } catch (e) {
-      print("❌ Error updating attendance: $e");
       Get.snackbar('Error', 'Something went wrong.',
-          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // ========== STATUS CONVERTER (FIXED: maps "HALF DAY" to "HALF_DAY") ==========
+  String _getBackendStatus(String? status) {
+    if (status == null) return 'PRESENT';
+    switch (status.toUpperCase()) {
+      case 'PRESENT':
+        return 'PRESENT';
+      case 'ABSENT':
+        return 'ABSENT';
+      case 'LATE':
+        return 'LATE';
+      case 'HALF DAY':      // UI uses "HALF DAY" with space
+        return 'HALF_DAY';
+      case 'LEAVE':
+        return 'LEAVE';
+      default:
+        return status.toUpperCase();
     }
   }
 

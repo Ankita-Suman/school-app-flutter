@@ -1,6 +1,5 @@
 // controllers/teacher_dashboard_controller.dart
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -44,58 +43,45 @@ class DashboardController extends GetxController {
 
   final GetStorage _storage = GetStorage();
 
-  @override
-  void onInit() {
-    super.onInit();
-    print("🔵🔵🔵 DASHBOARD CONTROLLER onInit START 🔵🔵🔵");
-    // ❌ No cache loading - remove loadCachedData()
-    print("🔵🔵🔵 DASHBOARD CONTROLLER onInit END 🔵🔵🔵");
-  }
 
   @override
   void onReady() {
     super.onReady();
-    print("🟢🟢🟢 DASHBOARD CONTROLLER onReady START 🟢🟢🟢");
-
-    // Load home tab data on app start
     getProfileDetailsWithoutLoader();
     getAllEventsWithLoader();
-
-    print("🟢🟢🟢 DASHBOARD CONTROLLER onReady END 🟢🟢🟢");
   }
 
   // ==================== PROFILE API (Home Tab) ====================
 
   Future<void> getProfileDetailsWithoutLoader() async {
-    print("👤👤👤 getProfileDetailsWithoutLoader START 👤👤👤");
     try {
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
-      var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
+      var studentId =
+          await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
-      if (token == null || token.isEmpty || studentId == null || studentId.isEmpty) {
-        print("❌ Missing required data for profile");
+      if (token.isEmpty ||
+          studentId.isEmpty) {
         return;
       }
 
       var res = await dashboardPresenter.getProfileDetailsAPI(
         isLoading: false,
         token: token.toString(),
-        branchId: branchId?.toString() ?? '',
+        branchId: branchId.toString(),
         studentId: studentId.toString(),
       );
 
-      if (res != null && res.status == true && res.data != null) {
+      if (res != null && res.status == true) {
         profileData.value = res.data;
-        print("✅ Profile loaded: ${res.data?.personal?.name}");
       } else {
-        print("❌ Failed to load profile: ${res?.message}");
+        debugPrint("❌ Failed to load profile: ${res?.message}");
       }
     } catch (e) {
-      print("❌ Error in getProfileDetailsWithoutLoader: $e");
+      debugPrint("❌ Error in getProfileDetailsWithoutLoader: $e");
     }
-    print("👤👤👤 getProfileDetailsWithoutLoader END 👤👤👤");
+    debugPrint("👤👤👤 getProfileDetailsWithoutLoader END 👤👤👤");
   }
 
   // ==================== PROFILE API WITH LOADER (Profile Tab) ====================
@@ -103,34 +89,30 @@ class DashboardController extends GetxController {
   Future<void> getProfileDetailsWithLoader() async {
     try {
       isLoadingProfile.value = true;
-      print("📡📡📡 getProfileDetailsWithLoader START - API HIT WITH LOADER 📡📡📡");
-
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
-      var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
+      var studentId =
+          await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
-      if (token == null || token.isEmpty) {
-        print("❌ Missing token");
+      if (token.isEmpty) {
         isLoadingProfile.value = false;
         return;
       }
-
       var res = await dashboardPresenter.getProfileDetailsAPI(
         isLoading: true,
         token: token.toString(),
-        branchId: branchId?.toString() ?? '',
-        studentId: studentId?.toString() ?? '',
+        branchId: branchId.toString(),
+        studentId: studentId.toString() ,
       );
 
-      if (res != null && res.status == true && res.data != null) {
+      if (res != null && res.status == true) {
         profileData.value = res.data;
-        print("✅ Profile loaded: ${res.data?.personal?.name}");
       } else {
-        print("❌ Failed to load profile: ${res?.message}");
+        debugPrint("❌ Failed to load profile: ${res?.message}");
       }
     } catch (e) {
-      print("Error in getProfileDetailsWithLoader: $e");
+      debugPrint("Error in getProfileDetailsWithLoader: $e");
     } finally {
       isLoadingProfile.value = false;
     }
@@ -139,17 +121,16 @@ class DashboardController extends GetxController {
   // ==================== EVENTS API (Home Tab) ====================
 
   Future<void> getAllEventsWithLoader() async {
-    print("📅📅📅 getAllEventsWithLoader START 📅📅📅");
     try {
       isLoadingEvents.value = true;
 
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
-      var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
+      var studentId =
+          await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
-      if (token == null || token.isEmpty) {
-        print("❌ No token, cannot fetch events");
+      if (token.isEmpty) {
         isLoadingEvents.value = false;
         return;
       }
@@ -157,15 +138,16 @@ class DashboardController extends GetxController {
       var res = await dashboardPresenter.getAllEvents(
         isLoading: true,
         token: token.toString(),
-        branchId: branchId?.toString() ?? '',
-        studentId: studentId?.toString() ?? '',
+        branchId: branchId.toString(),
+        studentId: studentId.toString(),
       );
 
       if (res != null && res.status == true && res.data != null) {
         if (res.data is EventsResponseModel) {
           eventsData.value = res.data as EventsResponseModel;
         } else if (res.data is Map<String, dynamic>) {
-          eventsData.value = EventsResponseModel.fromJson(res.data as Map<String, dynamic>);
+          eventsData.value =
+              EventsResponseModel.fromJson(res.data as Map<String, dynamic>);
         } else if (res.data is EventsData) {
           eventsData.value = EventsResponseModel(
             status: true,
@@ -173,17 +155,15 @@ class DashboardController extends GetxController {
             data: res.data as EventsData,
           );
         }
-
-        print("📊 Events Count: ${eventsData.value?.data?.events?.length ?? 0}");
       } else {
-        print("❌ Failed to load events: ${res?.message ?? 'Unknown error'}");
+        debugPrint("❌ Failed to load events: ${res?.message ?? 'Unknown error'}");
       }
     } catch (e) {
-      print("❌ Error in getAllEventsWithLoader: $e");
+      debugPrint("❌ Error in getAllEventsWithLoader: $e");
     } finally {
       isLoadingEvents.value = false;
     }
-    print("📅📅📅 getAllEventsWithLoader END 📅📅📅");
+    debugPrint("📅📅📅 getAllEventsWithLoader END 📅📅📅");
   }
 
   // ==================== FEES API (Fees Tab) ====================
@@ -191,15 +171,14 @@ class DashboardController extends GetxController {
   Future<void> getFeesDetails() async {
     try {
       isLoadingFees.value = true;
-      print("💰💰💰 getFeesDetails START - API HIT WITH LOADER 💰💰💰");
 
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
-      var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
+      var studentId =
+          await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
-      if (token == null || token.isEmpty) {
-        print("❌ No token, cannot fetch fees");
+      if (token.isEmpty) {
         isLoadingFees.value = false;
         return;
       }
@@ -207,8 +186,8 @@ class DashboardController extends GetxController {
       var res = await dashboardPresenter.getFeesDetailsAPI(
         isLoading: true,
         token: token.toString(),
-        branchId: branchId?.toString() ?? '',
-        studentId: studentId?.toString() ?? '',
+        branchId: branchId.toString(),
+        studentId: studentId.toString(),
       );
 
       if (res != null && res.status == true && res.data != null) {
@@ -219,55 +198,59 @@ class DashboardController extends GetxController {
             data: res.data as FeeData,
           );
         } else if (res.data is Map<String, dynamic>) {
-          feeData.value = FeeResponseModel.fromJson(res.data as Map<String, dynamic>);
+          feeData.value =
+              FeeResponseModel.fromJson(res.data as Map<String, dynamic>);
         } else if (res.data is FeeResponseModel) {
           feeData.value = res.data as FeeResponseModel;
         }
-
-        print("💰 Fees loaded successfully");
       } else {
-        print("❌ Failed to load fees: ${res?.message}");
+        debugPrint("❌ Failed to load fees: ${res?.message}");
       }
     } catch (e) {
-      print("❌ Error in getFeesDetails: $e");
+      debugPrint("❌ Error in getFeesDetails: $e");
     } finally {
       isLoadingFees.value = false;
     }
-    print("💰💰💰 getFeesDetails END 💰💰💰");
+    debugPrint("💰💰💰 getFeesDetails END 💰💰💰");
   }
 
   // ==================== NAVIGATION ====================
 
   void changeNavIndex(int index) {
-    print("🔄🔄🔄 changeNavIndex CALLED: index = $index 🔄🔄🔄");
     selectedIndex.value = index;
     update();
 
     // ✅ Fresh API call on every tab click with loader
     switch (index) {
       case 0: // Home Tab
-        print("🏠 Home tab selected - Loading fresh data");
         getProfileDetailsWithoutLoader();
         getAllEventsWithLoader();
         break;
       case 1: // Homework Tab
-        print("📚 Homework tab selected");
+        showComingSoonDialog();
         break;
       case 2: // Fees Tab
-        print("💰 Fees tab selected - Loading fresh data with loader");
-        getFeesDetails();  // ✅ Fresh API every time
+        getFeesDetails(); // ✅ Fresh API every time
         break;
       case 3: // Profile Tab
-        print("👤 Profile tab selected - Loading fresh data with loader");
-        getProfileDetailsWithLoader();  // ✅ Fresh API every time
+        getProfileDetailsWithLoader(); // ✅ Fresh API every time
         break;
       case 4: // More Tab
-        print("📱 More tab selected - Loading fresh data");
+        debugPrint("📱 More tab selected - Loading fresh data");
         // More tab can also load fresh data if needed
         break;
     }
   }
-
+  void showComingSoonDialog() {
+    Get.defaultDialog(
+      title: 'Coming Soon',
+      middleText: 'This feature will be available in the upcoming release.',
+      textConfirm: 'OK',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.blue.shade700,
+      onConfirm: () => Get.back(),
+    );
+  }
   Widget getCurrentScreen() {
     return screens[selectedIndex.value];
   }
@@ -280,17 +263,18 @@ class DashboardController extends GetxController {
     try {
       Utility.showLoader();
       try {
-        var res = await dashboardPresenter.logoutAPI(isLoading: isLoading,token:token);
+        var res = await dashboardPresenter.logoutAPI(
+            isLoading: isLoading, token: token);
         debugPrint('Logout response: $res');
       } catch (apiError) {
-        print("Logout API error: $apiError");
+        debugPrint("Logout API error: $apiError");
       }
       await _clearAllStorageData();
       Utility.closeLoader();
       RouteManagement.goToLogin();
       update();
     } catch (e) {
-      print("Logout error: $e");
+      debugPrint("Logout error: $e");
       await _clearAllStorageData();
       Utility.closeLoader();
       RouteManagement.goToLogin();
@@ -314,16 +298,14 @@ class DashboardController extends GetxController {
       await _storage.remove('profile_data');
       await _storage.remove('events_data');
       await _storage.remove('fees_data');
-
-      print("All storage data cleared successfully");
     } catch (e) {
-      print("Error in _clearAllStorageData: $e");
+      debugPrint("Error in _clearAllStorageData: $e");
     }
   }
 
   @override
   void onClose() {
-    print("🔴🔴🔴 DASHBOARD CONTROLLER onClose CALLED 🔴🔴🔴");
+    debugPrint("🔴🔴🔴 DASHBOARD CONTROLLER onClose CALLED 🔴🔴🔴");
     super.onClose();
   }
 }

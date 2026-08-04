@@ -108,7 +108,7 @@ class _JoinMeetingScreenState extends State<JoinMeetingScreen> {
                             status: item['status'] as String,
                             color: item['color'] as Color,
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),
@@ -168,7 +168,8 @@ class _JoinMeetingScreenState extends State<JoinMeetingScreen> {
               ),
               // Status Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: isOngoing ? Colors.green.shade50 : Colors.blue.shade50,
                   borderRadius: BorderRadius.circular(8),
@@ -181,7 +182,9 @@ class _JoinMeetingScreenState extends State<JoinMeetingScreen> {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: isOngoing ? Colors.green.shade700 : Colors.blue.shade700,
+                        color: isOngoing
+                            ? Colors.green.shade700
+                            : Colors.blue.shade700,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -191,7 +194,9 @@ class _JoinMeetingScreenState extends State<JoinMeetingScreen> {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: isOngoing ? Colors.green.shade700 : Colors.blue.shade700,
+                        color: isOngoing
+                            ? Colors.green.shade700
+                            : Colors.blue.shade700,
                       ),
                     ),
                   ],
@@ -219,10 +224,7 @@ class _JoinMeetingScreenState extends State<JoinMeetingScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                time,
-                style:Styles.darkBlcW60015
-              ),
+              Text(time, style: Styles.darkBlcW60015),
               // ========== JOIN BUTTON ==========
               ElevatedButton(
                 onPressed: () {
@@ -231,15 +233,13 @@ class _JoinMeetingScreenState extends State<JoinMeetingScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue.shade700,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child:  Text(
-                  'Join Now',
-                  style: Styles.whiteW600
-                ),
+                child: Text('Join Now', style: Styles.whiteW600),
               ),
             ],
           ),

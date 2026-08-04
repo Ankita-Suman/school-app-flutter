@@ -7,6 +7,7 @@ import 'student_profile.dart';
 /// A list of bindings which will be used in the route of [StudentProfileScreen].
 class StudentProfileBinding extends Bindings {
 
+  @override
   void dependencies() {
     Get.put<StudentProfileController>(
       StudentProfileController(

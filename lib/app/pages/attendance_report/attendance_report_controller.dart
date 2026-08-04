@@ -25,7 +25,8 @@ class AttendanceReportController extends GetxController {
   var selectedSectionName = ''.obs;
 
   // ========== DISPLAY VALUE ==========
-  String get selectedClassDisplay => '${selectedClassName.value} - ${selectedSectionName.value}';
+  String get selectedClassDisplay =>
+      '${selectedClassName.value} - ${selectedSectionName.value}';
 
   // ========== DATE ==========
   var selectedDate = DateTime.now().obs;
@@ -41,33 +42,48 @@ class AttendanceReportController extends GetxController {
   Future<void> getMyClassData() async {
     try {
       isLoading.value = true;
-      print("📡📡📡 AttendanceReport - getMyClassData START");
-
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
 
-      if (token == null || token.isEmpty) {
-        print("❌ Missing token");
+      if (token.isEmpty || branchId.isEmpty) {
         isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
         return;
       }
 
       var res = await attendanceReportPresenter.getMyClassData(
         isLoading: false,
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3ODQxODA2ODgsImV4cCI6MTc4NDM1MzQ4OCwibmJmIjoxNzg0MTgwNjg4LCJqdGkiOiJKY3IzSmVOdmVWVk5TMllMIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZjZTg0MjJlLWFhOTItNGQ2OS1hZjZhLTIxNTlmZDBjOGM2YSIsInJvbGVfaWQiOiI4MmY4MGE0Yi03ZWIxLTRiNWMtYmIxMS03Yjk5ODczMjY4ZjUifQ.Mdpb7QcnglMLL5B5cph0vKDQQ546iY0I_YkJA-Cl82E',
-        branchId: '6ce8422e-aa92-4d69-af6a-2159fd0c8c6a',
+        token: token, // ✅ dynamic
+        branchId: branchId, // ✅ dynamic
       );
 
       if (res != null && res.status == true && res.data != null) {
         teacherClassData.value = res;
-        print("✅ My Classes loaded successfully");
       } else {
-        print("❌ Failed to load classes: ${res?.message}");
-        isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load classes.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getMyClassData: $e");
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading classes.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
       isLoading.value = false;
     }
   }
@@ -76,7 +92,6 @@ class AttendanceReportController extends GetxController {
   void buildClassGroups() {
     final classes = teacherClassData.value?.data?.classes;
     if (classes == null || classes.isEmpty) {
-      print("⚠️ No classes found to group");
       return;
     }
     Map<String, List<ClassItem>> map = {};
@@ -88,8 +103,6 @@ class AttendanceReportController extends GetxController {
     }
     classGroups.value = map;
     classNames.value = map.keys.toList();
-    print("📦 Class groups built: ${classNames.length} classes");
-
     if (classNames.isNotEmpty) {
       selectedClassId.value = classNames.first;
       final sections = map[classNames.first]!;
@@ -121,8 +134,6 @@ class AttendanceReportController extends GetxController {
       selectedSectionId.value = sections.first.sectionId;
       selectedSectionName.value = sections.first.sectionName;
     }
-
-    print("✅ Class changed to: ${selectedClassDisplay}");
     _fetchAttendanceForCurrentSelection();
   }
 
@@ -130,7 +141,8 @@ class AttendanceReportController extends GetxController {
     selectedSectionId.value = sectionId;
     final classItems = classGroups[selectedClassId.value];
     if (classItems != null) {
-      final selected = classItems.firstWhere((item) => item.sectionId == sectionId);
+      final selected =
+      classItems.firstWhere((item) => item.sectionId == sectionId);
       selectedSectionName.value = selected.sectionName;
     }
     _fetchAttendanceForCurrentSelection();
@@ -139,7 +151,6 @@ class AttendanceReportController extends GetxController {
   // ========== DATE CHANGED ==========
   void onDateChanged(DateTime newDate) {
     selectedDate.value = newDate;
-    print("✅ Date changed to: ${_formatDateForAPI(newDate)}");
     _fetchAttendanceForCurrentSelection();
   }
 
@@ -152,31 +163,31 @@ class AttendanceReportController extends GetxController {
 
   Future<void> fetchClassAttendanceReport() async {
     if (selectedClassId.isEmpty || selectedSectionId.isEmpty) {
-      print("❌ Class or Section not selected");
       return;
     }
 
     try {
       isLoading.value = true;
-      print("📡📡📡 fetchClassAttendanceReport START");
-      print("📚 Class ID: ${selectedClassId.value}");
-      print("📚 Section ID: ${selectedSectionId.value}");
-      print("📅 Date: ${_formatDateForAPI(selectedDate.value)}");
-
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
 
-      if (token == null || token.isEmpty) {
-        print("❌ Missing token");
+      if (token.isEmpty || branchId.isEmpty) {
         isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
         return;
       }
 
       var res = await attendanceReportPresenter.fetchClassAttendanceReport(
         isLoading: false,
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3ODQxODA2ODgsImV4cCI6MTc4NDM1MzQ4OCwibmJmIjoxNzg0MTgwNjg4LCJqdGkiOiJKY3IzSmVOdmVWVk5TMllMIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZjZTg0MjJlLWFhOTItNGQ2OS1hZjZhLTIxNTlmZDBjOGM2YSIsInJvbGVfaWQiOiI4MmY4MGE0Yi03ZWIxLTRiNWMtYmIxMS03Yjk5ODczMjY4ZjUifQ.Mdpb7QcnglMLL5B5cph0vKDQQ546iY0I_YkJA-Cl82E',
-        branchId: '6ce8422e-aa92-4d69-af6a-2159fd0c8c6a',
+        token: token, // ✅ dynamic
+        branchId: branchId, // ✅ dynamic
         classId: selectedClassId.value,
         sectionId: selectedSectionId.value,
         date: _formatDateForAPI(selectedDate.value),
@@ -184,9 +195,7 @@ class AttendanceReportController extends GetxController {
 
       if (res != null && res.status == true && res.data != null) {
         attendanceReportResponse.value = res;
-        print("✅ Attendance report loaded successfully");
       } else {
-        print("❌ Failed to load attendance report: ${res?.message}");
         Get.snackbar(
           'Error',
           res?.message ?? 'Failed to load attendance report.',
@@ -196,7 +205,6 @@ class AttendanceReportController extends GetxController {
         );
       }
     } catch (e) {
-      print("❌ Error in fetchClassAttendanceReport: $e");
       Get.snackbar(
         'Error',
         'Something went wrong while loading attendance report.',
@@ -216,17 +224,16 @@ class AttendanceReportController extends GetxController {
 
   // ========== GETTERS ==========
   List<ClassItem>? get classList => teacherClassData.value?.data?.classes;
+
   bool get hasData => classList != null && classList!.isNotEmpty;
+
   bool get isLoadingData => isLoading.value;
+
   bool get hasReportData => attendanceReportResponse.value?.data != null;
 
   AttendanceReportData? get reportData => attendanceReportResponse.value?.data;
+
   String get month => reportData?.reportInfo?.month ?? '';
   List<AttendanceStat>? get attendanceStats => reportData?.attendanceStats;
   List<TopDefaulter>? get topDefaulters => reportData?.topDefaulters;
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
 }

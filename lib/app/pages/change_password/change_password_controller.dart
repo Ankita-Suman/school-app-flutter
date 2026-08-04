@@ -82,17 +82,17 @@ class ChangePasswordController extends GetxController {
       String? storedUsername = await deviceRepository.getSecuredValue(DeviceConstants.username);
       String? storedBranchCode = await deviceRepository.getSecuredValue(DeviceConstants.branchCode);
 
-      if (token != null && token.isNotEmpty) {
+      if (token.isNotEmpty) {
         resetToken = token;
       }
-      if (storedUsername != null && storedUsername.isNotEmpty) {
+      if (storedUsername.isNotEmpty) {
         username = storedUsername;
       }
-      if (storedBranchCode != null && storedBranchCode.isNotEmpty) {
+      if (storedBranchCode.isNotEmpty) {
         branchCode = storedBranchCode;
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
     }
   }
 
@@ -170,7 +170,6 @@ class ChangePasswordController extends GetxController {
 
   void _updateFormValidity() {
     isFormValid.value = isPasswordValid.value && isConfirmPasswordValid.value;
-    print("Password Valid: ${isPasswordValid.value}, Confirm Valid: ${isConfirmPasswordValid.value}, Form Valid: ${isFormValid.value}");
   }
 
   void showErrorSnackbar(String message) {

@@ -1,12 +1,8 @@
 // controllers/teacher_dashboard_presenter.dart
 import 'package:get/get.dart';
-import '../../../domain/models/events_response.dart';
-import '../../../domain/models/fees_response.dart';
-import '../../../domain/models/profile_response.dart';
 import '../../../domain/models/response_model.dart';
 import '../../../domain/models/staff_profile_response.dart';
 import '../../../domain/models/teacher_dashboard_response.dart';
-import '../../../domain/usecases/home_usecases.dart';
 import '../../../domain/usecases/teacher_home_usecase.dart';
 
 class TeacherDashboardPresenter extends GetxController {
@@ -26,7 +22,7 @@ class TeacherDashboardPresenter extends GetxController {
     );
   }
 
- Future<StaffProfileResponse?> getStaffProfileData({
+  Future<StaffProfileResponse?> getStaffProfileData({
     required bool isLoading,
     required String token,
     required String branchId,
@@ -38,9 +34,9 @@ class TeacherDashboardPresenter extends GetxController {
     );
   }
 
-
-Future<ResponseModel?> logoutAPI({
-  required bool isLoading, required String token,
-}) async =>
-    await homeUseCases.logoutAPI(isLoading: isLoading,token:token);
+  Future<ResponseModel?> logoutAPI({
+    required bool isLoading,
+    required String token,
+  }) async =>
+      await homeUseCases.logoutAPI(isLoading: isLoading, token: token);
 }

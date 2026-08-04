@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import '../../../domain/models/events_response.dart';
 import '../../app.dart';
 import 'upcoming_events_controller.dart';
@@ -12,8 +11,6 @@ class UpcomingEventsScreen extends StatelessWidget {
   final TextEditingController searchController = TextEditingController();
   final RxList<Event> filteredEventsList = RxList<Event>();
 
-  int _currentIndex = 0;
-  final CarouselController _carouselController = CarouselController();
 
   String _formatEventDate(String? date) {
     if (date == null || date.isEmpty) return 'Event Date';
@@ -27,18 +24,32 @@ class UpcomingEventsScreen extends StatelessWidget {
       }
       return date;
     } catch (e) {
-      return date ?? 'Event Date';
+      return date;
     }
   }
 
   String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return months[month - 1];
   }
 
   @override
   Widget build(BuildContext context) {
-    final UpcomingEventsController controller = Get.put(UpcomingEventsController(Get.find()));
+    final UpcomingEventsController controller =
+        Get.put(UpcomingEventsController(Get.find()));
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -50,7 +61,8 @@ class UpcomingEventsScreen extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       body: Obx(() {
         // Loading state
-        if (controller.isLoadingEvents.value && controller.eventsData.value == null) {
+        if (controller.isLoadingEvents.value &&
+            controller.eventsData.value == null) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -61,16 +73,20 @@ class UpcomingEventsScreen extends StatelessWidget {
           filteredEventsList.value = allEvents;
         }
 
-        final events = filteredEventsList.isEmpty ? allEvents : filteredEventsList;
+        final events =
+            filteredEventsList.isEmpty ? allEvents : filteredEventsList;
 
         if (events.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.priority_high, size: 64, color: Colors.grey.shade400),
+                Icon(Icons.priority_high,
+                    size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 16),
-                Text('No upcoming events found', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+                Text('No upcoming events found',
+                    style:
+                        TextStyle(color: Colors.grey.shade500, fontSize: 16)),
               ],
             ),
           );
@@ -108,12 +124,13 @@ class UpcomingEventsScreen extends StatelessWidget {
                               children: [
                                 GestureDetector(
                                   onTap: () => Get.back(),
-                                  child:  SvgPicture.asset(
-                                      AssetConstants.icBackBg,
+                                  child: SvgPicture.asset(
+                                    AssetConstants.icBackBg,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text('Upcoming Events', style: Styles.whiteBold),
+                                Text('Upcoming Events',
+                                    style: Styles.whiteBold),
                               ],
                             ),
                           ],
@@ -137,15 +154,29 @@ class UpcomingEventsScreen extends StatelessWidget {
                           child: TextField(
                             controller: searchController,
                             onChanged: (value) {
-                              final allEventsList = controller.eventsData.value?.data?.events ?? [];
+                              final allEventsList =
+                                  controller.eventsData.value?.data?.events ??
+                                      [];
                               if (value.isEmpty) {
                                 filteredEventsList.value = allEventsList;
                               } else {
                                 final filtered = allEventsList.where((event) {
-                                  return event.title?.toLowerCase().contains(value.toLowerCase()) == true ||
-                                      event.eventType?.toLowerCase().contains(value.toLowerCase()) == true ||
-                                      event.description?.toLowerCase().contains(value.toLowerCase()) == true ||
-                                      event.location?.toLowerCase().contains(value.toLowerCase()) == true;
+                                  return event.title
+                                              ?.toLowerCase()
+                                              .contains(value.toLowerCase()) ==
+                                          true ||
+                                      event.eventType
+                                              ?.toLowerCase()
+                                              .contains(value.toLowerCase()) ==
+                                          true ||
+                                      event.description
+                                              ?.toLowerCase()
+                                              .contains(value.toLowerCase()) ==
+                                          true ||
+                                      event.location
+                                              ?.toLowerCase()
+                                              .contains(value.toLowerCase()) ==
+                                          true;
                                 }).toList();
                                 filteredEventsList.value = filtered;
                               }
@@ -153,11 +184,13 @@ class UpcomingEventsScreen extends StatelessWidget {
                             decoration: InputDecoration(
                               hintText: 'Search events...',
                               hintStyle: Styles.darkBlueW500,
-                              prefixIcon: Icon(Icons.search, color: Colors.grey.shade500, size: 18),
+                              prefixIcon: Icon(Icons.search,
+                                  color: Colors.grey.shade500, size: 18),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 8),
                             ),
                             style: Styles.whiteBold14600,
                           ),
@@ -245,7 +278,8 @@ class UpcomingEventsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.9),
                               borderRadius: BorderRadius.circular(12),
@@ -256,10 +290,12 @@ class UpcomingEventsScreen extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.3),
-                              border: Border.all(color: Colors.grey.shade500, width: 1),
+                              border: Border.all(
+                                  color: Colors.grey.shade500, width: 1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -296,7 +332,8 @@ class UpcomingEventsScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    SvgPicture.asset(AssetConstants.icLocations, height: 14, width: 14),
+                    SvgPicture.asset(AssetConstants.icLocations,
+                        height: 14, width: 14),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(

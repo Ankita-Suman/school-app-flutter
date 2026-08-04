@@ -79,9 +79,9 @@ class MoreWidget extends StatelessWidget {
             Expanded(
               child: Container(
                 color: Colors.grey.shade50,
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: const Column(
+                child: const SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Column(
                     children: [
                       CombinedGridWidget(),
                       SizedBox(height: 20),
@@ -94,22 +94,6 @@ class MoreWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-
-
-
-  String _getInitials(String? fullName) {
-    if (fullName == null || fullName.isEmpty) return 'AS';
-
-    List<String> parts = fullName.trim().split(' ');
-
-    if (parts.length == 1) {
-      return parts[0][0].toUpperCase();
-    }
-
-    String first = parts[0][0].toUpperCase();
-    String last = parts[parts.length - 1][0].toUpperCase();
-    return '$first$last';
   }
 }
 
@@ -203,7 +187,7 @@ class CombinedGridWidget extends StatelessWidget {
             RouteManagement.goToTeamLiveClasses();
             break;
           case 16:
-          // RouteManagement.goToFeesDetails();
+            // RouteManagement.goToFeesDetails();
             break;
           case 17:
             RouteManagement.goToApplyLeave();
@@ -223,12 +207,14 @@ class CombinedGridWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(svgIcon, height: 28, width: 28, fit: BoxFit.contain),
+            SvgPicture.asset(svgIcon,
+                height: 28, width: 28, fit: BoxFit.contain),
             const SizedBox(height: 8),
             Flexible(
               child: Text(
                 label,
-                style: Styles.darkBlkW600013?.copyWith(fontSize: 12, fontWeight: FontWeight.w600),
+                style: Styles.darkBlkW600013
+                    .copyWith(fontSize: 12, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

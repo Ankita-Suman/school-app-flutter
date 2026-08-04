@@ -197,7 +197,8 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
                                 children: [
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Class',
@@ -220,7 +221,8 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Term',
@@ -281,7 +283,8 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
                                 roll: student['roll'] as String? ?? '',
                                 status: student['status'] as String? ?? '',
                                 amount: student['amount'] as String? ?? '',
-                                amountPaid: student['amountPaid'] as String? ?? '',
+                                amountPaid:
+                                    student['amountPaid'] as String? ?? '',
                               ),
                             );
                           }).toList(),
@@ -296,58 +299,6 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // ========== BUILD FILTER CHIP ==========
-  Widget _buildFilterChip({
-    required String label,
-    required int count,
-    required Color color,
-  }) {
-    bool isSelected = selectedFilter == label;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            selectedFilter = label;
-          });
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-          decoration: BoxDecoration(
-            color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected ? color : Colors.grey.shade300,
-              width: 1.5,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '$label ($count)',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? color : Colors.grey.shade700,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -500,22 +451,28 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
           children: [
             // Left side label
             Text(
-              status == 'Paid' ? 'Amount Paid' :
-              status == 'Unpaid' ? 'Total Dues' :
-              'Amount Paid',
+              status == 'Paid'
+                  ? 'Amount Paid'
+                  : status == 'Unpaid'
+                      ? 'Total Dues'
+                      : 'Amount Paid',
               style: Styles.darkBlueW40010,
             ),
             // Right side amount
             Text(
-              status == 'Paid' ? amount :
-              status == 'Unpaid' ? amount :
-              amountPaid,
+              status == 'Paid'
+                  ? amount
+                  : status == 'Unpaid'
+                      ? amount
+                      : amountPaid,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: status == 'Paid' ? Colors.green.shade700 :
-                status == 'Unpaid' ? Colors.red.shade700 :
-                Colors.orange.shade700,
+                color: status == 'Paid'
+                    ? Colors.green.shade700
+                    : status == 'Unpaid'
+                        ? Colors.red.shade700
+                        : Colors.orange.shade700,
               ),
             ),
           ],

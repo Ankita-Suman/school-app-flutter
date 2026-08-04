@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../app.dart';
-import '../../widgets/gradient_button.dart';
 
 class SyllabusTrackingScreen extends StatefulWidget {
   const SyllabusTrackingScreen({super.key});
@@ -88,7 +87,8 @@ class _SyllabusTrackingScreenState extends State<SyllabusTrackingScreen> {
                       children: [
                         // ========== CLASS & SUBJECT (Single Container) ==========
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 16),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -171,33 +171,27 @@ class _SyllabusTrackingScreenState extends State<SyllabusTrackingScreen> {
                             children: [
                               // Row: Title + Percentage
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                     Text(
-                                    'Overall Syllabus',
-                                    style: Styles.darkBlcW70014
-                                  ),
-
-                                     Text(
+                                      Text('Overall Syllabus',
+                                          style: Styles.darkBlcW70014),
+                                      Text(
                                           '${syllabusData['completedChapters']} of ${syllabusData['totalChapters']} Chapters Completed',
-                                          style: Styles.darkBlackW60012
-                                        ),
-
-
-                                ],
-                              ),
-                                  Text(
-                                    '${((syllabusData['completedChapters'] / syllabusData['totalChapters']) * 100).toStringAsFixed(0)}%',
-                                    style: Styles.darkGreenW70020
+                                          style: Styles.darkBlackW60012),
+                                    ],
                                   ),
+                                  Text(
+                                      '${((syllabusData['completedChapters'] / syllabusData['totalChapters']) * 100).toStringAsFixed(0)}%',
+                                      style: Styles.darkGreenW70020),
                                 ],
                               ),
-
                             ],
                           ),
                         ),
@@ -265,10 +259,7 @@ class _SyllabusTrackingScreenState extends State<SyllabusTrackingScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  name,
-                  style: Styles.darkBlcW70013
-                ),
+                child: Text(name, style: Styles.darkBlcW70013),
               ),
               Text(
                 '$progress%',
@@ -292,16 +283,16 @@ class _SyllabusTrackingScreenState extends State<SyllabusTrackingScreen> {
             ),
             child: progress > 0
                 ? FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: progress / 100,
-              child: Container(
-                height: 6,
-                decoration: BoxDecoration(
-                  color: _getProgressColor(progress),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            )
+                    alignment: Alignment.centerLeft,
+                    widthFactor: progress / 100,
+                    child: Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: _getProgressColor(progress),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  )
                 : null, // 🔥 0% par empty (fully grey)
           ),
         ],

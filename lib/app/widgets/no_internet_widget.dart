@@ -25,7 +25,7 @@ class NoInternetWidget extends StatelessWidget {
                   child: Text(
                     'internetIsNotConnected'.tr,
                     textAlign: TextAlign.center,
-                    style: Styles.black15,
+                    style: Styles.blackDark16,
                   ),
                 ),
               ),

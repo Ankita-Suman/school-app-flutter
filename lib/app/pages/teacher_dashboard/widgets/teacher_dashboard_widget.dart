@@ -17,7 +17,8 @@ class TeacherDashboardHomeScreen extends StatelessWidget {
       Get.put(TeacherDashboardController(Get.find()), permanent: true);
     }
 
-    final TeacherDashboardController controller = Get.find<TeacherDashboardController>();
+    final TeacherDashboardController controller =
+        Get.find<TeacherDashboardController>();
     final screenWidth = MediaQuery.of(context).size.width;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -118,7 +119,7 @@ class TeacherDashboardHomeScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Obx(
-                                      () => Text(
+                                  () => Text(
                                     _getTeacherName(controller),
                                     style: const TextStyle(
                                       fontSize: 18,
@@ -149,8 +150,11 @@ class TeacherDashboardHomeScreen extends StatelessWidget {
                             ),
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.notifications, color: Colors.white, size: 20),
-                            onPressed: () {},
+                            icon: const Icon(Icons.notifications,
+                                color: Colors.white, size: 20),
+                            onPressed: () {
+                              controller.showComingSoonSnackbar();
+                            },
                           ),
                         ),
                       ],
@@ -174,12 +178,14 @@ class TeacherDashboardHomeScreen extends StatelessWidget {
                     height: 280,
                     child: Obx(() {
                       final cards = controller.dashboardCards ?? [];
-                      final displayCards = cards.isNotEmpty ? cards : _getDefaultCards();
+                      final displayCards =
+                          cards.isNotEmpty ? cards : _getDefaultCards();
 
                       return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 7,
@@ -362,7 +368,7 @@ class TeacherDashboardHomeScreen extends StatelessWidget {
     return Container(
       width: 55,
       height: 55,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: ColorsValue.bgColors,
         shape: BoxShape.circle,
       ),
@@ -494,7 +500,8 @@ class GridWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(svgIcon, height: 40, width: 40, fit: BoxFit.contain),
+            SvgPicture.asset(svgIcon,
+                height: 40, width: 40, fit: BoxFit.contain),
             const SizedBox(height: 8),
             Flexible(
               child: Text(

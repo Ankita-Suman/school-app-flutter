@@ -1,21 +1,12 @@
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
-import 'package:school_app/app/pages/invoice/invoice_screen.dart';
-import 'package:school_app/app/pages/login_student/login_student.dart';
-
-import '../pages/invoice/invoice.dart';
-import '../pages/invoice/invoice_screen.dart';
-import '../pages/invoice/invoice_screen.dart';
-
 /// A chunk of routes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        taken in the application.
 ///
 /// Will be ignored for test since all are static values and would not change.
 abstract class RouteManagement {
 
 
-  static void goToChooseOptions() {
-    Get.offAllNamed(Routes.chooseOptions);
-  }
+
   static void goToHome() {
     // Navigate to home screen (replace with your actual home route)
     Get.offAllNamed(Routes.home);
@@ -33,9 +24,6 @@ abstract class RouteManagement {
     Get.offAllNamed(Routes.login); // or Routes.dashboard
   }
 
-  static void goToLoginTeacher() {
-    Get.toNamed(Routes.loginTeacher);
-  }
   static void goToPayment() {
     Get.toNamed(Routes.payment);
   }
@@ -58,11 +46,20 @@ abstract class RouteManagement {
   static void goToMyStudentClassList() {
     Get.toNamed(Routes.myStudentClass);
   }
+  static void goToJoinMeeting() {
+    Get.toNamed(Routes.joinMeeting);
+  }
+  static void goToStudentFeeList() {
+    Get.toNamed(Routes.studentFeeList);
+  }
+  static void goToDefaulterList() {
+    Get.toNamed(Routes.defaulterList);
+  }
 
   static void goToStudentProfile({required String studentId}) {
     Get.toNamed(
       Routes.studentProfile,
-      arguments: {'studentId': studentId ?? ''},
+      arguments: {'studentId': studentId},
     );
   }
   static void goToAttendanceManagement() {
@@ -70,6 +67,12 @@ abstract class RouteManagement {
   }
   static void goToHomeworkAssignment() {
     Get.toNamed(Routes.homeworkAssignment);
+  }
+  static void goToLeaveBalance() {
+    Get.toNamed(Routes.leaveBalance);
+  }
+  static void goToApprovalStatus() {
+    Get.toNamed(Routes.approvalStatus);
   }
   static void goToLessonPlanning() {
     Get.toNamed(Routes.lessonPlanning);
@@ -90,17 +93,10 @@ abstract class RouteManagement {
     Get.toNamed(Routes.myStudentClass);
   }
 
-  // static void goToLoginStudentWithParam({required String role}) {
-  //   Get.to(
-  //         () =>  LoginStudentScreen(),
-  //     arguments: {'fromScreen': role}, // Pass argument
-  //   );
-  // }
-
   static void goToInvoice({required String invoiceId}) {
     Get.toNamed(
       Routes.invoice,
-      arguments: {'invoiceId': invoiceId ?? ''},
+      arguments: {'invoiceId': invoiceId},
     );
   }
 
@@ -117,15 +113,30 @@ abstract class RouteManagement {
     );
   }
 
-  static void goToLoginParent() {
-    Get.toNamed(Routes.loginParent);
+  static void goToStaffLeaveHistory() {
+    Get.toNamed(Routes.staffLeaveHistory);
   }
 
   static void goToOtpVerification() {
     Get.toNamed(Routes.otpVerification);
   }
+  static void goToExamSchedule() {
+    Get.toNamed(Routes.examinationSchedule);
+  }
   static void goToForgotPassword() {
     Get.toNamed(Routes.forgotPassword);
+  }
+  static void goToMarkEntry() {
+    Get.toNamed(Routes.markEntry);
+  }
+  static void goToTermAttendance() {
+    Get.toNamed(Routes.termAttendance);
+  }
+  static void goToExternalMarks() {
+    Get.toNamed(Routes.externalMarks);
+  }
+  static void goToInternalMarks() {
+    Get.toNamed(Routes.internalMarks);
   }
   static void goToNewForgotPassword() {
     Get.toNamed(Routes.newForgotPassword);

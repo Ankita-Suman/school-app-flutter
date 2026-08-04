@@ -17,8 +17,6 @@ class EditAttendanceScreen extends StatefulWidget {
 class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
   late final EditAttendanceController controller;
 
-  bool _hasAttendanceChanged = false;
-
   String get currentDate {
     final now = DateTime.now();
     final day = now.day.toString().padLeft(2, '0');
@@ -35,29 +33,40 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
 
   Color _getStatusColor(String status) {
     switch (status.toUpperCase()) {
-      case 'PRESENT': return Colors.green;
-      case 'LATE': return Colors.orange;
-      case 'ABSENT': return Colors.red;
-      case 'HALF_DAY': return Colors.purple;
-      case 'LEAVE': return Colors.blue;
-      default: return Colors.grey;
+      case 'PRESENT':
+        return Colors.green;
+      case 'LATE':
+        return Colors.orange;
+      case 'ABSENT':
+        return Colors.red;
+      case 'HALF_DAY':
+        return Colors.purple;
+      case 'LEAVE':
+        return Colors.blue;
+      default:
+        return Colors.grey;
     }
   }
 
   Color _getStatusBgColor(String status) {
     switch (status.toUpperCase()) {
-      case 'PRESENT': return Colors.green.shade50;
-      case 'LATE': return Colors.orange.shade50;
-      case 'ABSENT': return Colors.red.shade50;
-      case 'HALF_DAY': return Colors.purple.shade50;
-      case 'LEAVE': return Colors.blue.shade50;
-      default: return Colors.white;
+      case 'PRESENT':
+        return Colors.green.shade50;
+      case 'LATE':
+        return Colors.orange.shade50;
+      case 'ABSENT':
+        return Colors.red.shade50;
+      case 'HALF_DAY':
+        return Colors.purple.shade50;
+      case 'LEAVE':
+        return Colors.blue.shade50;
+      default:
+        return Colors.transparent;
     }
   }
 
   void _updateAttendance(int index, String status) {
     controller.updateStudentAttendance(index, status);
-    setState(() => _hasAttendanceChanged = true);
   }
 
   void _showNoteDialog(int index, String currentNote) {
@@ -99,7 +108,6 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                   ElevatedButton(
                     onPressed: () {
                       controller.updateStudentNote(index, noteController.text.trim());
-                      setState(() => _hasAttendanceChanged = true);
                       Get.back();
                     },
                     style: ElevatedButton.styleFrom(
@@ -118,8 +126,138 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
     );
   }
 
+  // ========== CONFIRMATION DIALOG ==========
+  void _showConfirmationDialog() {
+    final students = controller.students;
+    if (students.isEmpty) return;
+
+    final statusCounts = controller.getStatusCounts();
+    if (statusCounts.isEmpty) {
+      Get.snackbar('Info', 'No status selected. Please mark at least one student.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white);
+      return;
+    }
+
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Confirm Changes',
+                style: Styles.darkBlcW700.copyWith(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Total Students: ${students.length}',
+                style: Styles.darkBlueW400,
+              ),
+              const SizedBox(height: 16),
+              ...statusCounts.entries.map((entry) {
+                final displayStatus = entry.key;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(displayStatus),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            displayStatus,
+                            style: Styles.darkBlcW600,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '${entry.value}',
+                        style: Styles.darkBlcW600,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        controller.revertChanges();
+                        Get.back();
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey.shade100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                        controller.updateAttendance();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade700,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text(
+                        'Submit',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  // ========== SAVE ACTION ==========
   void _saveChanges() {
-    controller.updateAttendance();
+    if (!controller.hasChanges()) {
+      Get.snackbar('Info', 'No changes to save.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white);
+      return;
+    }
+    _showConfirmationDialog();
   }
 
   @override
@@ -171,20 +309,16 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                           ),
                           child: Text(
                             '$count Students',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
                           ),
                         );
-                      })
+                      }),
                     ],
                   ),
                 ),
                 const SizedBox(height: 30),
 
-                // ========== DATE + CLASS + SECTION (with dropdowns) ==========
+                // Date + Class + Section (unchanged)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Container(
@@ -226,7 +360,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                         ),
                         const SizedBox(width: 8),
 
-                        // Class Dropdown
+                        // Class Dropdown (unchanged)
                         Expanded(
                           child: Obx(() {
                             final classNames = controller.classNames;
@@ -252,6 +386,15 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                 ],
                               );
                             }
+                            String? selectedId = controller.selectedClassId.value;
+                            if (selectedId.isEmpty || !classNames.contains(selectedId)) {
+                              selectedId = classNames.isNotEmpty ? classNames.first : null;
+                              if (selectedId != null && selectedId != controller.selectedClassId.value) {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  controller.onClassSelected(selectedId!);
+                                });
+                              }
+                            }
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -267,7 +410,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
-                                      value: controller.selectedClassId.value,
+                                      value: selectedId,
                                       items: classNames.map((classId) {
                                         final name = controller.classGroups[classId]?.first.className ?? classId;
                                         return DropdownMenuItem<String>(
@@ -291,7 +434,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                         ),
                         const SizedBox(width: 8),
 
-                        // Section Dropdown
+                        // Section Dropdown (unchanged)
                         Expanded(
                           child: Obx(() {
                             final sections = controller.classGroups[controller.selectedClassId.value] ?? [];
@@ -317,17 +460,15 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                 ],
                               );
                             }
-                            // Ensure selected section is valid
-                            String currentSection = controller.selectedSectionId.value;
-                            bool isValid = sections.any((item) => item.sectionId == currentSection);
+                            String? selectedSection = controller.selectedSectionId.value;
+                            bool isValid = sections.any((s) => s.sectionId == selectedSection);
                             if (!isValid && sections.isNotEmpty) {
-                              currentSection = sections.first.sectionId;
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (controller.selectedSectionId.value != currentSection) {
-                                  controller.selectedSectionId.value = currentSection;
-                                  controller.selectedSectionName.value = sections.first.sectionName;
-                                }
-                              });
+                              selectedSection = sections.first.sectionId;
+                              if (selectedSection != controller.selectedSectionId.value) {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  controller.onSectionSelected(selectedSection!);
+                                });
+                              }
                             }
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,7 +485,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
-                                      value: currentSection,
+                                      value: selectedSection,
                                       items: sections.map((item) {
                                         return DropdownMenuItem<String>(
                                           value: item.sectionId,
@@ -371,7 +512,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Warning
+                // Warning (unchanged)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Container(
@@ -397,7 +538,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Student list with table header
+                // Student list (unchanged)
                 Expanded(
                   child: Obx(() {
                     if (controller.isLoading.value) {
@@ -415,6 +556,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                     }
 
                     return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Header
                         Container(
@@ -436,7 +578,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                             ],
                           ),
                         ),
-                         Divider(height: 1, color: Colors.grey.shade300),
+                        Divider(height: 1, color: Colors.grey.shade300),
 
                         // List
                         Expanded(
@@ -449,7 +591,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                 children: [
                                   _buildStudentRow(student: student, index: index),
                                   if (index < students.length - 1)
-                                     Divider(height: 1, color: Colors.grey.shade200),
+                                    Divider(height: 1, color: Colors.grey.shade200),
                                 ],
                               );
                             },
@@ -460,7 +602,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                   }),
                 ),
 
-                // Update button
+                // ========== BUTTON – always enabled, always "Update Changes" ==========
                 Obx(() {
                   if (!controller.hasData) return const SizedBox.shrink();
                   return Container(
@@ -480,7 +622,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                       width: double.infinity,
                       height: 50,
                       child: GradientButton(
-                        onPressed: _hasAttendanceChanged ? _saveChanges : (){},
+                        onPressed: _saveChanges,
                         text: 'Update Changes',
                       ),
                     ),
@@ -509,10 +651,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            width: 40,
-            child: Text(student.rollNumber, style: Styles.darkBlcW60013),
-          ),
+          SizedBox(width: 40, child: Text(student.rollNumber, style: Styles.darkBlcW60013)),
           Expanded(
             flex: 3,
             child: Column(

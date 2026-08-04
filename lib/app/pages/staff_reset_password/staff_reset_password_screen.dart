@@ -67,7 +67,8 @@ class StaffResetPasswordScreen extends StatelessWidget {
             child: Container(
               color: Colors.white,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -95,7 +96,8 @@ class StaffResetPasswordScreen extends StatelessWidget {
                       focusNode: controller.currentPasswordFocusNode,
                       isFocused: controller.isCurrentPasswordFocused,
                       isVisible: controller.isCurrentPasswordVisible,
-                      toggleVisibility: controller.toggleCurrentPasswordVisibility,
+                      toggleVisibility:
+                          controller.toggleCurrentPasswordVisibility,
                       errorText: controller.currentPasswordError,
                       textInputAction: TextInputAction.next,
                       onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -129,12 +131,15 @@ class StaffResetPasswordScreen extends StatelessWidget {
                       focusNode: controller.confirmPasswordFocusNode,
                       isFocused: controller.isConfirmPasswordFocused,
                       isVisible: controller.isConfirmPasswordVisible,
-                      toggleVisibility: controller.toggleConfirmPasswordVisibility,
+                      toggleVisibility:
+                          controller.toggleConfirmPasswordVisibility,
                       errorText: controller.confirmPasswordError,
                       textInputAction: TextInputAction.done,
                       onSubmitted: (_) {
                         FocusScope.of(context).unfocus();
-                        if (controller.isFormValid.value) controller.resetPassword();
+                        if (controller.isFormValid.value) {
+                          controller.resetPassword();
+                        }
                       },
                       screenWidth: screenWidth,
                       screenHeight: screenHeight,
@@ -165,19 +170,22 @@ class StaffResetPasswordScreen extends StatelessWidget {
               ],
             ),
             child: Obx(
-                  () => Opacity(
+              () => Opacity(
                 opacity: controller.isFormValid.value ? 1.0 : 0.5,
                 child: SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: GradientButton(
-                    onPressed: controller.isFormValid.value && !controller.isLoading.value
+                    onPressed: controller.isFormValid.value &&
+                            !controller.isLoading.value
                         ? () {
-                      FocusScope.of(context).unfocus();
-                      controller.resetPassword();
-                    }
-                        : (){},
-                    text: controller.isLoading.value ? 'Resetting...' : 'Reset Password',
+                            FocusScope.of(context).unfocus();
+                            controller.resetPassword();
+                          }
+                        : () {},
+                    text: controller.isLoading.value
+                        ? 'Resetting...'
+                        : 'Reset Password',
                   ),
                 ),
               ),
@@ -211,16 +219,16 @@ class StaffResetPasswordScreen extends StatelessWidget {
       final borderColor = isError
           ? Colors.red
           : (hasFocus || hasContent)
-          ? Colors.blue.shade700
-          : Colors.grey.shade300;
+              ? Colors.blue.shade700
+              : Colors.grey.shade300;
       final borderWidth = (hasFocus || hasContent || isError) ? 1.5 : 1.0;
       final bgColor = isError
           ? Colors.red.shade50
           : hasFocus
-          ? Colors.white
-          : hasContent
-          ? Colors.blue.shade50
-          : Colors.grey.shade50;
+              ? Colors.white
+              : hasContent
+                  ? Colors.blue.shade50
+                  : Colors.grey.shade50;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,7 +296,7 @@ class StaffResetPasswordScreen extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4, left: 4),
               child: Text(
                 errorText.value,
-                style: Styles.lightRed12,
+                style: Styles.darkRedW70012,
               ),
             ),
         ],

@@ -1,6 +1,5 @@
 import 'package:school_app/domain/domain.dart';
 
-import '../../../domain/models/student_list_response.dart';
 
 class MyStudentListPresenter {
   MyStudentListPresenter(this.homeUseCases);
@@ -13,7 +12,6 @@ class MyStudentListPresenter {
     required String branchId,
     required String classId,
     required String sectionId,
-
   }) async {
     return await homeUseCases.getAllStudentList(
       isLoading: isLoading,
@@ -23,6 +21,4 @@ class MyStudentListPresenter {
       sectionId: sectionId,
     );
   }
-
-
 }

@@ -1,17 +1,13 @@
 // screens/change_password_successfully_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import '../../app.dart';
-import 'change_password_successfully_controller.dart';
 
 class ChangePasswordSuccessfullyScreen extends StatelessWidget {
   const ChangePasswordSuccessfullyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ChangePasswordSuccessfullyController controller = Get.put(ChangePasswordSuccessfullyController());
-
     // Get screen dimensions for responsive layout
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;

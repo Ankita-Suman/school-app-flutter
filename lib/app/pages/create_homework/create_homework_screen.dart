@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../app.dart';
 import '../../widgets/gradient_button.dart';
 
@@ -23,14 +22,32 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
     'fileName': 'algebra_worksheet.pdf',
     'fileSize': '245 KB',
   };
+
   // ========== ADD MORE OPTIONS ==========
   // ========== ADD MORE OPTIONS DATA ==========
   final List<Map<String, dynamic>> addMoreOptions = [
-    {'icon': Icons.photo_camera_outlined, 'label': 'Photo', 'color': Colors.blue.shade700},
-    {'icon': Icons.videocam_outlined, 'label': 'Video', 'color': Colors.purple.shade700},
-    {'icon': Icons.share_outlined, 'label': 'Link', 'color': Colors.green.shade700},
-    {'icon': Icons.description_outlined, 'label': 'Document', 'color': Colors.orange.shade700},
+    {
+      'icon': Icons.photo_camera_outlined,
+      'label': 'Photo',
+      'color': Colors.blue.shade700
+    },
+    {
+      'icon': Icons.videocam_outlined,
+      'label': 'Video',
+      'color': Colors.purple.shade700
+    },
+    {
+      'icon': Icons.share_outlined,
+      'label': 'Link',
+      'color': Colors.green.shade700
+    },
+    {
+      'icon': Icons.description_outlined,
+      'label': 'Document',
+      'color': Colors.orange.shade700
+    },
   ];
+
   // ========== CONTROLLERS ==========
   final TextEditingController classController = TextEditingController();
   final TextEditingController subjectController = TextEditingController();
@@ -112,7 +129,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                 // ========== SCROLLABLE CONTENT ==========
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -129,7 +147,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -162,7 +181,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -196,7 +216,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -225,7 +246,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -255,7 +277,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -298,55 +321,56 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                           style: Styles.darkBlackW60012,
                         ),
                         const SizedBox(height: 6),
-                         Container(
-                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.blue.shade700,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  //padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade100,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    Icons.picture_as_pdf,
-                                    size: 20,
-                                    color: Colors.red.shade700,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        homeworkData['fileName'] as String,
-                                        style: Styles.darkBlcW600,
-                                      ),
-                                      Text(
-                                        homeworkData['fileSize'] as String,
-                                        style: Styles.darkBlueW400,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // 🔥 Cross Icon instead of Download
-                                Icon(
-                                  Icons.close,
-                                  color: Colors.grey.shade600,
-                                  size: 22,
-                                ),
-                              ],
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Colors.blue.shade700,
+                              width: 1.5,
                             ),
                           ),
+                          child: Row(
+                            children: [
+                              Container(
+                                //padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade100,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.picture_as_pdf,
+                                  size: 20,
+                                  color: Colors.red.shade700,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      homeworkData['fileName'] as String,
+                                      style: Styles.darkBlcW600,
+                                    ),
+                                    Text(
+                                      homeworkData['fileSize'] as String,
+                                      style: Styles.darkBlueW400,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // 🔥 Cross Icon instead of Download
+                              Icon(
+                                Icons.close,
+                                color: Colors.grey.shade600,
+                                size: 22,
+                              ),
+                            ],
+                          ),
+                        ),
 
                         const SizedBox(height: 16),
 
@@ -366,8 +390,10 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                                   // Handle option tap
                                 },
                                 child: Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10),
@@ -385,10 +411,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                                         color: Colors.blue.shade700,
                                       ),
                                       const SizedBox(height: 4),
-                                      Text(
-                                        option['label'] as String,
-                                        style: Styles.darkBlackW70010
-                                      ),
+                                      Text(option['label'] as String,
+                                          style: Styles.darkBlackW70010),
                                     ],
                                   ),
                                 ),
@@ -457,7 +481,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
     if (picked != null) {
       setState(() {
         dueDateController.text =
-        '${picked.day.toString().padLeft(2, '0')} ${_getMonthName(picked.month)} ${picked.year}';
+            '${picked.day.toString().padLeft(2, '0')} ${_getMonthName(picked.month)} ${picked.year}';
       });
     }
   }

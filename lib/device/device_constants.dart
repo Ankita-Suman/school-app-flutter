@@ -30,6 +30,7 @@ abstract class DeviceConstants {
   static const String otp = 'otp';
   static const String resetToken = 'token';
   static const String branchId = 'branchId';
+  static const String staffId = 'staffId';
   static const String branchCode = 'branchCode';
   static const String isForgot = 'isForgot';
   static const String isSalon = 'isSalon';

@@ -72,7 +72,8 @@ class MoreWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Container(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 15),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15),
@@ -82,73 +83,80 @@ class MoreWidget extends StatelessWidget {
                           ),
                         ),
                         child: Obx(() => Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Stack(
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      width: 70,
-                                      height: 70,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.blue.shade300,
-                                          width: 2,
+                                    Stack(
+                                      children: [
+                                        Container(
+                                          width: 70,
+                                          height: 70,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.blue.shade300,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          child: _buildAvatar(controller),
                                         ),
-                                      ),
-                                      child: _buildAvatar(controller),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        controller.profileData.value?.personal?.name ??
-                                            'Olivier Thomas',
-                                        style: Styles.whiteBold,
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Class ${controller.profileData.value?.personal?.classInfo?.name ?? '1'} – ${controller.profileData.value?.personal?.section?.name ?? 'A'} - Session ${controller.profileData.value?.other?.academic?.session ?? '2025 – 26'}',
-                                        style: Styles.whiteW400,
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: Colors.white.withOpacity(0.3),
-                                                width: 1,
+                                          Text(
+                                            controller.profileData.value
+                                                    ?.personal.name ??
+                                                'Olivier Thomas',
+                                            style: Styles.whiteBold,
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            'Class ${controller.profileData.value?.personal.classInfo.name ?? '1'} – ${controller.profileData.value?.personal.section.name ?? 'A'} - Session ${controller.profileData.value?.other.academic.session ?? '2025 – 26'}',
+                                            style: Styles.whiteW400,
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 10),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.3),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Roll. No. ${controller.profileData.value?.personal.rollNumber ?? '18001'}',
+                                                  style: Styles.whiteW40011,
+                                                ),
                                               ),
-                                            ),
-                                            child: Text(
-                                              'Roll. No. ${controller.profileData.value?.personal?.rollNumber ?? '18001'}',
-                                              style: Styles.whiteW40011,
-                                            ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ],
-                        )),
+                            )),
                       ),
                     ],
                   ),
@@ -158,9 +166,9 @@ class MoreWidget extends StatelessWidget {
             Expanded(
               child: Container(
                 color: Colors.grey.shade50,
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: const Column(
+                child: const SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Column(
                     children: [
                       CombinedGridWidget(),
                       SizedBox(height: 20),
@@ -177,8 +185,8 @@ class MoreWidget extends StatelessWidget {
 
   // ✅ Avatar Widget with Image/Initials logic
   Widget _buildAvatar(DashboardController controller) {
-    String? photoUrl = controller.profileData.value?.personal?.photo;
-    String? fullName = controller.profileData.value?.personal?.name;
+    String? photoUrl = controller.profileData.value?.personal.photo;
+    String? fullName = controller.profileData.value?.personal.name;
 
     if (photoUrl != null && photoUrl.isNotEmpty) {
       return ClipOval(
@@ -201,7 +209,7 @@ class MoreWidget extends StatelessWidget {
     return Container(
       width: 70,
       height: 70,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: ColorsValue.bgColors,
         shape: BoxShape.circle,
       ),
@@ -319,7 +327,7 @@ class CombinedGridWidget extends StatelessWidget {
             RouteManagement.goToTeamLiveClasses();
             break;
           case 16:
-          // RouteManagement.goToFeesDetails();
+            // RouteManagement.goToFeesDetails();
             break;
           case 17:
             RouteManagement.goToApplyLeave();
@@ -339,12 +347,14 @@ class CombinedGridWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(svgIcon, height: 28, width: 28, fit: BoxFit.contain),
+            SvgPicture.asset(svgIcon,
+                height: 28, width: 28, fit: BoxFit.contain),
             const SizedBox(height: 8),
             Flexible(
               child: Text(
                 label,
-                style: Styles.darkBlkW600013?.copyWith(fontSize: 12, fontWeight: FontWeight.w600),
+                style: Styles.darkBlkW600013
+                    .copyWith(fontSize: 12, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

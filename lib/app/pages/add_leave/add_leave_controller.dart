@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -103,7 +102,6 @@ class AddLeaveController extends GetxController {
         );
       }
     } catch (e) {
-      print("Error picking file: $e");
       Get.snackbar(
         'Error',
         'Failed to pick file. Please try again.',
@@ -141,7 +139,8 @@ class AddLeaveController extends GetxController {
     );
 
     if (picked != null) {
-      String formattedDate = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      String formattedDate =
+          "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
       applyDate.value = formattedDate;
       applyDateController.text = formattedDate;
     }
@@ -168,7 +167,8 @@ class AddLeaveController extends GetxController {
     );
 
     if (picked != null) {
-      String formattedDate = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      String formattedDate =
+          "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
       fromDate.value = formattedDate;
       fromDateController.text = formattedDate;
       if (toDate.value.isNotEmpty) {
@@ -199,7 +199,8 @@ class AddLeaveController extends GetxController {
     );
 
     if (picked != null) {
-      String formattedDate = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      String formattedDate =
+          "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
       toDate.value = formattedDate;
       toDateController.text = formattedDate;
       if (fromDate.value.isNotEmpty) {

@@ -4,17 +4,15 @@ import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:school_app/app/app.dart';
 import '../pages/dashboard/dashboard_controller.dart';
-import '../utils/asset_constants.dart';
 
 class BottomNavBarWidget extends StatelessWidget {
   const BottomNavBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    print("🔽🔽🔽 BOTTOM NAV BAR BUILD 🔽🔽🔽");
 
     if (!Get.isRegistered<DashboardController>()) {
-      print("⚠️ DashboardController not registered yet");
+      debugPrint("⚠️ DashboardController not registered yet");
       return const SizedBox.shrink();
     }
 

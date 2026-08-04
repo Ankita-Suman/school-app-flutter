@@ -6,11 +6,12 @@ import '../../app.dart';
 import '../../widgets/gradient_button.dart';
 
 class ShareMaterialScreen extends StatelessWidget {
-  ShareMaterialScreen({super.key});
+  const ShareMaterialScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ShareMaterialController controller = Get.put(ShareMaterialController());
+    final ShareMaterialController controller =
+        Get.put(ShareMaterialController());
 
     final screenHeight = MediaQuery.of(context).size.height;
     final backgroundHeight = screenHeight < 700 ? 90.0 : 110.0;
@@ -64,7 +65,8 @@ class ShareMaterialScreen extends StatelessWidget {
                 // ========== SCROLLABLE CONTENT ==========
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -83,7 +85,8 @@ class ShareMaterialScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -117,7 +120,8 @@ class ShareMaterialScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -151,7 +155,8 @@ class ShareMaterialScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -180,7 +185,8 @@ class ShareMaterialScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -254,37 +260,40 @@ class ShareMaterialScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 12),
                                 // Selected file name
-                                Obx(() => controller.selectedFileName.value.isNotEmpty
+                                Obx(() => controller
+                                        .selectedFileName.value.isNotEmpty
                                     ? Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Colors.green.shade200,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.check_circle,
-                                        size: 16,
-                                        color: Colors.green.shade600,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        controller.selectedFileName.value,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.green.shade700,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.shade50,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                            color: Colors.green.shade200,
+                                            width: 1,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.check_circle,
+                                              size: 16,
+                                              color: Colors.green.shade600,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              controller.selectedFileName.value,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.green.shade700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                     : const SizedBox.shrink()),
                               ],
                             ),

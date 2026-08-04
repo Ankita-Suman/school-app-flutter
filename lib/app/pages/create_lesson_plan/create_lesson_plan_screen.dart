@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../app.dart';
 import '../../widgets/gradient_button.dart';
 
@@ -55,8 +54,16 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
 
   // ========== ADD MORE OPTIONS ==========
   final List<Map<String, dynamic>> addMoreOptions = [
-    {'icon': Icons.add, 'label': 'Add Presentation', 'color': Colors.blue.shade700},
-    {'icon': Icons.add, 'label': 'Add Video Link', 'color': Colors.purple.shade700},
+    {
+      'icon': Icons.add,
+      'label': 'Add Presentation',
+      'color': Colors.blue.shade700
+    },
+    {
+      'icon': Icons.add,
+      'label': 'Add Video Link',
+      'color': Colors.purple.shade700
+    },
   ];
 
   @override
@@ -113,7 +120,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                 // ========== SCROLLABLE CONTENT ==========
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -130,7 +138,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -163,7 +172,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -197,7 +207,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -226,7 +237,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -262,7 +274,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -280,7 +293,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                                           ),
                                         ),
                                         GestureDetector(
-                                          onTap: () => _selectStartDate(context),
+                                          onTap: () =>
+                                              _selectStartDate(context),
                                           child: Icon(
                                             Icons.calendar_today,
                                             size: 18,
@@ -304,7 +318,8 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -356,8 +371,10 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
                                   // Handle option tap
                                 },
                                 child: Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10),
@@ -447,7 +464,7 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
     if (picked != null) {
       setState(() {
         startDateController.text =
-        '${picked.day.toString().padLeft(2, '0')} ${_getMonthName(picked.month)} ${picked.year}';
+            '${picked.day.toString().padLeft(2, '0')} ${_getMonthName(picked.month)} ${picked.year}';
       });
     }
   }
@@ -475,7 +492,7 @@ class _CreateLessonPlanScreenState extends State<CreateLessonPlanScreen> {
     if (picked != null) {
       setState(() {
         endDateController.text =
-        '${picked.day.toString().padLeft(2, '0')} ${_getMonthName(picked.month)} ${picked.year}';
+            '${picked.day.toString().padLeft(2, '0')} ${_getMonthName(picked.month)} ${picked.year}';
       });
     }
   }

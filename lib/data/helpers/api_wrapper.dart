@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'package:school_app/app/app.dart';
 import 'package:school_app/data/data_constants.dart';
 import 'package:school_app/domain/domain.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 /// API WRAPPER to call all the APIs and handle the error status codes

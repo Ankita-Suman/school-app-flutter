@@ -14,7 +14,8 @@ class DashboardPresenter extends GetxController {
   Future<ProfileResponse?> getProfileDetailsAPI({
     required bool isLoading,
     required String token,
-    required String branchId, required String studentId,
+    required String branchId,
+    required String studentId,
   }) async {
     return await homeUseCases.getProfileDetailsAPI(
       isLoading: isLoading,
@@ -27,7 +28,8 @@ class DashboardPresenter extends GetxController {
   Future<FeeResponseModel?> getFeesDetailsAPI({
     required bool isLoading,
     required String token,
-    required String branchId, required String studentId,
+    required String branchId,
+    required String studentId,
   }) async {
     return await homeUseCases.getFeesDetailsAPI(
       isLoading: isLoading,
@@ -40,7 +42,8 @@ class DashboardPresenter extends GetxController {
   Future<EventsResponseModel?> getAllEvents({
     required bool isLoading,
     required String token,
-    required String branchId, required String studentId,
+    required String branchId,
+    required String studentId,
   }) async {
     return await homeUseCases.getAllEvents(
       isLoading: isLoading,
@@ -50,8 +53,9 @@ class DashboardPresenter extends GetxController {
     );
   }
 
-Future<ResponseModel?> logoutAPI({
-  required bool isLoading, required String token,
-}) async =>
-    await homeUseCases.logoutAPI(isLoading: isLoading,token:token);
+  Future<ResponseModel?> logoutAPI({
+    required bool isLoading,
+    required String token,
+  }) async =>
+      await homeUseCases.logoutAPI(isLoading: isLoading, token: token);
 }

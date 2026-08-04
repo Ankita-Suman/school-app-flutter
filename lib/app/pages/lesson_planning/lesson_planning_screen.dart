@@ -127,7 +127,7 @@ class LessonPlanningScreen extends StatelessWidget {
                                   color: item['color'] as Color,
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
 
@@ -163,7 +163,7 @@ class LessonPlanningScreen extends StatelessWidget {
                                   color: item['color'] as Color,
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
 

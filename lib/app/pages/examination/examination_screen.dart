@@ -6,22 +6,29 @@ import '../../app.dart';
 class ExaminationScreen extends StatelessWidget {
   ExaminationScreen({super.key});
 
-  // ========== LEAVE MANAGEMENT DATA ==========
-  final List<Map<String, dynamic>> leaveManagement = [
-
+  // ========== EXAMINATION MANAGEMENT DATA ==========
+  final List<Map<String, dynamic>> examManagement = [
     {
       'title': 'Exam Schedule',
       'subtitle': 'View upcoming exam dates',
       'icon': Icons.calendar_today_outlined,
       'color': Colors.orangeAccent,
+      'position': 0,
     },
     {
       'title': 'Mark Entry',
       'subtitle': 'Enter subject marks',
       'icon': Icons.create_outlined,
       'color': Colors.orangeAccent,
+      'position': 1,
     },
-
+    {
+      'title': 'Exam Term Attendance',
+      'subtitle': 'Max attendance days & obtained',
+      'icon': Icons.assignment_outlined,
+      'color': Colors.orange,
+      'position': 2,
+    },
   ];
 
   @override
@@ -83,15 +90,13 @@ class ExaminationScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ========== CONTAINER: LEAVE MANAGEMENT ==========
+                        // ========== MANAGEMENT CARDS ==========
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-
-                            // Items
-                            ...leaveManagement.map((item) {
-                              final isLast = leaveManagement.indexOf(item) ==
-                                  leaveManagement.length - 1;
+                            ...examManagement.map((item) {
+                              final isLast = examManagement.indexOf(item) ==
+                                  examManagement.length - 1;
                               return Padding(
                                 padding: EdgeInsets.only(
                                   left: 16,
@@ -104,9 +109,10 @@ class ExaminationScreen extends StatelessWidget {
                                   subtitle: item['subtitle'] as String,
                                   icon: item['icon'] as IconData,
                                   color: item['color'] as Color,
+                                  position: item['position'] as int,
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
 
@@ -123,68 +129,94 @@ class ExaminationScreen extends StatelessWidget {
     );
   }
 
-  // ========== BUILD MANAGEMENT CARD ==========
+  // ========== BUILD MANAGEMENT CARD with onTap using RouteManagement ==========
   Widget _buildManagementCard({
     required String title,
     required String subtitle,
     required IconData icon,
     required Color color,
+    required int position,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1,
+    return GestureDetector(
+      onTap: () {
+        // Navigate based on position using RouteManagement methods
+        switch (position) {
+          case 0:
+            RouteManagement.goToExamSchedule();
+            break;
+          case 1:
+            RouteManagement.goToMarkEntry();
+            break;
+          case 2:
+            RouteManagement.goToTermAttendance();
+            break;
+          default:
+          // Fallback snackbar for any undefined position
+            Get.snackbar(
+              'Info',
+              'Screen for "$title" (position $position) is not ready yet.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.orange,
+              colorText: Colors.white,
+            );
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          // ========== COLORED CONTAINER WITH ICON ==========
-          Container(
-            width: 45,
-            height: 45,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
+        child: Row(
+          children: [
+            // ========== COLORED CONTAINER WITH ICON ==========
+            Container(
+              width: 45,
+              height: 45,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
 
-          // ========== TITLE & SUBTITLE ==========
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Styles.darkBlcW60015,
-                ),
-                if (subtitle.isNotEmpty)
+            // ========== TITLE & SUBTITLE ==========
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    subtitle,
-                    style: Styles.darkBlueW400,
+                    title,
+                    style: Styles.darkBlcW60015,
                   ),
-              ],
+                  if (subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      style: Styles.darkBlueW400,
+                    ),
+                ],
+              ),
             ),
-          ),
 
-          // ========== ARROW ICON ==========
-          Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.grey.shade400,
-            size: 16,
-          ),
-        ],
+            // ========== ARROW ICON ==========
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 16,
+            ),
+          ],
+        ),
       ),
     );
   }

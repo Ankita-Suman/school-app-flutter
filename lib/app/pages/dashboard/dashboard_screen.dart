@@ -10,11 +10,6 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Initialize controller
-    print("🏠🏠🏠 DASHBOARD SCREEN BUILD START 🏠🏠🏠");
-
-    final DashboardController controller = Get.put(DashboardController(Get.find()), permanent: true);
-
-    print("🏠🏠🏠 DASHBOARD SCREEN BUILD END 🏠🏠🏠");
     return GetBuilder<DashboardController>(
       builder: (controller) => Scaffold(
         backgroundColor: Colors.grey.shade50,

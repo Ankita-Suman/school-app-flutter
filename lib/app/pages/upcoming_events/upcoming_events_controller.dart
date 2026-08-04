@@ -28,7 +28,7 @@ class UpcomingEventsController extends GetxController {
   // Fixed method for getAllEvents
   Future<void> getAllEvents() async {
     if (isEventsLoaded.value) {
-      print("✅ Events already loaded, skipping API call");
+      debugPrint("✅ Events already loaded, skipping API call");
       return;
     }
 
@@ -38,30 +38,25 @@ class UpcomingEventsController extends GetxController {
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
-      var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
+      var studentId =
+          await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
       // ✅ Call correct API - getAllEventsAPI, not getFeesDetailsAPI
       var res = await upcomingEventsPresenter.getAllEvents(
         isLoading: false,
-        token: token?.toString() ?? '',
-        branchId: branchId?.toString() ?? '',
-        studentId: studentId?.toString() ?? '',
+        token: token.toString(),
+        branchId: branchId.toString(),
+        studentId: studentId.toString(),
       );
-
-      print("📡 Events Response type: ${res?.message}");
-      print("📡 Events Response status: ${res?.status}");
-
       if (res != null && res.status == true && res.data != null) {
-
         // ✅ Handle EventsResponseModel correctly
         if (res.data is EventsResponseModel) {
           eventsData.value = res.data as EventsResponseModel;
-          print("✅ Events loaded - Direct model");
         }
         // If it's Map, parse it
         else if (res.data is Map<String, dynamic>) {
-          eventsData.value = EventsResponseModel.fromJson(res.data as Map<String, dynamic>);
-          print("✅ Events loaded - Parsed from Map");
+          eventsData.value =
+              EventsResponseModel.fromJson(res.data as Map<String, dynamic>);
         }
         // If data is EventsData directly
         else if (res.data is EventsData) {
@@ -70,24 +65,19 @@ class UpcomingEventsController extends GetxController {
             message: "Success",
             data: res.data as EventsData,
           );
-          print("✅ Events loaded - Direct EventsData wrapped");
         }
 
         // Verify data
         if (eventsData.value != null && eventsData.value!.data != null) {
-          print("📊 Total Events: ${eventsData.value?.data?.total ?? 0}");
-          print("📊 Events Count: ${eventsData.value?.data?.events?.length ?? 0}");
-          print("📊 Current Page: ${eventsData.value?.data?.currentPage ?? 0}");
           isEventsLoaded.value = true;
         } else {
-          print("⚠️ Events data is null or incomplete");
+          debugPrint("⚠️ Events data is null or incomplete");
         }
       } else {
-        print("❌ Failed to load events: ${res?.message ?? 'Unknown error'}");
+        debugPrint("❌ Failed to load events: ${res?.message ?? 'Unknown error'}");
       }
     } catch (e, stackTrace) {
-      print("Error in getAllEvents: $e");
-      print("Stack trace: $stackTrace");
+      debugPrint("Error in getAllEvents: $e");
     } finally {
       isLoadingEvents.value = false;
     }

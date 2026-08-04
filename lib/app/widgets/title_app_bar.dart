@@ -47,7 +47,7 @@ PreferredSizeWidget titleAppbar({
     title: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        child ?? Text(title!, style: titleStyle ?? Styles.blackSB18),
+        child ?? Text(title!, style: titleStyle ?? Styles.blackDark18),
         Dimens.boxHeight2
       ],
     ),

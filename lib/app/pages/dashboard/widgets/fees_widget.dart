@@ -5,10 +5,6 @@ import 'package:school_app/app/app.dart';
 import 'package:school_app/app/pages/dashboard/dashboard_controller.dart';
 
 import '../../../../domain/models/fees_response.dart';
-import '../../../theme/colors_value.dart';
-import '../../../theme/dimens.dart';
-import '../../../theme/styles.dart';
-import '../../../utils/asset_constants.dart';
 import '../../../widgets/dashed_widget.dart';
 import '../../../widgets/gradient_button.dart';
 
@@ -18,7 +14,6 @@ class FeesDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DashboardController controller = Get.find<DashboardController>();
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final backgroundHeight = screenHeight * 0.26; // 22% of screen height
 
@@ -83,7 +78,9 @@ class FeesDetailsScreen extends StatelessWidget {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      feeData?.student?.firstName?.substring(0, 1) ?? 'AS',
+                                      feeData?.student?.firstName
+                                              ?.substring(0, 1) ??
+                                          'AS',
                                       style: Styles.whiteW70011,
                                     ),
                                   ),
@@ -93,7 +90,8 @@ class FeesDetailsScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      feeData?.student?.fullName ?? 'Student Name',
+                                      feeData?.student?.fullName ??
+                                          'Student Name',
                                       style: Styles.whiteW70011,
                                     ),
                                     Text(
@@ -134,7 +132,8 @@ class FeesDetailsScreen extends StatelessWidget {
                                         style: Styles.whiteExBold15,
                                       ),
                                       const SizedBox(height: 4),
-                                      Text('TOTAL DUE', style: Styles.whiteW60009),
+                                      Text('TOTAL DUE',
+                                          style: Styles.whiteW60009),
                                     ],
                                   ),
                                 ),
@@ -144,10 +143,12 @@ class FeesDetailsScreen extends StatelessWidget {
                             Expanded(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: ColorsValue.titleGreenColors.withOpacity(0.1),
+                                  color: ColorsValue.titleGreenColors
+                                      .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: ColorsValue.titleGreenColors.withOpacity(0.2),
+                                    color: ColorsValue.titleGreenColors
+                                        .withOpacity(0.2),
                                     width: 1,
                                   ),
                                 ),
@@ -170,10 +171,12 @@ class FeesDetailsScreen extends StatelessWidget {
                             Expanded(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: ColorsValue.titleRedColors.withOpacity(0.1),
+                                  color: ColorsValue.titleRedColors
+                                      .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: ColorsValue.titleRedColors.withOpacity(0.2),
+                                    color: ColorsValue.titleRedColors
+                                        .withOpacity(0.2),
                                     width: 1,
                                   ),
                                 ),
@@ -186,7 +189,8 @@ class FeesDetailsScreen extends StatelessWidget {
                                         style: Styles.whiteExBold15R,
                                       ),
                                       const SizedBox(height: 4),
-                                      Text('PENDING', style: Styles.whiteW60009),
+                                      Text('PENDING',
+                                          style: Styles.whiteW60009),
                                     ],
                                   ),
                                 ),
@@ -233,22 +237,41 @@ class FeesDetailsScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 15),
-                                  Text('GRAND TOTAL OVERVIEW', style: Styles.darkBlackW70012),
+                                  Text('GRAND TOTAL OVERVIEW',
+                                      style: Styles.darkBlackW70012),
                                   const SizedBox(height: 16),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Expanded(child: Text('AMOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                      Expanded(child: Text('DISCOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                      Expanded(child: Text('FINE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                      Expanded(child: Text('PAID', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                      Expanded(child: Text('BALANCE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
+                                      Expanded(
+                                          child: Text('AMOUNT',
+                                              textAlign: TextAlign.center,
+                                              style: Styles.darkBlackW60009)),
+                                      Expanded(
+                                          child: Text('DISCOUNT',
+                                              textAlign: TextAlign.center,
+                                              style: Styles.darkBlackW60009)),
+                                      Expanded(
+                                          child: Text('FINE',
+                                              textAlign: TextAlign.center,
+                                              style: Styles.darkBlackW60009)),
+                                      Expanded(
+                                          child: Text('PAID',
+                                              textAlign: TextAlign.center,
+                                              style: Styles.darkBlackW60009)),
+                                      Expanded(
+                                          child: Text('BALANCE',
+                                              textAlign: TextAlign.center,
+                                              style: Styles.darkBlackW60009)),
                                     ],
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Expanded(
                                           child: Text(
@@ -293,7 +316,8 @@ class FeesDetailsScreen extends StatelessWidget {
                             ),
 
                             // Expandable List - Pass invoices data
-                            if (feeData?.invoices != null && feeData!.invoices!.isNotEmpty)
+                            if (feeData?.invoices != null &&
+                                feeData!.invoices!.isNotEmpty)
                               ExpandableFeesList(
                                 invoices: feeData.invoices!,
                               )
@@ -304,7 +328,8 @@ class FeesDetailsScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.grey.shade300),
+                                  border:
+                                      Border.all(color: Colors.grey.shade300),
                                 ),
                                 child: const Center(
                                   child: Text(
@@ -332,6 +357,7 @@ class FeesDetailsScreen extends StatelessWidget {
 // ExpandableFeesList with API data integration - No changes
 class ExpandableFeesList extends StatefulWidget {
   final List<Invoice> invoices;
+
   const ExpandableFeesList({super.key, required this.invoices});
 
   @override
@@ -423,7 +449,8 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                         });
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -433,7 +460,8 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   width: 12,
                                   height: 12,
                                   decoration: BoxDecoration(
-                                    color: getStatusColor(invoice.status ?? 'UPCOMING'),
+                                    color: getStatusColor(
+                                        invoice.status ?? 'UPCOMING'),
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -452,11 +480,16 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                 ),
                                 const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: getStatusColor(invoice.status ?? 'UPCOMING').withOpacity(0.1),
+                                    color: getStatusColor(
+                                            invoice.status ?? 'UPCOMING')
+                                        .withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: ColorsValue.lightOrangeColors, width: 1),
+                                    border: Border.all(
+                                        color: ColorsValue.lightOrangeColors,
+                                        width: 1),
                                   ),
                                   child: Text(
                                     invoice.status ?? 'UPCOMING',
@@ -465,7 +498,9 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                 ),
                                 const SizedBox(width: 12),
                                 Icon(
-                                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                  isExpanded
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
                                   size: 20,
                                   color: Colors.grey.shade600,
                                 ),
@@ -485,51 +520,67 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   Padding(
                                     padding: Dimens.edgeInsets15,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(item.feeTitle ?? '', style: Styles.darkBlackW400),
-                                        Text('₹${item.finalAmount ?? 0}', style: Styles.darkBlcW600),
+                                        Text(item.feeTitle ?? '',
+                                            style: Styles.darkBlackW400),
+                                        Text('₹${item.finalAmount ?? 0}',
+                                            style: Styles.darkBlcW600),
                                       ],
                                     ),
                                   ),
                                   const DashedDivider(),
                                 ],
                               );
-                            }).toList(),
+                            }),
                           const SizedBox(height: 15),
                           Container(
-                            padding: const EdgeInsets.only(top: 15, left: 25, right: 25, bottom: 15),
-                            decoration: const BoxDecoration(color: Colors.white),
+                            padding: const EdgeInsets.only(
+                                top: 15, left: 25, right: 25, bottom: 15),
+                            decoration:
+                                const BoxDecoration(color: Colors.white),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Net Amount', style: Styles.darkBlkW400),
-                                    Text('₹$totalNetAmount', style: Styles.darkBlcW70012),
+                                    Text('Net Amount',
+                                        style: Styles.darkBlkW400),
+                                    Text('₹$totalNetAmount',
+                                        style: Styles.darkBlcW70012),
                                   ],
                                 ),
                                 const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 5),
-                                  child: Divider(thickness: 1, color: ColorsValue.bordersColor),
+                                  child: Divider(
+                                      thickness: 1,
+                                      color: ColorsValue.bordersColor),
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Paid', style: Styles.darkBlkW400),
-                                    Text('₹$totalPaidAmount', style: Styles.darkGreenW70012),
+                                    Text('₹$totalPaidAmount',
+                                        style: Styles.darkGreenW70012),
                                   ],
                                 ),
                                 const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 5),
-                                  child: Divider(thickness: 1, color: ColorsValue.bordersColor),
+                                  child: Divider(
+                                      thickness: 1,
+                                      color: ColorsValue.bordersColor),
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Pending', style: Styles.darkBlkW400),
-                                    Text('₹$totalPendingAmount', style: Styles.darkRedW70012),
+                                    Text('₹$totalPendingAmount',
+                                        style: Styles.darkRedW70012),
                                   ],
                                 ),
                               ],
@@ -557,7 +608,8 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                             onPressed: () {
                                               RouteManagement.goToPayment();
                                             },
-                                            text: 'Pay Now →', // Just add arrow in text
+                                            text:
+                                                'Pay Now →', // Just add arrow in text
                                           )
                                         ],
                                       ),
@@ -572,24 +624,33 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                     alignment: Alignment.center,
                                     child: OutlinedButton(
                                       onPressed: () {
-                                        RouteManagement.goToInvoice(invoiceId: invoice.id ?? '');
+                                        RouteManagement.goToInvoice(
+                                            invoiceId: invoice.id ?? '');
                                       },
                                       style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.blue.shade700),
-                                        padding: const EdgeInsets.symmetric(vertical: 8),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                        side: BorderSide(
+                                            color: Colors.blue.shade700),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           SvgPicture.asset(
                                             AssetConstants.icView,
                                             height: 16,
                                             width: 16,
-                                            colorFilter: ColorFilter.mode(Colors.blue.shade700, BlendMode.srcIn),
+                                            colorFilter: ColorFilter.mode(
+                                                Colors.blue.shade700,
+                                                BlendMode.srcIn),
                                           ),
                                           const SizedBox(width: 6),
-                                           Text('View', style: Styles.blueBold70010),
+                                          Text('View',
+                                              style: Styles.blueBold70010),
                                         ],
                                       ),
                                     ),
@@ -605,7 +666,8 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                 ),
               ),
               if (!isLastItem && !isExpanded)
-                const Divider(height: 1, thickness: 1, color: ColorsValue.bordersColor),
+                const Divider(
+                    height: 1, thickness: 1, color: ColorsValue.bordersColor),
             ],
           );
         },

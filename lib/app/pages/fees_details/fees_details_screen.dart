@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import '../../app.dart';
 import '../../widgets/dashed_widget.dart';
 
-
 class FeesDetailsScreen extends StatelessWidget {
   const FeesDetailsScreen({super.key});
 
@@ -68,7 +67,8 @@ class FeesDetailsScreen extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Arjun Sharma', style: Styles.whiteW70011),
+                                  Text('Arjun Sharma',
+                                      style: Styles.whiteW70011),
                                   Text('Class 9-A', style: Styles.whiteW40010),
                                 ],
                               ),
@@ -98,9 +98,11 @@ class FeesDetailsScreen extends StatelessWidget {
                                 padding: Dimens.edgeInsets10,
                                 child: Column(
                                   children: [
-                                    Text('₹22,560', style: Styles.whiteExBold15),
+                                    Text('₹22,560',
+                                        style: Styles.whiteExBold15),
                                     const SizedBox(height: 4),
-                                    Text('TOTAL DUE', style: Styles.whiteW60009),
+                                    Text('TOTAL DUE',
+                                        style: Styles.whiteW60009),
                                   ],
                                 ),
                               ),
@@ -110,10 +112,12 @@ class FeesDetailsScreen extends StatelessWidget {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: ColorsValue.titleGreenColors.withOpacity(0.1),
+                                color: ColorsValue.titleGreenColors
+                                    .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: ColorsValue.titleGreenColors.withOpacity(0.2),
+                                  color: ColorsValue.titleGreenColors
+                                      .withOpacity(0.2),
                                   width: 1,
                                 ),
                               ),
@@ -121,7 +125,8 @@ class FeesDetailsScreen extends StatelessWidget {
                                 padding: Dimens.edgeInsets10,
                                 child: Column(
                                   children: [
-                                    Text('₹5,080', style: Styles.whiteExBold15G),
+                                    Text('₹5,080',
+                                        style: Styles.whiteExBold15G),
                                     const SizedBox(height: 4),
                                     Text('Paid', style: Styles.whiteW60009),
                                   ],
@@ -133,10 +138,12 @@ class FeesDetailsScreen extends StatelessWidget {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: ColorsValue.titleRedColors.withOpacity(0.1),
+                                color:
+                                    ColorsValue.titleRedColors.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: ColorsValue.titleRedColors.withOpacity(0.2),
+                                  color: ColorsValue.titleRedColors
+                                      .withOpacity(0.2),
                                   width: 1,
                                 ),
                               ),
@@ -144,7 +151,8 @@ class FeesDetailsScreen extends StatelessWidget {
                                 padding: Dimens.edgeInsets10,
                                 child: Column(
                                   children: [
-                                    Text('₹17,480', style: Styles.whiteExBold15R),
+                                    Text('₹17,480',
+                                        style: Styles.whiteExBold15R),
                                     const SizedBox(height: 4),
                                     Text('PENDING', style: Styles.whiteW60009),
                                   ],
@@ -173,28 +181,62 @@ class FeesDetailsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 15),
-                              Text('GRAND TOTAL OVERVIEW', style: Styles.darkBlackW70012),
+                              Text('GRAND TOTAL OVERVIEW',
+                                  style: Styles.darkBlackW70012),
                               const SizedBox(height: 16),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Expanded(child: Text('AMOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                  Expanded(child: Text('DISCOUNT', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                  Expanded(child: Text('FINE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                  Expanded(child: Text('PAID', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
-                                  Expanded(child: Text('BALANCE', textAlign: TextAlign.center, style: Styles.darkBlackW60009)),
+                                  Expanded(
+                                      child: Text('AMOUNT',
+                                          textAlign: TextAlign.center,
+                                          style: Styles.darkBlackW60009)),
+                                  Expanded(
+                                      child: Text('DISCOUNT',
+                                          textAlign: TextAlign.center,
+                                          style: Styles.darkBlackW60009)),
+                                  Expanded(
+                                      child: Text('FINE',
+                                          textAlign: TextAlign.center,
+                                          style: Styles.darkBlackW60009)),
+                                  Expanded(
+                                      child: Text('PAID',
+                                          textAlign: TextAlign.center,
+                                          style: Styles.darkBlackW60009)),
+                                  Expanded(
+                                      child: Text('BALANCE',
+                                          textAlign: TextAlign.center,
+                                          style: Styles.darkBlackW60009)),
                                 ],
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Expanded(child: Text('₹22,560', textAlign: TextAlign.center, style: Styles.darkBlcW70013)),
-                                    Expanded(child: Text('₹0', textAlign: TextAlign.center, style: Styles.darkGreenW70013)),
-                                    Expanded(child: Text('₹0', textAlign: TextAlign.center, style: Styles.darkOrangeW70013)),
-                                    Expanded(child: Text('₹5,080', textAlign: TextAlign.center, style: Styles.darkGreenW70013)),
-                                    Expanded(child: Text('₹17,480', textAlign: TextAlign.center, style: Styles.darkRedW70013)),
+                                    Expanded(
+                                        child: Text('₹22,560',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkBlcW70013)),
+                                    Expanded(
+                                        child: Text('₹0',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkGreenW70013)),
+                                    Expanded(
+                                        child: Text('₹0',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkOrangeW70013)),
+                                    Expanded(
+                                        child: Text('₹5,080',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkGreenW70013)),
+                                    Expanded(
+                                        child: Text('₹17,480',
+                                            textAlign: TextAlign.center,
+                                            style: Styles.darkRedW70013)),
                                   ],
                                 ),
                               ),
@@ -218,6 +260,7 @@ class FeesDetailsScreen extends StatelessWidget {
     );
   }
 }
+
 // Alternative using Flutter's built-in ExpansionTile (Without Header)
 // Complete ExpandableFeesList with Pink Background when expanded
 class ExpandableFeesList extends StatefulWidget {
@@ -314,18 +357,14 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  item['month'],
-                                  style: Styles.darkBlcW70013
-                                ),
+                                Text(item['month'],
+                                    style: Styles.darkBlcW70013),
                               ],
                             ),
                             Row(
                               children: [
-                                Text(
-                                  item['amount'],
-                                  style: Styles.darkGryW70012
-                                ),
+                                Text(item['amount'],
+                                    style: Styles.darkGryW70012),
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -340,11 +379,8 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                       width: 1,
                                     ),
                                   ),
-
-                                  child: Text(
-                                    item['status'],
-                                    style: Styles.darkOrangeW8009
-                                  ),
+                                  child: Text(item['status'],
+                                      style: Styles.darkOrangeW8009),
                                 ),
                                 const SizedBox(width: 12),
                                 Icon(
@@ -368,17 +404,12 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                           // Annual Charges
                           Padding(
                             padding: Dimens.edgeInsets15,
-                            child:  Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Annual Charges',
-                                  style: Styles.darkBlackW400
-                                ),
-                                Text(
-                                  '₹3,600',
-                                  style: Styles.darkBlcW600
-                                ),
+                                Text('Annual Charges',
+                                    style: Styles.darkBlackW400),
+                                Text('₹3,600', style: Styles.darkBlcW600),
                               ],
                             ),
                           ),
@@ -388,17 +419,12 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                           // Monthly Fee
                           Padding(
                             padding: Dimens.edgeInsets15_10_15_0,
-                            child:  Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Monthly Fee',
-                                    style: Styles.darkBlackW400
-                                ),
-                                Text(
-                                  '₹1,480',
-                                    style: Styles.darkBlcW600
-                                ),
+                                Text('Monthly Fee',
+                                    style: Styles.darkBlackW400),
+                                Text('₹1,480', style: Styles.darkBlcW600),
                               ],
                             ),
                           ),
@@ -413,26 +439,21 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                               color: Colors.white,
                               //borderRadius: BorderRadius.circular(12),
                             ),
-                            child:  Column(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Net Amount',
-                                      style: Styles.darkBlkW400
-                                    ),
-                                    Text(
-                                      '₹5,080',
-                                      style: Styles.darkBlcW70012
-                                    ),
+                                    Text('Net Amount',
+                                        style: Styles.darkBlkW400),
+                                    Text('₹5,080', style: Styles.darkBlcW70012),
                                   ],
                                 ),
                                 Padding(
                                     padding: Dimens.edgeInsets0_5_0_5,
-                                    child:  const Divider(
+                                    child: const Divider(
                                       thickness: 1,
                                       color: ColorsValue.bordersColor,
                                     )),
@@ -440,19 +461,14 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Paid',
-                                        style: Styles.darkBlkW400
-                                    ),
-                                    Text(
-                                      '₹3,600',
-                                      style: Styles.darkGreenW70012
-                                    ),
+                                    Text('Paid', style: Styles.darkBlkW400),
+                                    Text('₹3,600',
+                                        style: Styles.darkGreenW70012),
                                   ],
                                 ),
                                 Padding(
                                     padding: Dimens.edgeInsets0_5_0_5,
-                                    child:  const Divider(
+                                    child: const Divider(
                                       thickness: 1,
                                       color: ColorsValue.bordersColor,
                                     )),
@@ -460,14 +476,8 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Pending',
-                                        style: Styles.darkBlkW400
-                                    ),
-                                    Text(
-                                      '₹1,480',
-                                      style:Styles.darkRedW70012
-                                    ),
+                                    Text('Pending', style: Styles.darkBlkW400),
+                                    Text('₹1,480', style: Styles.darkRedW70012),
                                   ],
                                 ),
                               ],
@@ -480,7 +490,8 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center, // ✅ Added for vertical center
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              // ✅ Added for vertical center
                               children: [
                                 // Pay Now Button - Full width, SVG background
                                 Expanded(
@@ -488,8 +499,10 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   child: GestureDetector(
                                     onTap: () {},
                                     child: Container(
-                                      height: 70, // ✅ Fixed height
-                                      alignment: Alignment.center, // ✅ Center content
+                                      height: 70,
+                                      // ✅ Fixed height
+                                      alignment: Alignment.center,
+                                      // ✅ Center content
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
@@ -518,19 +531,25 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                 Expanded(
                                   flex: 1,
                                   child: Container(
-                                    height: 50, // ✅ Same height as Pay Now button
-                                    alignment: Alignment.center, // ✅ Center content
+                                    height: 50,
+                                    // ✅ Same height as Pay Now button
+                                    alignment: Alignment.center,
+                                    // ✅ Center content
                                     child: OutlinedButton(
                                       onPressed: () {},
                                       style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.blue.shade700),
-                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        side: BorderSide(
+                                            color: Colors.blue.shade700),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           SvgPicture.asset(
                                             AssetConstants.icView,

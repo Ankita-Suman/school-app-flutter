@@ -7,7 +7,8 @@ import 'my_class_details_controller.dart';
 class MyClassDetailsScreen extends StatelessWidget {
   MyClassDetailsScreen({super.key});
 
-  final MyClassDetailsController controller = Get.put(MyClassDetailsController(Get.find()));
+  final MyClassDetailsController controller =
+      Get.put(MyClassDetailsController(Get.find()));
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +50,11 @@ class MyClassDetailsScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Obx(() => Text(
-                            controller.fullClassName.isNotEmpty
-                                ? 'My Class (${controller.fullClassName})'
-                                : 'My Class',
-                            style: Styles.whiteBold,
-                          )),
+                                controller.fullClassName.isNotEmpty
+                                    ? 'My Class (${controller.fullClassName})'
+                                    : 'My Class',
+                                style: Styles.whiteBold,
+                              )),
                         ],
                       ),
                     ],
@@ -148,10 +149,15 @@ class MyClassDetailsScreen extends StatelessWidget {
                                 ),
                                 // ✅ Timetable with static times
                                 if (controller.timetableWithTimes.isNotEmpty)
-                                  ...controller.timetableWithTimes.asMap().entries.map((entry) {
+                                  ...controller.timetableWithTimes
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
                                     final index = entry.key;
                                     final item = entry.value;
-                                    final isLast = index == controller.timetableWithTimes.length - 1;
+                                    final isLast = index ==
+                                        controller.timetableWithTimes.length -
+                                            1;
 
                                     return Padding(
                                       padding: EdgeInsets.only(
@@ -160,10 +166,12 @@ class MyClassDetailsScreen extends StatelessWidget {
                                         bottom: isLast ? 16 : 8,
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               // Time
                                               SizedBox(
@@ -177,20 +185,28 @@ class MyClassDetailsScreen extends StatelessWidget {
                                               // Subject Details
                                               Expanded(
                                                 child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       item['subject'] ?? 'Free',
-                                                      style: item['subject'] == 'Free'
+                                                      style: item['subject'] ==
+                                                              'Free'
                                                           ? Styles.darkBlueW400
-                                                          : Styles.darkBlcW70014,
+                                                          : Styles
+                                                              .darkBlcW70014,
                                                     ),
-                                                    if (item['teacher']?.isNotEmpty ?? false)
+                                                    if (item['teacher']
+                                                            ?.isNotEmpty ??
+                                                        false)
                                                       const SizedBox(height: 2),
-                                                    if (item['teacher']?.isNotEmpty ?? false)
+                                                    if (item['teacher']
+                                                            ?.isNotEmpty ??
+                                                        false)
                                                       Text(
                                                         item['teacher'] ?? '',
-                                                        style: Styles.darkBlueW400,
+                                                        style:
+                                                            Styles.darkBlueW400,
                                                       ),
                                                   ],
                                                 ),
@@ -199,7 +215,8 @@ class MyClassDetailsScreen extends StatelessWidget {
                                           ),
                                           if (!isLast)
                                             Padding(
-                                              padding: const EdgeInsets.only(top: 8),
+                                              padding:
+                                                  const EdgeInsets.only(top: 8),
                                               child: Divider(
                                                 color: Colors.grey.shade200,
                                                 height: 1,
@@ -208,7 +225,7 @@ class MyClassDetailsScreen extends StatelessWidget {
                                         ],
                                       ),
                                     );
-                                  }).toList()
+                                  })
                                 else
                                   const Padding(
                                     padding: EdgeInsets.all(16),
@@ -263,10 +280,16 @@ class MyClassDetailsScreen extends StatelessWidget {
                                   ),
                                 ),
                                 if (controller.subjectAllocationList.isNotEmpty)
-                                  ...controller.subjectAllocationList.asMap().entries.map((entry) {
+                                  ...controller.subjectAllocationList
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
                                     final index = entry.key;
                                     final subject = entry.value;
-                                    final isLast = index == controller.subjectAllocationList.length - 1;
+                                    final isLast = index ==
+                                        controller
+                                                .subjectAllocationList.length -
+                                            1;
 
                                     return Padding(
                                       padding: EdgeInsets.only(
@@ -275,7 +298,8 @@ class MyClassDetailsScreen extends StatelessWidget {
                                         bottom: isLast ? 16 : 8,
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             subject.subject,
@@ -286,14 +310,16 @@ class MyClassDetailsScreen extends StatelessWidget {
                                             'Teacher: ${subject.teacherName}',
                                             style: Styles.darkBlueW400,
                                           ),
-                                          if (subject.subjectCode != null && subject.subjectCode!.isNotEmpty)
+                                          if (subject.subjectCode != null &&
+                                              subject.subjectCode!.isNotEmpty)
                                             Text(
                                               'Code: ${subject.subjectCode}',
                                               style: Styles.darkBlueW400,
                                             ),
                                           if (!isLast)
                                             Padding(
-                                              padding: const EdgeInsets.only(top: 8),
+                                              padding:
+                                                  const EdgeInsets.only(top: 8),
                                               child: Divider(
                                                 color: Colors.grey.shade200,
                                                 height: 1,
@@ -302,7 +328,7 @@ class MyClassDetailsScreen extends StatelessWidget {
                                         ],
                                       ),
                                     );
-                                  }).toList()
+                                  })
                                 else
                                   const Padding(
                                     padding: EdgeInsets.all(16),
@@ -357,7 +383,8 @@ class MyClassDetailsScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   child: Column(
                                     children: [
                                       Text(
@@ -374,15 +401,18 @@ class MyClassDetailsScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   child: Row(
                                     children: [
                                       Expanded(
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12),
                                           decoration: BoxDecoration(
                                             color: ColorsValue.cardBorderSkyClr,
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             border: Border.all(
                                               color: Colors.blue.shade100,
                                               width: 1,
@@ -406,10 +436,12 @@ class MyClassDetailsScreen extends StatelessWidget {
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12),
                                           decoration: BoxDecoration(
                                             color: ColorsValue.cardBorderSkyClr,
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             border: Border.all(
                                               color: Colors.blue.shade100,
                                               width: 1,

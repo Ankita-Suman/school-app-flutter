@@ -64,8 +64,6 @@ class AttendanceManagementController extends GetxController {
       );
       return;
     }
-
-    print('Login with: $email, Password: $password, Tab: ${selectedTab.value}');
   }
 
   @override

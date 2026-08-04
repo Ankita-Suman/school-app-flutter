@@ -13,12 +13,14 @@ class FeeCollectionScreen extends StatelessWidget {
       'subtitle': 'View overall fee collection',
       'icon': Icons.payment_outlined,
       'color': Colors.blue,
+      'route': RouteManagement.goToStudentFeeList, // ✅ Add route reference
     },
     {
       'title': 'Defaulter List',
       'subtitle': 'View students with pending dues',
       'icon': Icons.warning_amber_outlined,
       'color': Colors.orange,
+      'route': RouteManagement.goToDefaulterList, // ✅ Add route reference
     },
   ];
 
@@ -101,9 +103,10 @@ class FeeCollectionScreen extends StatelessWidget {
                                   subtitle: item['subtitle'] as String,
                                   icon: item['icon'] as IconData,
                                   color: item['color'] as Color,
+                                  onTap: item['route'] as VoidCallback, // ✅ Pass the route
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
 
@@ -126,62 +129,66 @@ class FeeCollectionScreen extends StatelessWidget {
     required String subtitle,
     required IconData icon,
     required Color color,
+    required VoidCallback onTap, // ✅ Add onTap parameter
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1,
+    return GestureDetector(
+      onTap: onTap, // ✅ Handle tap
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          // ========== COLORED CONTAINER WITH ICON ==========
-          Container(
-            width: 45,
-            height: 45,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
+        child: Row(
+          children: [
+            // ========== COLORED CONTAINER WITH ICON ==========
+            Container(
+              width: 45,
+              height: 45,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
 
-          // ========== TITLE & SUBTITLE ==========
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Styles.darkBlcW60015,
-                ),
-                if (subtitle.isNotEmpty)
+            // ========== TITLE & SUBTITLE ==========
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    subtitle,
-                    style: Styles.darkBlueW400,
+                    title,
+                    style: Styles.darkBlcW60015,
                   ),
-              ],
+                  if (subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      style: Styles.darkBlueW400,
+                    ),
+                ],
+              ),
             ),
-          ),
 
-          // ========== ARROW ICON ==========
-          Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.grey.shade400,
-            size: 16,
-          ),
-        ],
+            // ========== ARROW ICON ==========
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 16,
+            ),
+          ],
+        ),
       ),
     );
   }

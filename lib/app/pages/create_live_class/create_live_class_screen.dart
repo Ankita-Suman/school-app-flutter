@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../app.dart';
 import '../../widgets/gradient_button.dart';
 
@@ -107,7 +106,8 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                 // ========== SCROLLABLE CONTENT ==========
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -125,7 +125,8 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -158,7 +159,8 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -192,7 +194,8 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -229,7 +232,8 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -272,7 +276,8 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 13),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -315,7 +320,8 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 13),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -359,7 +365,9 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
                     width: double.infinity,
                     height: 50,
                     child: GradientButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        RouteManagement.goToJoinMeeting();
+                      },
                       text: 'Schedule Class',
                     ),
                   ),
@@ -395,7 +403,7 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
     if (picked != null) {
       setState(() {
         dateController.text =
-        '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
+            '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
       });
     }
   }
@@ -420,7 +428,11 @@ class _CreateLiveClassScreenState extends State<CreateLiveClassScreen> {
     );
     if (picked != null) {
       setState(() {
-        final hour = picked.hour == 0 ? 12 : picked.hour > 12 ? picked.hour - 12 : picked.hour;
+        final hour = picked.hour == 0
+            ? 12
+            : picked.hour > 12
+                ? picked.hour - 12
+                : picked.hour;
         final minute = picked.minute.toString().padLeft(2, '0');
         final ampm = picked.hour >= 12 ? 'PM' : 'AM';
         timeController.text = '$hour:$minute $ampm';

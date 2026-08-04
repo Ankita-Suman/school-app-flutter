@@ -85,155 +85,113 @@ class ProfileWidget extends StatelessWidget {
                           ),
                         ),
                         child: Obx(() => Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Stack(
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      width: 70,
-                                      height: 70,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.blue.shade300,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: _buildAvatar(controller),
-                                    ),
-                                    Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {},
-                                        child: Container(
-                                          padding: const EdgeInsets.all(3),
+                                    Stack(
+                                      children: [
+                                        Container(
+                                          width: 70,
+                                          height: 70,
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
                                             shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.blue.shade300,
+                                              width: 2,
+                                            ),
                                           ),
-                                          child: SvgPicture.asset(
-                                            AssetConstants.iccEdit,
-                                            height: 18,
-                                            width: 18,
+                                          child: _buildAvatar(controller),
+                                        ),
+                                        Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          child: GestureDetector(
+                                            onTap: () {},
+                                            child: Container(
+                                              padding: const EdgeInsets.all(3),
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: SvgPicture.asset(
+                                                AssetConstants.iccEdit,
+                                                height: 18,
+                                                width: 18,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        controller.profileData.value?.personal?.name ?? 'Olivier Thomas',
-                                        style: Styles.whiteBold.copyWith(fontSize: 16),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Class ${controller.profileData.value?.personal?.classInfo?.name ?? '1'} – ${controller.profileData.value?.personal?.section?.name ?? 'A'} - Session ${controller.profileData.value?.other?.academic?.session ?? '2025 – 26'}',
-                                        style: Styles.whiteW400.copyWith(fontSize: 12),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 4, horizontal: 8),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: Colors.white.withOpacity(0.3),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              'Adm. No. ${controller.profileData.value?.personal?.admissionNumber ?? '18001'}',
-                                              style: Styles.whiteW40011.copyWith(fontSize: 10),
-                                            ),
+                                          Text(
+                                            controller.profileData.value
+                                                    ?.personal.name ??
+                                                'Olivier Thomas',
+                                            style: Styles.whiteBold
+                                                .copyWith(fontSize: 16),
                                           ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 4, horizontal: 8),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: Colors.white.withOpacity(0.3),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              'Roll. No. ${controller.profileData.value?.personal?.rollNumber ?? '18001'}',
-                                              style: Styles.whiteW40011.copyWith(fontSize: 10),
-                                            ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Class ${controller.profileData.value?.personal.classInfo.name ?? '1'} – ${controller.profileData.value?.personal.section.name ?? 'A'} - Session ${controller.profileData.value?.other.academic.session ?? '2025 – 26'}',
+                                            style: Styles.whiteW400
+                                                .copyWith(fontSize: 12),
                                           ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-                              child: Divider(
-                                thickness: 1,
-                                color: Colors.white.withOpacity(0.3),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('QR CODE',
-                                        style: Styles.whiteW60010.copyWith(fontSize: 10)),
-                                    const SizedBox(height: 5),
-                                    SvgPicture.asset(
-                                      AssetConstants.icQr,
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 40),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('CREDIT SCORE',
-                                        style: Styles.whiteW60010.copyWith(fontSize: 10)),
-                                    const SizedBox(height: 5),
-                                    SizedBox(
-                                      height: 60,
-                                      width: 60,
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          SvgPicture.asset(
-                                            AssetConstants.progressBar,
-                                            height: 60,
-                                            width: 60,
-                                            fit: BoxFit.contain,
-                                          ),
-                                          Column(
-                                            mainAxisSize: MainAxisSize.min,
+                                          const SizedBox(height: 8),
+                                          Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
                                             children: [
-                                              Text(
-                                                '${controller.profileData.value?.other?.grade?.averagePercentage ?? 0}',
-                                                style: Styles.whiteExBold.copyWith(fontSize: 16),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 4,
+                                                        horizontal: 8),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.3),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Adm. No. ${controller.profileData.value?.personal.admissionNumber ?? '18001'}',
+                                                  style: Styles.whiteW40011
+                                                      .copyWith(fontSize: 10),
+                                                ),
                                               ),
-                                              Text('/100',
-                                                  style: Styles.whiteW40009.copyWith(fontSize: 10)),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 4,
+                                                        horizontal: 8),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.3),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Roll. No. ${controller.profileData.value?.personal.rollNumber ?? '18001'}',
+                                                  style: Styles.whiteW40011
+                                                      .copyWith(fontSize: 10),
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ],
@@ -241,18 +199,84 @@ class ProfileWidget extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 10, 20, 5),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('QR CODE',
+                                            style: Styles.whiteW60010
+                                                .copyWith(fontSize: 10)),
+                                        const SizedBox(height: 5),
+                                        SvgPicture.asset(
+                                          AssetConstants.icQr,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 40),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('CREDIT SCORE',
+                                            style: Styles.whiteW60010
+                                                .copyWith(fontSize: 10)),
+                                        const SizedBox(height: 5),
+                                        SizedBox(
+                                          height: 60,
+                                          width: 60,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              SvgPicture.asset(
+                                                AssetConstants.progressBar,
+                                                height: 60,
+                                                width: 60,
+                                                fit: BoxFit.contain,
+                                              ),
+                                              Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    '${controller.profileData.value?.other.grade.averagePercentage ?? 0}',
+                                                    style: Styles.whiteExBold
+                                                        .copyWith(fontSize: 16),
+                                                  ),
+                                                  Text('/100',
+                                                      style: Styles.whiteW40009
+                                                          .copyWith(
+                                                              fontSize: 10)),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 3),
                               ],
-                            ),
-                            const SizedBox(height: 3),
-                          ],
-                        )),
+                            )),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-
             Expanded(
               child: Container(
                 color: Colors.grey.shade50,
@@ -297,8 +321,8 @@ class ProfileWidget extends StatelessWidget {
 
   // ✅ Avatar Widget with Image/Initials logic
   Widget _buildAvatar(DashboardController controller) {
-    String? photoUrl = controller.profileData.value?.personal?.photo;
-    String? fullName = controller.profileData.value?.personal?.name;
+    String? photoUrl = controller.profileData.value?.personal.photo;
+    String? fullName = controller.profileData.value?.personal.name;
 
     if (photoUrl != null && photoUrl.isNotEmpty) {
       return ClipOval(
@@ -321,7 +345,7 @@ class ProfileWidget extends StatelessWidget {
     return Container(
       width: 70,
       height: 70,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: ColorsValue.bgColors,
         shape: BoxShape.circle,
       ),
@@ -389,12 +413,12 @@ class PersonalTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-
           _buildDetailsContainer(
             title: 'PERSONAL DETAILS',
             index: 0,
             children: [
-              _buildDetailRow('Date of Birth', _formatDate(personal?.dateOfBirth)),
+              _buildDetailRow(
+                  'Date of Birth', _formatDate(personal?.dateOfBirth)),
               _buildDetailRow('Gender', personal?.gender ?? '-'),
               _buildDetailRow('Category', '-'),
               _buildDetailRow('Blood Group', personal?.bloodGroup ?? '-'),
@@ -402,31 +426,24 @@ class PersonalTab extends StatelessWidget {
               _buildDetailRow('Height/Weight', '4.5 · 40 kg'),
             ],
           ),
-
           const SizedBox(height: 10),
-
           _buildDetailsContainer(
             title: 'CONTACT INFO',
             index: 1,
             children: [
-              _buildDetailRow('Mobile', personal?.contact?.email ?? '-'),
-              _buildDetailRow('Email', personal?.contact?.email ?? '-'),
+              _buildDetailRow('Mobile', personal?.contact.email ?? '-'),
+              _buildDetailRow('Email', personal?.contact.email ?? '-'),
             ],
           ),
-
           const SizedBox(height: 10),
-
           _buildAddressContainer(
             title: 'ADDRESS',
             index: 2,
-            currentAddress: personal?.address?.current ?? '-',
-            permanentAddress: personal?.address?.permanent ?? '-',
+            currentAddress: personal?.address.current ?? '-',
+            permanentAddress: personal?.address.permanent ?? '-',
           ),
-
           const SizedBox(height: 20),
-
           _buildLogoutContainer(controller),
-
           const SizedBox(height: 20),
         ],
       ),
@@ -445,8 +462,18 @@ class PersonalTab extends StatelessWidget {
 
   String _getMonth(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return months[month - 1];
   }
@@ -468,7 +495,8 @@ class PersonalTab extends StatelessWidget {
                   Get.back();
                   controller.logoutAPI(isLoading: true);
                 },
-                child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                child:
+                    const Text('Logout', style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -548,9 +576,11 @@ class PersonalTab extends StatelessWidget {
               child: Row(
                 children: [
                   SvgPicture.asset(
-                    index == 0 ? AssetConstants.icDm : index == 1
-                        ? AssetConstants.icCall
-                        : AssetConstants.icAdd,
+                    index == 0
+                        ? AssetConstants.icDm
+                        : index == 1
+                            ? AssetConstants.icCall
+                            : AssetConstants.icAdd,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(width: 8),
@@ -560,12 +590,15 @@ class PersonalTab extends StatelessWidget {
             ),
           ),
           ...children.map((child) => Column(
-            children: [
-              child,
-              if (child != children.last)
-                const Divider(height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
-            ],
-          )),
+                children: [
+                  child,
+                  if (child != children.last)
+                    const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: ColorsValue.cardBorderColor),
+                ],
+              )),
         ],
       ),
     );
@@ -636,7 +669,8 @@ class PersonalTab extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
+          const Divider(
+              height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -709,28 +743,28 @@ class ParentsTab extends StatelessWidget {
       child: Column(
         children: [
           _buildParentCard(
-            initials: _getInitials(parents?.father?.name ?? ''),
-            name: parents?.father?.name ?? '-',
-            occupation: parents?.father?.occupation ?? '-',
+            initials: _getInitials(parents?.father.name ?? ''),
+            name: parents?.father.name ?? '-',
+            occupation: parents?.father.occupation ?? '-',
             relation: 'FATHER',
-            phoneNumber: parents?.father?.phone ?? '-',
+            phoneNumber: parents?.father.phone ?? '-',
             index: 0,
           ),
           const SizedBox(height: 16),
           _buildParentCard(
-            initials: _getInitials(parents?.mother?.name ?? ''),
-            name: parents?.mother?.name ?? '-',
-            occupation: parents?.mother?.occupation ?? '-',
+            initials: _getInitials(parents?.mother.name ?? ''),
+            name: parents?.mother.name ?? '-',
+            occupation: parents?.mother.occupation ?? '-',
             relation: 'MOTHER',
-            phoneNumber: parents?.mother?.phone ?? '-',
+            phoneNumber: parents?.mother.phone ?? '-',
             index: 1,
           ),
           _buildParentCard(
-            initials: _getInitials(parents?.guardian?.name ?? ''),
-            name: parents?.guardian?.name ?? '-',
-            occupation: parents?.guardian?.occupation ?? '-',
-            relation: parents?.guardian?.relation ?? 'GUARDIAN',
-            phoneNumber: parents?.guardian?.phone ?? '-',
+            initials: _getInitials(parents?.guardian.name ?? ''),
+            name: parents?.guardian.name ?? '-',
+            occupation: parents?.guardian.occupation ?? '-',
+            relation: parents?.guardian.relation ?? 'GUARDIAN',
+            phoneNumber: parents?.guardian.phone ?? '-',
             index: 2,
           ),
         ],
@@ -785,8 +819,8 @@ class ParentsTab extends StatelessWidget {
                     color: index == 0
                         ? ColorsValue.bgBlueColors
                         : index == 1
-                        ? ColorsValue.txtPinkClrs
-                        : ColorsValue.txtGrClrs,
+                            ? ColorsValue.txtPinkClrs
+                            : ColorsValue.txtGrClrs,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -806,8 +840,8 @@ class ParentsTab extends StatelessWidget {
                         style: index == 0
                             ? Styles.darkBlueW700Spacing
                             : index == 1
-                            ? Styles.darkPinkW70010
-                            : Styles.darkGrW700,
+                                ? Styles.darkPinkW70010
+                                : Styles.darkGrW700,
                       ),
                       Text(
                         name,
@@ -819,8 +853,8 @@ class ParentsTab extends StatelessWidget {
                         style: index == 0
                             ? Styles.darkBlueW600
                             : index == 1
-                            ? Styles.darkPinkW600
-                            : Styles.darkGrW600,
+                                ? Styles.darkPinkW600
+                                : Styles.darkGrW600,
                       ),
                     ],
                   ),
@@ -917,7 +951,8 @@ class OtherTab extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 8,
-              childAspectRatio: 1.6, // ✅ Much shorter boxes (more width, less height)
+              childAspectRatio:
+                  1.6, // ✅ Much shorter boxes (more width, less height)
             ),
             itemCount: 4,
             itemBuilder: (context, index) {
@@ -925,7 +960,7 @@ class OtherTab extends StatelessWidget {
                 case 0:
                   return _buildStatCard(
                     svgIcon: AssetConstants.icDmm,
-                    value: '${other?.attendance?.percentage ?? 0}%',
+                    value: '${other?.attendance.percentage ?? 0}%',
                     label: 'Attendance',
                     valueColor: Colors.green.shade700,
                     isSmallPhone: isSmallPhone,
@@ -933,7 +968,7 @@ class OtherTab extends StatelessWidget {
                 case 1:
                   return _buildStatCard(
                     svgIcon: AssetConstants.icStar,
-                    value: other?.grade?.grade ?? 'N/A',
+                    value: other?.grade.grade ?? 'N/A',
                     label: 'Last Result',
                     valueColor: ColorsValue.txtGreenClrs,
                     isSmallPhone: isSmallPhone,
@@ -949,7 +984,7 @@ class OtherTab extends StatelessWidget {
                 case 3:
                   return _buildStatCard(
                     svgIcon: AssetConstants.icHwork,
-                    value: other?.library?.isMember == true ? 'Yes' : 'No',
+                    value: other?.library.isMember == true ? 'Yes' : 'No',
                     label: 'Library Member',
                     valueColor: ColorsValue.lightPurpleClrs,
                     isSmallPhone: isSmallPhone,
@@ -966,11 +1001,14 @@ class OtherTab extends StatelessWidget {
             title: 'ACADEMIC INFO',
             index: 0,
             children: [
-              _buildDetailRow('Class & Section', '${other?.academic?.classInfo ?? personal?.classInfo?.name ?? '-'} - ${other?.academic?.section ?? personal?.section?.name ?? '-'}'),
+              _buildDetailRow('Class & Section',
+                  '${other?.academic.classInfo ?? personal?.classInfo.name ?? '-'} - ${other?.academic.section ?? personal?.section.name ?? '-'}'),
               _buildDetailRow('Roll Number', personal?.rollNumber ?? '-'),
-              _buildDetailRow('Admission No.', personal?.admissionNumber ?? '-'),
-              _buildDetailRow('Session', other?.academic?.session ?? '-'),
-              _buildDetailRow('Admission Type', other?.academic?.admissionType ?? '-'),
+              _buildDetailRow(
+                  'Admission No.', personal?.admissionNumber ?? '-'),
+              _buildDetailRow('Session', other?.academic.session ?? '-'),
+              _buildDetailRow(
+                  'Admission Type', other?.academic.admissionType ?? '-'),
             ],
           ),
 
@@ -980,7 +1018,8 @@ class OtherTab extends StatelessWidget {
             title: 'TRANSPORT',
             index: 2,
             children: [
-              _buildDetailRow('Transport Registered', other?.transport?.isRegistered == true ? 'Yes' : 'No'),
+              _buildDetailRow('Transport Registered',
+                  other?.transport.isRegistered == true ? 'Yes' : 'No'),
             ],
           ),
           const SizedBox(height: 12),
@@ -998,7 +1037,8 @@ class OtherTab extends StatelessWidget {
     required bool isSmallPhone,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14), // ✅ Reduced vertical padding
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+      // ✅ Reduced vertical padding
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -1077,8 +1117,8 @@ class OtherTab extends StatelessWidget {
                       index == 0
                           ? AssetConstants.icAca
                           : index == 1
-                          ? AssetConstants.icHrt
-                          : AssetConstants.icTrans,
+                              ? AssetConstants.icHrt
+                              : AssetConstants.icTrans,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -1104,7 +1144,10 @@ class OtherTab extends StatelessWidget {
                 children: [
                   child,
                   if (idx != children.length - 1)
-                    const Divider(height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
+                    const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: ColorsValue.cardBorderColor),
                 ],
               );
             }).toList(),

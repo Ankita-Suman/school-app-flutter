@@ -265,9 +265,9 @@ class ClassStrength {
   String get genderRatio => boys > 0 && girls > 0
       ? '${boys}B : ${girls}G'
       : boys > 0
-      ? '${boys} Boys'
+      ? '$boys Boys'
       : girls > 0
-      ? '${girls} Girls'
+      ? '$girls Girls'
       : 'No students';
 }
 

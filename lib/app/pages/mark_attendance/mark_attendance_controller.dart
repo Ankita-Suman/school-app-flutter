@@ -37,10 +37,15 @@ class MarkAttendanceController extends GetxController {
   var totalStudents = 0.obs;
   var hasMoreData = false.obs;
 
-  // ==================== HARDCODED (replace later) ====================
-  final String hardcodedToken =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RlbW8uYWl0c29sdXRpb25zLmluL2FwaS9icmFuY2gvbG9naW4iLCJpYXQiOjE3ODQxODA2ODgsImV4cCI6MTc4NDM1MzQ4OCwibmJmIjoxNzg0MTgwNjg4LCJqdGkiOiJKY3IzSmVOdmVWVk5TMllMIiwic3ViIjoiMDE5ZDAwNDAtMjNkNy03MzVlLWE0NDQtNTE3ZjYyMmQ5NjFmIiwicHJ2IjoiOGIwYjQ2ZmU0M2U1YWNjMmU1NzFkYmRlNWIwODFiYzFiMjA1MGNmMiIsInVzZXJfdHlwZSI6InRlbmFudCIsImJyYW5jaF9pZCI6IjZjZTg0MjJlLWFhOTItNGQ2OS1hZjZhLTIxNTlmZDBjOGM2YSIsInJvbGVfaWQiOiI4MmY4MGE0Yi03ZWIxLTRiNWMtYmIxMS03Yjk5ODczMjY4ZjUifQ.Mdpb7QcnglMLL5B5cph0vKDQQ546iY0I_YkJA-Cl82E';
-  final String hardcodedBranchId = '6ce8422e-aa92-4d69-af6a-2159fd0c8c6a';
+  // ---------- original statuses/remarks for revert ----------
+  final Map<String, String> originalStatuses = {};
+  final Map<String, String> originalRemarks = {};
+
+  // ---------- flag for first load ----------
+  var _isFirstLoad = true.obs;
+
+  // Expose isFirstLoad to screen
+  bool get isFirstLoad => _isFirstLoad.value;
 
   @override
   void onInit() {
@@ -53,22 +58,48 @@ class MarkAttendanceController extends GetxController {
   Future<void> getMyClassData() async {
     try {
       isLoading.value = true;
-      print("📡📡📡 getMyClassData START");
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       var res = await markAttendancePresenter.getMyClassData(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
       );
 
       if (res != null && res.status == true && res.data != null) {
         teacherClassData.value = res;
-        print("✅ My Classes loaded successfully");
       } else {
-        print("❌ Failed to load classes: ${res?.message}");
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load classes.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getMyClassData: $e");
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading classes.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -78,7 +109,7 @@ class MarkAttendanceController extends GetxController {
   void buildClassGroups() {
     final classes = teacherClassData.value?.data?.classes;
     if (classes == null || classes.isEmpty) {
-      print("⚠️ No classes found to group");
+      debugPrint("⚠️ No classes found to group");
       return;
     }
     Map<String, List<ClassItem>> map = {};
@@ -100,7 +131,7 @@ class MarkAttendanceController extends GetxController {
         selectedSectionName.value = sections.first.sectionName;
         _fetchAttendanceForCurrentSelection();
       } else {
-        print("⚠️ No sections for class ${classNames.first}");
+        debugPrint("⚠️ No sections for class ${classNames.first}");
       }
     }
   }
@@ -125,7 +156,8 @@ class MarkAttendanceController extends GetxController {
     selectedSectionId.value = sectionId;
     final classItems = classGroups[selectedClassId.value];
     if (classItems != null) {
-      final selected = classItems.firstWhere((item) => item.sectionId == sectionId);
+      final selected =
+      classItems.firstWhere((item) => item.sectionId == sectionId);
       selectedClassName.value = selected.className;
       selectedSectionName.value = selected.sectionName;
       _fetchAttendanceForCurrentSelection();
@@ -133,7 +165,9 @@ class MarkAttendanceController extends GetxController {
   }
 
   void _fetchAttendanceForCurrentSelection() {
-    if (selectedClassId.value.isNotEmpty && selectedSectionId.value.isNotEmpty) {
+    if (selectedClassId.value.isNotEmpty &&
+        selectedSectionId.value.isNotEmpty) {
+      _isFirstLoad.value = true; // mark that we are starting a fresh load
       getClassAttendanceData(
         classId: selectedClassId.value,
         sectionId: selectedSectionId.value,
@@ -160,15 +194,39 @@ class MarkAttendanceController extends GetxController {
         allStudents.clear();
         currentPage.value = 1;
         isAttendanceAlreadyMarked.value = false;
+        originalStatuses.clear();
+        originalRemarks.clear();
+      }
+
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        if (isLoadMore) {
+          isLoadingMore.value = false;
+        } else {
+          isLoading.value = false;
+          _isFirstLoad.value = false; // no data, show empty state
+        }
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
       }
 
       final now = DateTime.now();
-      final attendanceDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      final attendanceDate =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
       var res = await markAttendancePresenter.getClassAttendance(
         isLoading: false,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         attendanceDate: attendanceDate,
         classId: classId,
         sectionId: sectionId,
@@ -186,66 +244,161 @@ class MarkAttendanceController extends GetxController {
 
         if (res.data!.students != null) {
           final studentsList = res.data!.students!;
+
+          // ---------- CONVERT "HALF_DAY" TO "HALF DAY" FOR DISPLAY ----------
           for (var student in studentsList) {
-            // If currentStatus is null (not marked), set default to PRESENT
-            if (student.currentStatus == null || student.currentStatus!.isEmpty) {
-              student.currentStatus = 'PRESENT';
+            if (student.currentStatus != null &&
+                student.currentStatus!.toUpperCase() == 'HALF_DAY') {
+              student.currentStatus = 'HALF DAY';
             }
           }
+
           if (isLoadMore) {
             allStudents.addAll(studentsList);
           } else {
             allStudents.value = studentsList;
           }
-          // Check if all students have a status (i.e., already marked)
-          isAttendanceAlreadyMarked.value = allStudents.every((s) => s.currentStatus != null && s.currentStatus!.isNotEmpty);
+
+          // Check if attendance is already marked
+          isAttendanceAlreadyMarked.value = allStudents.every(
+                (s) => s.currentStatus != null && s.currentStatus!.isNotEmpty,
+          );
+
+          // If NOT marked, set default status to 'PRESENT'
+          if (!isAttendanceAlreadyMarked.value && allStudents.isNotEmpty) {
+            for (var student in allStudents) {
+              if (student.currentStatus == null || student.currentStatus!.isEmpty) {
+                student.currentStatus = 'PRESENT';
+              }
+            }
+          }
+
+          // Store original statuses & remarks
+          for (var student in allStudents) {
+            originalStatuses[student.studentId] = student.currentStatus ?? '';
+            originalRemarks[student.studentId] = student.remarks ?? '';
+          }
         }
-        print("✅ Attendance loaded, students: ${allStudents.length}, already marked: ${isAttendanceAlreadyMarked.value}");
+
+        // ---------- FIRST LOAD COMPLETE ----------
+        if (!isLoadMore) {
+          _isFirstLoad.value = false;
+        }
       } else {
-        print("❌ Failed to load attendance: ${res?.message}");
+        allStudents.clear();
+        isAttendanceAlreadyMarked.value = false;
+        if (!isLoadMore) {
+          _isFirstLoad.value = false;
+        }
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to load attendance.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print("❌ Error in getClassAttendanceData: $e");
+      allStudents.clear();
+      isAttendanceAlreadyMarked.value = false;
+      if (!isLoadMore) {
+        _isFirstLoad.value = false;
+      }
+      Get.snackbar(
+        'Error',
+        'Something went wrong while loading attendance.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
-      if (isLoadMore) isLoadingMore.value = false;
-      else isLoading.value = false;
+      if (isLoadMore) {
+        isLoadingMore.value = false;
+      } else {
+        isLoading.value = false;
+      }
     }
+  }
+
+  // ---------- revert all changes ----------
+  void revertChanges() {
+    for (var student in allStudents) {
+      student.currentStatus = originalStatuses[student.studentId] ?? '';
+      student.remarks = originalRemarks[student.studentId] ?? '';
+    }
+  }
+
+  // ---------- compute status counts for dialog ----------
+  Map<String, int> getStatusCounts() {
+    Map<String, int> counts = {};
+    for (var student in allStudents) {
+      final status = student.currentStatus;
+      if (status != null && status.isNotEmpty) {
+        counts[status] = (counts[status] ?? 0) + 1;
+      }
+    }
+    return counts;
   }
 
   // ========== SAVE ATTENDANCE ==========
   Future<void> saveAttendance() async {
-    // If already marked, prevent save
     if (isAttendanceAlreadyMarked.value) {
       Get.snackbar('Info', 'Attendance already marked for this class.',
-          snackPosition: SnackPosition.TOP, backgroundColor: Colors.orange, colorText: Colors.white);
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white);
       return;
     }
 
     try {
       if (selectedClassId.isEmpty || selectedSectionId.isEmpty) {
         Get.snackbar('Error', 'Class or Section not selected.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
       final students = allStudents;
       if (students.isEmpty) {
         Get.snackbar('Error', 'No students found.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
-      // ✅ No unmarked check – all students are guaranteed to have a status
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Authentication failed. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       final now = DateTime.now();
-      final attendanceDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      final attendanceDate =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
       final List<Map<String, dynamic>> attendanceData = [];
       for (var student in students) {
+        String status = student.currentStatus ?? '';
+        if (status.isEmpty) {
+          status = 'PRESENT';
+        }
+        // Convert display status to backend format
+        String backendStatus = _getBackendStatus(status);
         attendanceData.add({
           'student_id': student.studentId,
-          'status': _getBackendStatus(student.currentStatus),
-          'remarks': student.remarks ?? '', // ✅ include note
+          'status': backendStatus,
+          'remarks': student.remarks ?? '',
         });
       }
 
@@ -260,49 +413,65 @@ class MarkAttendanceController extends GetxController {
 
       var res = await markAttendancePresenter.saveAttendance(
         isLoading: true,
-        token: hardcodedToken,
-        branchId: hardcodedBranchId,
+        token: token,
+        branchId: branchId,
         payload: payload,
       );
 
       if (res == null) {
         Get.snackbar('Error', 'No response from server.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return;
       }
 
       if (res.status == true) {
         isAttendanceAlreadyMarked.value = true;
-        var repo = Get.find<DeviceRepository>();
-        await repo.saveValueSecurely(DeviceConstants.lastAttendanceClassId, selectedClassId.value);
-        await repo.saveValueSecurely(DeviceConstants.lastAttendanceSectionId, selectedSectionId.value);
-        await repo.saveValueSecurely(DeviceConstants.lastAttendanceDate, attendanceDate);
+        await deviceRepo.saveValueSecurely(
+            DeviceConstants.lastAttendanceClassId, selectedClassId.value);
+        await deviceRepo.saveValueSecurely(
+            DeviceConstants.lastAttendanceSectionId, selectedSectionId.value);
+        await deviceRepo.saveValueSecurely(
+            DeviceConstants.lastAttendanceDate, attendanceDate);
 
         Get.back();
-        Get.snackbar('Success', res.message ?? 'Attendance saved!',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar('Success', res.message,
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green,
+            colorText: Colors.white);
       } else {
-        Get.snackbar('Error', res.message ?? 'Failed to save.',
-            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar('Error', res.message,
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
       }
     } catch (e) {
-      print("❌ Error saving: $e");
       Get.snackbar('Error', 'Something went wrong.',
-          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }
   }
 
+  // ========== STATUS CONVERTER ==========
   String _getBackendStatus(String? status) {
     if (status == null) return '';
     switch (status.toUpperCase()) {
-      case 'PRESENT': return 'PRESENT';
-      case 'ABSENT': return 'ABSENT';
-      case 'LATE': return 'LATE';
-      case 'HALF_DAY': return 'HALF DAY';
-      case 'LEAVE': return 'LEAVE';
-      default: return status.toUpperCase();
+      case 'PRESENT':
+        return 'PRESENT';
+      case 'ABSENT':
+        return 'ABSENT';
+      case 'LATE':
+        return 'LATE';
+      case 'HALF DAY':
+        return 'HALF_DAY';
+      case 'LEAVE':
+        return 'LEAVE';
+      default:
+        return status.toUpperCase();
     }
   }
 
@@ -321,9 +490,15 @@ class MarkAttendanceController extends GetxController {
 
   // ========== GETTERS ==========
   List<ClassItem>? get classList => teacherClassData.value?.data?.classes;
+
   bool get hasMorePages => hasMoreData.value;
-  int get totalStudentCount => totalStudents.value > 0 ? totalStudents.value : allStudents.length;
+
+  int get totalStudentCount =>
+      totalStudents.value > 0 ? totalStudents.value : allStudents.length;
+
   List<AttendanceStudent>? get attendanceStudents => allStudents;
+
   bool get isLoadingData => isLoading.value;
+
   bool get isLoadingMoreData => isLoadingMore.value;
 }

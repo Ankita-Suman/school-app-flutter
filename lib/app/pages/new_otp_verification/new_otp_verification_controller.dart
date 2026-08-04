@@ -55,13 +55,10 @@ class NewOtpVerificationController extends GetxController {
 
   Future<void> getUserData() async {
     var deviceRepo = Get.find<DeviceRepository>();
-    storedOtp = await deviceRepo.getSecuredValue(DeviceConstants.otp) ?? '';
-
-    print("🔢 Stored OTP: $storedOtp");
+    storedOtp = await deviceRepo.getSecuredValue(DeviceConstants.otp);
 
     if (storedOtp.isNotEmpty && storedOtp.length == 4) {
       pinController.text = storedOtp;
-      print("✅ OTP auto-filled: $storedOtp");
       _onPinChanged();
     }
 
@@ -69,14 +66,13 @@ class NewOtpVerificationController extends GetxController {
   }
 
   void startOtpTimer() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     otpTimer();
   }
 
   void _onPinChanged() {
     isOtpComplete.value = pinController.text.length == 4;
     update();
-    print("OTP Length: ${pinController.text.length}, Complete: ${isOtpComplete.value}");
   }
 
   void otpTimer() {
@@ -102,10 +98,8 @@ class NewOtpVerificationController extends GetxController {
   void resendOTP() async {
     var deviceRepo = Get.find<DeviceRepository>();
     var username = await deviceRepo.getSecuredValue(DeviceConstants.username);
-    var branchCode = await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
-
-    print("Username: $username");
-    print("BranchCode: $branchCode");
+    var branchCode =
+        await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
 
     // Clear previous OTP from field
     pinController.clear();
@@ -116,8 +110,8 @@ class NewOtpVerificationController extends GetxController {
 
       var res = await otpVerificationPresenter.resendOtpAPI(
         isLoading: true,
-        login: username?.toString() ?? '',
-        branchCode: branchCode?.toString() ?? '',
+        login: username.toString(),
+        branchCode: branchCode.toString() ,
       );
 
       isLoading.value = false;
@@ -132,19 +126,17 @@ class NewOtpVerificationController extends GetxController {
         if (res.data?.otp != null) {
           storedOtp = res.data!.otp!;
           await deviceRepo.saveValueSecurely(DeviceConstants.otp, storedOtp);
-          print("✅ New OTP stored: $storedOtp");
 
           // ✅ Auto-fill OTP in PIN field
           pinController.text = storedOtp;
           isOtpComplete.value = true;
-          print("✅ OTP auto-filled: $storedOtp");
         }
 
         update();
 
         Get.snackbar(
           'Success',
-          res.message ?? 'OTP resent successfully',
+          res.message,
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green,
           colorText: Colors.white,
@@ -160,7 +152,6 @@ class NewOtpVerificationController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      print("Resend OTP error: $e");
       Get.snackbar(
         'Error',
         'Failed to resend OTP',
@@ -187,28 +178,23 @@ class NewOtpVerificationController extends GetxController {
 
     var deviceRepo = Get.find<DeviceRepository>();
     var username = await deviceRepo.getSecuredValue(DeviceConstants.username);
-    var branchCode = await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
-
-    print("Verify OTP - Username: $username, BranchCode: $branchCode, OTP: $otp");
+    var branchCode =
+        await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
 
     try {
       isLoading.value = true;
 
       var res = await otpVerificationPresenter.verifyOtpAPI(
         isLoading: true,
-        login: username?.toString() ?? '',
-        branchCode: branchCode?.toString() ?? '',
+        login: username.toString(),
+        branchCode: branchCode.toString() ,
         otp: otp,
       );
 
       isLoading.value = false;
 
       if (res != null && res.status == true) {
-        print("✅ OTP verified successfully");
-        print("Message: ${res.message}");
-        print("Reset Token: ${res.data?.resetToken}");
-
-        if (res.data?.resetToken != null) {
+          if (res.data?.resetToken != null) {
           var deviceRepository = Get.find<DeviceRepository>();
           await deviceRepository.saveValueSecurely(
               DeviceConstants.resetToken, res.data!.resetToken!);
@@ -234,7 +220,6 @@ class NewOtpVerificationController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      print("Error in verifyOtpAPI: $e");
       Get.snackbar(
         'Error',
         'Network error. Please try again.',

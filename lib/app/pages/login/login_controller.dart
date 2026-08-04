@@ -15,6 +15,7 @@ class LoginController extends GetxController {
 
   // ========== ROLE SELECTION ==========
   var selectedRole = 'student'.obs; // 'student', 'parent', 'staff'
+  var selectedTab = 0.obs; // 0 = Student, 1 = Parent, 2 = Teacher
 
   final Map<String, String> displayToApiRole = {
     'student': 'student',
@@ -33,8 +34,6 @@ class LoginController extends GetxController {
     'parent': '/parent-dashboard',
     'staff': '/teacher-dashboard',
   };
-
-  var selectedTab = 0.obs;
 
   // Branch Code
   TextEditingController? branchCodeController;
@@ -84,7 +83,6 @@ class LoginController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Initialize controllers
     branchCodeController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
@@ -92,7 +90,6 @@ class LoginController extends GetxController {
     emailFocusNode = FocusNode();
     passwordFocusNode = FocusNode();
 
-    // Add listeners with null safety
     branchCodeFocusNode?.addListener(_onBranchCodeFocusChange);
     emailFocusNode?.addListener(_onEmailFocusChange);
     passwordFocusNode?.addListener(_onPasswordFocusChange);
@@ -108,9 +105,13 @@ class LoginController extends GetxController {
       clearAllFields();
       selectedRole.value = role;
 
-      String displayName = apiToDisplayRole[selectedRole.value] ?? selectedRole.value;
-      print('🔄 Role selected: $role (Display: $displayName)');
+      // Update tab index based on role
+      if (role == 'student') selectedTab.value = 0;
+      else if (role == 'parent') selectedTab.value = 1;
+      else if (role == 'teacher') selectedTab.value = 2;
 
+      String displayName =
+          apiToDisplayRole[selectedRole.value] ?? selectedRole.value;
       Get.snackbar(
         'Role Selected',
         'You are logging in as ${displayName.toUpperCase()}',
@@ -146,7 +147,8 @@ class LoginController extends GetxController {
   void _onBranchCodeFocusChange() {
     if (branchCodeFocusNode == null) return;
     isBranchCodeFocused.value = branchCodeFocusNode!.hasFocus;
-    if (!branchCodeFocusNode!.hasFocus && branchCodeController?.text.isNotEmpty == true) {
+    if (!branchCodeFocusNode!.hasFocus &&
+        branchCodeController?.text.isNotEmpty == true) {
       validateBranchCode(branchCodeController!.text, showSnackbar: false);
     }
   }
@@ -162,7 +164,8 @@ class LoginController extends GetxController {
   void _onPasswordFocusChange() {
     if (passwordFocusNode == null) return;
     isPasswordFocused.value = passwordFocusNode!.hasFocus;
-    if (!passwordFocusNode!.hasFocus && passwordController?.text.isNotEmpty == true) {
+    if (!passwordFocusNode!.hasFocus &&
+        passwordController?.text.isNotEmpty == true) {
       validatePassword(passwordController!.text, showSnackbar: false);
     }
   }
@@ -306,7 +309,26 @@ class LoginController extends GetxController {
     );
   }
 
+  // ========== SHOW COMING SOON DIALOG ==========
+  void showComingSoonDialog() {
+    Get.defaultDialog(
+      title: 'Coming Soon',
+      middleText: 'This feature will be available in the upcoming release.',
+      textConfirm: 'OK',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.blue.shade700,
+      onConfirm: () => Get.back(),
+    );
+  }
+
+  // ========== LOGIN WITH VALIDATION (UPDATED) ==========
   void loginWithValidation() {
+    // ✅ Block only Parent (tab index 1). Student (0) and Teacher (2) are allowed.
+    if (selectedTab.value == 1) {
+      showComingSoonDialog();
+      return;
+    }
+
     String branchCode = branchCodeController?.text.trim() ?? '';
     String email = emailController?.text.trim() ?? '';
     String password = passwordController?.text.trim() ?? '';
@@ -354,44 +376,39 @@ class LoginController extends GetxController {
       return;
     }
 
+    // Proceed with login (student or teacher)
     loginAPI();
   }
 
-  // ========== ✅ FULL LOGIN RESPONSE STORAGE METHODS ==========
-
-  /// Save the entire LoginResponse as a JSON string
+  // ========== FULL LOGIN RESPONSE STORAGE ==========
   Future<void> saveFullLoginResponse(LoginResponse response) async {
     final deviceRepository = Get.find<DeviceRepository>();
-    final jsonString = loginResponseToJson(response); // from your model
-    await deviceRepository.saveValueSecurely(DeviceConstants.loginResponse, jsonString);
-    print('✅ Full login response saved to shared preferences');
+    final jsonString = loginResponseToJson(response);
+    await deviceRepository.saveValueSecurely(
+        DeviceConstants.loginResponse, jsonString);
   }
 
-  /// Retrieve the full LoginResponse
   Future<LoginResponse?> getFullLoginResponse() async {
     final deviceRepository = Get.find<DeviceRepository>();
-    final jsonString = await deviceRepository.getSecuredValue(DeviceConstants.loginResponse);
-    if (jsonString != null && jsonString.isNotEmpty) {
+    final jsonString =
+    await deviceRepository.getSecuredValue(DeviceConstants.loginResponse);
+    if (jsonString.isNotEmpty) {
       try {
         final Map<String, dynamic> jsonMap = json.decode(jsonString);
         return LoginResponse.fromJson(jsonMap);
       } catch (e) {
-        print('❌ Error parsing login response: $e');
+        debugPrint('❌ Error parsing login response: $e');
         return null;
       }
     }
     return null;
   }
 
-  /// Clear the stored login response (call on logout)
   Future<void> clearFullLoginResponse() async {
-    final deviceRepository = Get.find<DeviceRepository>();
     await GetStorage().remove(DeviceConstants.loginResponse);
-    print('✅ Full login response cleared');
   }
 
   // ========== LOGIN API ==========
-
   Future<void> loginAPI() async {
     String loginName = emailController?.text.trim() ?? '';
     String branchCode = branchCodeController?.text.trim() ?? '';
@@ -404,89 +421,72 @@ class LoginController extends GetxController {
       password: password,
     );
 
-    print("Login response: $res");
-
     if (res != null && res.status == true) {
-      print("✅ Login successful");
-
-      // ✅ Store the entire response
       await saveFullLoginResponse(res);
 
-      // ✅ Get API role
-      String? apiRole = res.data?.user.userType?.toLowerCase() ?? '';
-      print("📌 API User Type: $apiRole");
-
+      String? apiRole = res.data?.user.userType.toLowerCase() ?? '';
       String displayRole = apiToDisplayRole[apiRole] ?? apiRole;
-      print("📌 Display Role: $displayRole");
-
       String navigationRole = apiRole.isNotEmpty ? apiRole : 'student';
 
       var deviceRepository = Get.find<DeviceRepository>();
 
-      // ✅ Save token and other individual fields (backward compatibility)
       String token = '${res.data?.token}';
       await deviceRepository.saveValueSecurely(DeviceConstants.token, token);
-      print("✅ Token saved: $token");
-
-      await deviceRepository.saveValueSecurely(DeviceConstants.userRole, navigationRole);
-      print("✅ User role saved: $navigationRole");
-
-      await deviceRepository.saveValueSecurely(DeviceConstants.branchId, '${res.data?.branchId}');
-      await deviceRepository.saveValueSecurely(DeviceConstants.branchCode, '${res.data?.branchCode}');
-      await deviceRepository.saveValueSecurely(DeviceConstants.email, '${res.data?.user.email}');
-      await deviceRepository.saveValueSecurely(DeviceConstants.username, '${res.data?.user.username}');
-      await deviceRepository.saveValueSecurely(DeviceConstants.studentId, '${res.data?.user.studentId}');
-
-      // ✅ Verify token exists
-      String? finalCheck = await deviceRepository.getSecuredValue(DeviceConstants.token);
-      print("✅ Final token check before home: ${finalCheck != null ? 'EXISTS' : 'NOT FOUND'}");
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.userRole, navigationRole);
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.branchId, '${res.data?.branchId}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.branchCode, '${res.data?.branchCode}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.email, '${res.data?.user.email}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.username, '${res.data?.user.username}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.studentId, '${res.data?.user.studentId}');
+      await deviceRepository.saveValueSecurely(
+          DeviceConstants.staffId, res.data?.user.staffId ?? '');
 
       await Future.delayed(const Duration(milliseconds: 500));
 
       navigateBasedOnRole(navigationRole);
     } else {
-      print("❌ Login failed");
       showErrorSnackbar('Login failed. Please check your credentials.');
     }
   }
 
-  // ========== NAVIGATE BASED ON ROLE ==========
-
+  // ========== NAVIGATE BASED ON ROLE (UPDATED) ==========
   void navigateBasedOnRole(String role) {
-    print("🚀 Navigating based on role: $role");
-
     String roleLower = role.toLowerCase();
 
     if (roleLower == 'student') {
-      print("📚 Navigating to Student Dashboard");
+      // ✅ Navigate to Student Dashboard
       RouteManagement.goToHome();
+      clearAllFields();
     } else if (roleLower == 'staff') {
-      print("👨‍🏫 Navigating to Staff/Teacher Dashboard");
       RouteManagement.goToTeacherDashboard();
+      clearAllFields();
     } else if (roleLower == 'parent') {
-      print("👨‍👩‍👧 Navigating to Parent Dashboard");
-      // RouteManagement.goToParentDashboard(); // Uncomment when ready
+      showComingSoonDialog();
+      clearAllFields();
     } else {
-      print("⚠️ Unknown role: $role, defaulting to Student Dashboard");
-      RouteManagement.goToHome();
+      showComingSoonDialog();
+      clearAllFields();
     }
-
-    clearAllFields();
   }
 
   // ========== GET USER ROLE ==========
-
   Future<String?> getUserRole() async {
     var deviceRepository = Get.find<DeviceRepository>();
     return await deviceRepository.getSecuredValue(DeviceConstants.userRole);
   }
 
   // ========== CHECK LOGIN STATUS ==========
-
   Future<bool> isUserLoggedIn() async {
     var deviceRepository = Get.find<DeviceRepository>();
-    String? token = await deviceRepository.getSecuredValue(DeviceConstants.token);
-    return token != null && token.isNotEmpty;
+    String? token =
+    await deviceRepository.getSecuredValue(DeviceConstants.token);
+    return token.isNotEmpty;
   }
 
   void togglePasswordVisibility() {
@@ -495,6 +495,13 @@ class LoginController extends GetxController {
 
   void changeTab(int index) {
     selectedTab.value = index;
+    if (index == 0) {
+      selectedRole.value = 'student';
+    } else if (index == 1) {
+      selectedRole.value = 'parent';
+    } else if (index == 2) {
+      selectedRole.value = 'teacher';
+    }
   }
 
   void clearEmailError() {
@@ -523,12 +530,9 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    // Remove listeners only, keep controllers alive for reuse
     branchCodeFocusNode?.removeListener(_onBranchCodeFocusChange);
     emailFocusNode?.removeListener(_onEmailFocusChange);
     passwordFocusNode?.removeListener(_onPasswordFocusChange);
-
-    // Do NOT dispose controllers here
     super.onClose();
   }
 }

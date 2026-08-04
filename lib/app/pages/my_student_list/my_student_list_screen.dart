@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../domain/models/student_list_response.dart';
 import '../../app.dart';
-import '../../navigators/routes_management.dart';
 import 'my_student_list_controller.dart';
 
 class MyStudentListScreen extends StatefulWidget {
@@ -59,7 +58,6 @@ class _MyStudentListScreenState extends State<MyStudentListScreen> {
               fit: BoxFit.cover,
             ),
           ),
-
           SafeArea(
             child: Column(
               children: [
@@ -78,17 +76,15 @@ class _MyStudentListScreenState extends State<MyStudentListScreen> {
                           ),
                           const SizedBox(width: 8),
                           Obx(() => Text(
-                            'Student List (${controller.totalStudents})',
-                            style: Styles.whiteBold,
-                          )),
+                                'Student List (${controller.totalStudents})',
+                                style: Styles.whiteBold,
+                              )),
                         ],
                       ),
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 Expanded(
                   child: Obx(() {
                     if (controller.isLoadingData) {
@@ -126,12 +122,15 @@ class _MyStudentListScreenState extends State<MyStudentListScreen> {
                     final filteredStudents = allStudents.where((student) {
                       final query = searchQuery.value.toLowerCase().trim();
                       if (query.isEmpty) return true;
-                      return student.studentName.toLowerCase().contains(query) ||
+                      return student.studentName
+                              .toLowerCase()
+                              .contains(query) ||
                           student.rollNumber.contains(query);
                     }).toList();
 
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -189,16 +188,12 @@ class _MyStudentListScreenState extends State<MyStudentListScreen> {
                               ),
                             ),
                           ),
-
                           const SizedBox(height: 16),
-
                           Text(
                             '${filteredStudents.length} students found',
                             style: Styles.darkBlueW400,
                           ),
-
                           const SizedBox(height: 12),
-
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -211,7 +206,6 @@ class _MyStudentListScreenState extends State<MyStudentListScreen> {
                               );
                             },
                           ),
-
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -237,7 +231,7 @@ class _MyStudentListScreenState extends State<MyStudentListScreen> {
       onTap: () {
         // ✅ Student ID pass karo
         RouteManagement.goToStudentProfile(
-          studentId: student.studentId,  // ✅ Student ID pass
+          studentId: student.studentId, // ✅ Student ID pass
         );
       },
       child: Container(

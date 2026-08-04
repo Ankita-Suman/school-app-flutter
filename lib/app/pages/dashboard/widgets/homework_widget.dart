@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../app.dart';
-import '../dashboard.dart';
 
 class HomeWorkWidget extends StatelessWidget {
   const HomeWorkWidget({super.key});
