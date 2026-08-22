@@ -30,3 +30,5 @@ export 'subject_response.dart';
 export 'external_marks_response.dart';
 export 'save_external_marks_response.dart';
 export 'internal_marks_response.dart';
+export 'school_info_response.dart';
+export 'student_fee_status_response.dart';

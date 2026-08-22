@@ -124,19 +124,14 @@ class StaffResetPasswordController extends GetxController {
     }
   }
 
-  // ---------- Validation Methods ----------
+  // ---------- Validation Methods (NO SNACKBARS) ----------
   void _validateCurrentPassword() {
     final current = currentPasswordController.text.trim();
     if (current.isEmpty) {
       currentPasswordError.value = 'Current password is required';
       isFormValid.value = false;
-      if (currentPasswordFocusNode.hasFocus && !_currentErrorShown) {
-        showErrorSnackbar('Please enter your current password');
-        _currentErrorShown = true;
-      }
     } else {
       currentPasswordError.value = '';
-      _currentErrorShown = false;
     }
     _updateFormValidity();
   }
@@ -148,27 +143,14 @@ class StaffResetPasswordController extends GetxController {
     if (newPwd.isEmpty) {
       newPasswordError.value = 'New password is required';
       isFormValid.value = false;
-      if (newPasswordFocusNode.hasFocus && !_newErrorShown) {
-        showErrorSnackbar('Please enter a new password');
-        _newErrorShown = true;
-      }
     } else if (newPwd.length < 6) {
       newPasswordError.value = 'Password must be at least 6 characters';
       isFormValid.value = false;
-      if (newPasswordFocusNode.hasFocus && !_newErrorShown) {
-        showErrorSnackbar('Password must be at least 6 characters');
-        _newErrorShown = true;
-      }
     } else if (newPwd == current) {
       newPasswordError.value = 'New password must be different from current';
       isFormValid.value = false;
-      if (newPasswordFocusNode.hasFocus && !_newErrorShown) {
-        showErrorSnackbar('New password must be different from current password');
-        _newErrorShown = true;
-      }
     } else {
       newPasswordError.value = '';
-      _newErrorShown = false;
     }
     _updateFormValidity();
   }
@@ -185,20 +167,11 @@ class StaffResetPasswordController extends GetxController {
     if (confirm.isEmpty) {
       confirmPasswordError.value = 'Please confirm your password';
       isFormValid.value = false;
-      if (confirmPasswordFocusNode.hasFocus && !_confirmErrorShown) {
-        showErrorSnackbar('Please confirm your new password');
-        _confirmErrorShown = true;
-      }
     } else if (confirm != newPwd) {
       confirmPasswordError.value = 'Passwords do not match';
       isFormValid.value = false;
-      if (confirmPasswordFocusNode.hasFocus && !_confirmErrorShown) {
-        showErrorSnackbar('Passwords do not match');
-        _confirmErrorShown = true;
-      }
     } else {
       confirmPasswordError.value = '';
-      _confirmErrorShown = false;
     }
     _updateFormValidity();
   }
@@ -225,51 +198,84 @@ class StaffResetPasswordController extends GetxController {
     isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
   }
 
-  // ---------- API Call (uses dynamic token and branchId) ----------
+  // ---------- API Call (NO SNACKBARS, errors shown inline) ----------
   void resetPassword() async {
-    // Final validation before API call
+    // Final validation with inline errors (no snackbars)
     String current = currentPasswordController.text.trim();
     String newPwd = newPasswordController.text.trim();
     String confirm = confirmPasswordController.text.trim();
 
+    bool hasError = false;
+
     if (current.isEmpty) {
-      showErrorSnackbar('Please enter current password');
-      return;
+      currentPasswordError.value = 'Current password is required';
+      hasError = true;
+    } else {
+      currentPasswordError.value = '';
     }
+
     if (newPwd.isEmpty) {
-      showErrorSnackbar('Please enter new password');
-      return;
+      newPasswordError.value = 'New password is required';
+      hasError = true;
+    } else if (newPwd.length < 6) {
+      newPasswordError.value = 'Password must be at least 6 characters';
+      hasError = true;
+    } else if (newPwd == current) {
+      newPasswordError.value = 'New password must be different from current';
+      hasError = true;
+    } else {
+      newPasswordError.value = '';
     }
-    if (newPwd.length < 6) {
-      showErrorSnackbar('New password must be at least 6 characters');
-      return;
+
+    if (newPwd.isNotEmpty && newPwd.length >= 6 && newPwd != current) {
+      if (confirm.isEmpty) {
+        confirmPasswordError.value = 'Please confirm your password';
+        hasError = true;
+      } else if (confirm != newPwd) {
+        confirmPasswordError.value = 'Passwords do not match';
+        hasError = true;
+      } else {
+        confirmPasswordError.value = '';
+      }
+    } else {
+      confirmPasswordError.value = '';
     }
-    if (newPwd == current) {
-      showErrorSnackbar('New password must be different from current password');
-      return;
-    }
-    if (confirm.isEmpty) {
-      showErrorSnackbar('Please confirm your password');
-      return;
-    }
-    if (newPwd != confirm) {
-      showErrorSnackbar('Passwords do not match');
+
+    if (hasError) {
+      // Focus the first field with error
+      if (currentPasswordError.value.isNotEmpty) {
+        currentPasswordFocusNode.requestFocus();
+      } else if (newPasswordError.value.isNotEmpty) {
+        newPasswordFocusNode.requestFocus();
+      } else if (confirmPasswordError.value.isNotEmpty) {
+        confirmPasswordFocusNode.requestFocus();
+      }
       return;
     }
 
     if (authToken.isEmpty || branchId.isEmpty) {
-      showErrorSnackbar('Authentication token or branch ID not found. Please login again.');
+      // Show inline error (maybe set a general error?) but we can show snackbar only for this critical case
+      Get.snackbar(
+        'Error',
+        'Authentication token or branch ID not found. Please login again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 10,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
       return;
     }
 
     try {
       isLoading.value = true;
 
-      // ✅ Use dynamic token and branchId
       StaffResetPasswordResponse? res = await _presenter.resetStaffPassword(
         isLoading: false,
-        token: authToken,        // ✅ dynamic
-        branchId: branchId,      // ✅ dynamic
+        token: authToken,
+        branchId: branchId,
         currentPassword: current,
         newPassword: newPwd,
         passwordConfirmation: confirm,
@@ -278,17 +284,49 @@ class StaffResetPasswordController extends GetxController {
       isLoading.value = false;
 
       if (res != null && res.status == true) {
-        showSuccessSnackbar('Password changed successfully! Please login again.');
+        // Success snackbar (green) – keep as per requirement (only red errors removed)
+        Get.snackbar(
+          'Success',
+          'Password changed successfully! Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+        );
         clearForm();
         Future.delayed(const Duration(seconds: 2), () {
           _clearAllAndNavigateToLogin();
         });
       } else {
-        showErrorSnackbar(res?.message ?? 'Failed to change password. Please try again.');
+        // Error from API – show inline? We can show as snackbar because it's a server error, not field-specific.
+        Get.snackbar(
+          'Error',
+          res?.message ?? 'Failed to change password. Please try again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: const Icon(Icons.error_outline, color: Colors.white),
+        );
       }
     } catch (e) {
       isLoading.value = false;
-      showErrorSnackbar('Network error. Please try again.');
+      Get.snackbar(
+        'Error',
+        'Network error. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 10,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
     }
   }
 
@@ -302,35 +340,6 @@ class StaffResetPasswordController extends GetxController {
     } catch (e) {
       RouteManagement.goToLogin();
     }
-  }
-
-  // ---------- Helper Snackbars ----------
-  void showErrorSnackbar(String message) {
-    Get.snackbar(
-      'Error',
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-      margin: const EdgeInsets.all(10),
-      borderRadius: 10,
-      icon: const Icon(Icons.error_outline, color: Colors.white),
-    );
-  }
-
-  void showSuccessSnackbar(String message) {
-    Get.snackbar(
-      'Success',
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-      margin: const EdgeInsets.all(10),
-      borderRadius: 10,
-      icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-    );
   }
 
   // ---------- Clear Form ----------

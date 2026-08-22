@@ -1,3 +1,4 @@
+// edit_attendance_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -46,6 +47,11 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
       default:
         return Colors.grey;
     }
+  }
+
+  String _displayStatus(String status) {
+    if (status.toUpperCase() == 'HALF_DAY') return 'HALF DAY';
+    return status.toUpperCase();
   }
 
   Color _getStatusBgColor(String status) {
@@ -299,7 +305,11 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                           Text('Edit Attendance', style: Styles.whiteBold),
                         ],
                       ),
+                      // ----- Student Count – hidden when no data -----
                       Obx(() {
+                        if (!controller.isAttendanceMarked || controller.students.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
                         final count = controller.totalStudents;
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -318,7 +328,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // Date + Class + Section (unchanged)
+                // Date + Class + Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Container(
@@ -343,7 +353,15 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(color: Colors.grey.shade300, width: 1),
+                                  border: Border.all(color: Colors.grey.shade400, width: 1),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.15),
+                                      spreadRadius: 0,
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
                                 child: Align(
                                   alignment: Alignment.centerLeft,
@@ -360,7 +378,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                         ),
                         const SizedBox(width: 8),
 
-                        // Class Dropdown (unchanged)
+                        // Class Dropdown
                         Expanded(
                           child: Obx(() {
                             final classNames = controller.classNames;
@@ -376,7 +394,15 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                                      border: Border.all(color: Colors.grey.shade400, width: 1),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.15),
+                                          spreadRadius: 0,
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                     child: const Align(
                                       alignment: Alignment.centerLeft,
@@ -395,38 +421,83 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                 });
                               }
                             }
+                            final selectedName =
+                                controller.classGroups[selectedId]?.first.className ?? selectedId ?? '--';
+
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Class', style: Styles.darkBlueW400.copyWith(fontSize: 10)),
                                 const SizedBox(height: 4),
-                                Container(
-                                  height: 40,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: selectedId,
-                                      items: classNames.map((classId) {
-                                        final name = controller.classGroups[classId]?.first.className ?? classId;
-                                        return DropdownMenuItem<String>(
-                                          value: classId,
-                                          child: Text(name, style: Styles.darkBlcW600.copyWith(fontSize: 12)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newId) {
-                                        if (newId != null) controller.onClassSelected(newId);
+                                Builder(
+                                  builder: (btnContext) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        final currentNames = controller.classNames;
+                                        if (currentNames.isEmpty) return;
+
+                                        final RenderBox renderBox =
+                                        btnContext.findRenderObject() as RenderBox;
+                                        final Offset offset = renderBox.localToGlobal(Offset.zero);
+                                        final Size size = renderBox.size;
+
+                                        showMenu<String>(
+                                          context: btnContext,
+                                          color: Colors.white,
+                                          surfaceTintColor: Colors.transparent,
+                                          position: RelativeRect.fromLTRB(
+                                            offset.dx,
+                                            offset.dy + size.height,
+                                            offset.dx + size.width,
+                                            offset.dy + size.height + 100,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          elevation: 4,
+                                          constraints: BoxConstraints(
+                                            minWidth: size.width,
+                                            maxWidth: size.width,
+                                          ),
+                                          items: _buildClassMenuItems(currentNames),
+                                        ).then((newId) {
+                                          if (newId != null) {
+                                            controller.onClassSelected(newId);
+                                          }
+                                        });
                                       },
-                                      icon: const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
-                                      style: Styles.darkBlcW600.copyWith(fontSize: 12),
-                                      isExpanded: true,
-                                      underline: const SizedBox(),
-                                    ),
-                                  ),
+                                      child: Container(
+                                        height: 40,
+                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(color: Colors.grey.shade400, width: 1),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.15),
+                                              spreadRadius: 0,
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                selectedName,
+                                                style: Styles.darkBlcW600.copyWith(fontSize: 12),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             );
@@ -434,7 +505,7 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                         ),
                         const SizedBox(width: 8),
 
-                        // Section Dropdown (unchanged)
+                        // Section Dropdown
                         Expanded(
                           child: Obx(() {
                             final sections = controller.classGroups[controller.selectedClassId.value] ?? [];
@@ -450,7 +521,15 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                                      border: Border.all(color: Colors.grey.shade400, width: 1),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.15),
+                                          spreadRadius: 0,
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                     child: const Align(
                                       alignment: Alignment.centerLeft,
@@ -470,37 +549,87 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                                 });
                               }
                             }
+                            final selectedSectionName = sections
+                                .firstWhere(
+                                  (s) => s.sectionId == selectedSection,
+                              orElse: () => sections.first,
+                            )
+                                .sectionName;
+
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Section', style: Styles.darkBlueW400.copyWith(fontSize: 10)),
                                 const SizedBox(height: 4),
-                                Container(
-                                  height: 40,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: selectedSection,
-                                      items: sections.map((item) {
-                                        return DropdownMenuItem<String>(
-                                          value: item.sectionId,
-                                          child: Text(item.sectionName, style: Styles.darkBlcW600.copyWith(fontSize: 12)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newId) {
-                                        if (newId != null) controller.onSectionSelected(newId);
+                                Builder(
+                                  builder: (btnContext) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        final currentSections =
+                                            controller.classGroups[controller.selectedClassId.value] ?? [];
+                                        if (currentSections.isEmpty) return;
+
+                                        final RenderBox renderBox =
+                                        btnContext.findRenderObject() as RenderBox;
+                                        final Offset offset = renderBox.localToGlobal(Offset.zero);
+                                        final Size size = renderBox.size;
+
+                                        showMenu<String>(
+                                          context: btnContext,
+                                          color: Colors.white,
+                                          surfaceTintColor: Colors.transparent,
+                                          position: RelativeRect.fromLTRB(
+                                            offset.dx,
+                                            offset.dy + size.height,
+                                            offset.dx + size.width,
+                                            offset.dy + size.height + 100,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          elevation: 4,
+                                          constraints: BoxConstraints(
+                                            minWidth: size.width,
+                                            maxWidth: size.width,
+                                          ),
+                                          items: _buildSectionMenuItems(currentSections),
+                                        ).then((newId) {
+                                          if (newId != null) {
+                                            controller.onSectionSelected(newId);
+                                          }
+                                        });
                                       },
-                                      icon: const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
-                                      style: Styles.darkBlcW600.copyWith(fontSize: 12),
-                                      isExpanded: true,
-                                      underline: const SizedBox(),
-                                    ),
-                                  ),
+                                      child: Container(
+                                        height: 40,
+                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(color: Colors.grey.shade400, width: 1),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.15),
+                                              spreadRadius: 0,
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                selectedSectionName,
+                                                style: Styles.darkBlcW600.copyWith(fontSize: 12),
+                                              ),
+                                            ),
+                                            const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             );
@@ -510,39 +639,67 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
 
-                // Warning (unchanged)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.orange, width: 1),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 25),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'You are modifying a submitted attendance record.',
-                            style: Styles.orange12500,
+                // ===== WARNING CONTAINER – shown only when students exist =====
+                Obx(() {
+                  if (!controller.isAttendanceMarked || controller.students.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.orange, width: 1),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 25),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'You are modifying a submitted attendance record.',
+                              style: Styles.orange12500,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                  );
+                }),
 
-                // Student list (unchanged)
+                // Student List (with attendance marked check)
                 Expanded(
                   child: Obx(() {
                     if (controller.isLoading.value) {
                       return const Center(child: CircularProgressIndicator());
+                    }
+
+                    // ---------- CHECK IF ATTENDANCE IS MARKED ----------
+                    if (!controller.isAttendanceMarked) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.warning_amber_rounded,
+                                size: 64,
+                                color: Colors.orange.shade300,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Attendance is not marked for today. Please mark attendance first using the \'Mark Attendance\' screen.',
+                                style: Styles.darkBlackW400,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     }
 
                     final students = controller.students;
@@ -602,9 +759,9 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
                   }),
                 ),
 
-                // ========== BUTTON – always enabled, always "Update Changes" ==========
+                // ========== UPDATE BUTTON – hidden if attendance not marked ==========
                 Obx(() {
-                  if (!controller.hasData) return const SizedBox.shrink();
+                  if (!controller.hasData || !controller.isAttendanceMarked) return const SizedBox.shrink();
                   return Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -639,10 +796,9 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
   // ========== STUDENT ROW ==========
   Widget _buildStudentRow({required StudentAttendance student, required int index}) {
     final options = controller.getAttendanceOptions();
-    String? selectedStatus = student.attendance?.status;
-    if (selectedStatus != null && !options.any((s) => s.toUpperCase() == selectedStatus!.toUpperCase())) {
-      selectedStatus = null;
-    }
+    String? selectedStatus = student.attendance?.status != null
+        ? _displayStatus(student.attendance!.status!)
+        : null;
     final currentStatus = selectedStatus ?? (options.contains('PRESENT') ? 'PRESENT' : options.first);
     final String note = student.attendance?.remarks ?? '';
 
@@ -739,5 +895,60 @@ class _EditAttendanceScreenState extends State<EditAttendanceScreen> {
     } catch (e) {
       return date;
     }
+  }
+
+  // ========== BUILD CLASS MENU ITEMS ==========
+  List<PopupMenuEntry<String>> _buildClassMenuItems(List<String> classIds) {
+    final List<PopupMenuEntry<String>> items = [];
+
+    for (int i = 0; i < classIds.length; i++) {
+      final classId = classIds[i];
+      final name = controller.classGroups[classId]?.first.className ?? classId;
+      items.add(
+        PopupMenuItem<String>(
+          value: classId,
+          height: 40,
+          child: SizedBox(
+            width: 220,
+            child: Text(
+              name,
+              style: Styles.darkBlcW600.copyWith(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      );
+
+      if (i != classIds.length - 1) {
+        items.add(const PopupMenuDivider(height: 1));
+      }
+    }
+
+    return items;
+  }
+
+  // ========== BUILD SECTION MENU ITEMS ==========
+  List<PopupMenuEntry<String>> _buildSectionMenuItems(List<dynamic> sections) {
+    final List<PopupMenuEntry<String>> items = [];
+
+    for (int i = 0; i < sections.length; i++) {
+      final item = sections[i];
+      items.add(
+        PopupMenuItem<String>(
+          value: item.sectionId,
+          height: 40,
+          child: Text(
+            item.sectionName,
+            style: Styles.darkBlcW600.copyWith(fontSize: 13),
+          ),
+        ),
+      );
+
+      if (i != sections.length - 1) {
+        items.add(const PopupMenuDivider(height: 1));
+      }
+    }
+
+    return items;
   }
 }

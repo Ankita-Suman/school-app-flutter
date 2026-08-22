@@ -77,6 +77,7 @@ class PersonalInfo {
   final SectionInfo section;
   final ContactInfo contact;
   final AddressInfo address;
+  final List<Sibling> siblings; // <-- NEW FIELD
 
   PersonalInfo({
     required this.id,
@@ -96,6 +97,7 @@ class PersonalInfo {
     required this.section,
     required this.contact,
     required this.address,
+    this.siblings = const [], // default empty list
   });
 
   factory PersonalInfo.fromJson(Map<String, dynamic> json) {
@@ -117,6 +119,10 @@ class PersonalInfo {
       section: SectionInfo.fromJson(json['section'] ?? {}),
       contact: ContactInfo.fromJson(json['contact'] ?? {}),
       address: AddressInfo.fromJson(json['address'] ?? {}),
+      siblings: (json['siblings'] as List?)
+          ?.map((e) => Sibling.fromJson(e))
+          .toList() ??
+          [],
     );
   }
 
@@ -139,6 +145,52 @@ class PersonalInfo {
       'section': section.toJson(),
       'contact': contact.toJson(),
       'address': address.toJson(),
+      'siblings': siblings.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+// ========== SIBLING CLASS ==========
+class Sibling {
+  final String id;
+  final String fullName;
+  final String admissionNumber;
+  final String rollNumber;
+  final String? photo;
+  final ClassInfo classInfo;
+  final SectionInfo section;
+
+  Sibling({
+    required this.id,
+    required this.fullName,
+    required this.admissionNumber,
+    required this.rollNumber,
+    this.photo,
+    required this.classInfo,
+    required this.section,
+  });
+
+  factory Sibling.fromJson(Map<String, dynamic> json) {
+    return Sibling(
+      id: json['id'] ?? '',
+      fullName: json['full_name'] ?? '',
+      admissionNumber: json['admission_number'] ?? '',
+      rollNumber: json['roll_number'] ?? '',
+      photo: json['photo'],
+      classInfo: ClassInfo.fromJson(json['class'] ?? {}),
+      section: SectionInfo.fromJson(json['section'] ?? {}),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'full_name': fullName,
+      'admission_number': admissionNumber,
+      'roll_number': rollNumber,
+      'photo': photo,
+      'class': classInfo.toJson(),
+      'section': section.toJson(),
     };
   }
 }
@@ -544,5 +596,6 @@ class TransportInfo {
     };
   }
 }
+
 ProfileResponse profileResponseFromJson(String str) =>
     ProfileResponse.fromJson(json.decode(str) as Map<String, dynamic>);

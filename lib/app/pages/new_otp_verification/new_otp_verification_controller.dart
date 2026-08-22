@@ -12,26 +12,22 @@ class NewOtpVerificationController extends GetxController {
 
   final NewOtpVerificationPresenter otpVerificationPresenter;
 
-  // For Pinput styling
   var isFocused = false.obs;
   var hasText = false.obs;
 
-  // Same as old class - int counter
   int counter = 30;
   bool enableResend = false;
   late Timer timer;
   String email = '';
   String storedOtp = '';
 
-  // Observable for button state
   var isOtpComplete = false.obs;
+  var otpError = ''.obs; // ✅ inline error
 
-  // PIN controller
   final pinController = TextEditingController();
   final otpFormKey = GlobalKey<FormState>();
   final focusNode = FocusNode();
 
-  // Loading state
   var isLoading = false.obs;
 
   @override
@@ -40,14 +36,20 @@ class NewOtpVerificationController extends GetxController {
     getUserData();
     startOtpTimer();
 
-    // Focus listener
     focusNode.addListener(() {
       isFocused.value = focusNode.hasFocus;
+      // Clear error when focused
+      if (focusNode.hasFocus) {
+        otpError.value = '';
+      }
     });
 
-    // Text listener
     pinController.addListener(() {
       hasText.value = pinController.text.isNotEmpty;
+      // Clear error on text change
+      if (pinController.text.isNotEmpty) {
+        otpError.value = '';
+      }
     });
 
     pinController.addListener(_onPinChanged);
@@ -72,6 +74,9 @@ class NewOtpVerificationController extends GetxController {
 
   void _onPinChanged() {
     isOtpComplete.value = pinController.text.length == 4;
+    if (pinController.text.length == 4) {
+      otpError.value = ''; // clear error when complete
+    }
     update();
   }
 
@@ -94,16 +99,16 @@ class NewOtpVerificationController extends GetxController {
     update();
   }
 
-  // ✅ Fixed Resend OTP Method
+  // ✅ Resend OTP – no red snackbars, inline error
   void resendOTP() async {
     var deviceRepo = Get.find<DeviceRepository>();
     var username = await deviceRepo.getSecuredValue(DeviceConstants.username);
     var branchCode =
-        await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
+    await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
 
-    // Clear previous OTP from field
     pinController.clear();
     isOtpComplete.value = false;
+    otpError.value = ''; // clear previous error
 
     try {
       isLoading.value = true;
@@ -111,122 +116,80 @@ class NewOtpVerificationController extends GetxController {
       var res = await otpVerificationPresenter.resendOtpAPI(
         isLoading: true,
         login: username.toString(),
-        branchCode: branchCode.toString() ,
+        branchCode: branchCode.toString(),
       );
 
       isLoading.value = false;
 
       if (res != null && res.status == true) {
-        // ✅ Reset timer
         counter = 30;
         enableResend = false;
         otpTimer();
 
-        // ✅ Store new OTP in preferences
         if (res.data?.otp != null) {
           storedOtp = res.data!.otp!;
           await deviceRepo.saveValueSecurely(DeviceConstants.otp, storedOtp);
-
-          // ✅ Auto-fill OTP in PIN field
           pinController.text = storedOtp;
           isOtpComplete.value = true;
         }
-
         update();
-
-        Get.snackbar(
-          'Success',
-          res.message,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        // No snackbar – success is shown by auto‑fill and navigation will happen on verification
       } else {
-        Get.snackbar(
-          'Error',
-          res?.message ?? 'Failed to resend OTP',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        otpError.value = res?.message ?? 'Failed to resend OTP. Please try again.';
+        update();
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar(
-        'Error',
-        'Failed to resend OTP',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      otpError.value = 'Network error. Please try again.';
+      update();
     }
   }
 
+  // ✅ Verify OTP – no red snackbars, inline error
   Future<void> verifyOtpAPI() async {
     String otp = pinController.text.trim();
 
     if (otp.isEmpty || otp.length != 4) {
-      Get.snackbar(
-        'Error',
-        'Please enter valid OTP',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      otpError.value = 'Please enter a valid 4‑digit OTP';
+      update();
       return;
     }
 
     var deviceRepo = Get.find<DeviceRepository>();
     var username = await deviceRepo.getSecuredValue(DeviceConstants.username);
     var branchCode =
-        await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
+    await deviceRepo.getSecuredValue(DeviceConstants.branchCode);
 
     try {
       isLoading.value = true;
+      otpError.value = ''; // clear any previous error
 
       var res = await otpVerificationPresenter.verifyOtpAPI(
         isLoading: true,
         login: username.toString(),
-        branchCode: branchCode.toString() ,
+        branchCode: branchCode.toString(),
         otp: otp,
       );
 
       isLoading.value = false;
 
       if (res != null && res.status == true) {
-          if (res.data?.resetToken != null) {
+        if (res.data?.resetToken != null) {
           var deviceRepository = Get.find<DeviceRepository>();
           await deviceRepository.saveValueSecurely(
               DeviceConstants.resetToken, res.data!.resetToken!);
         }
 
-        Get.snackbar(
-          'Success',
-          res.message ?? 'OTP verified successfully',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-
+        // Success – navigate without snackbar
         RouteManagement.goToChangePassword();
       } else {
-        Get.snackbar(
-          'Error',
-          res?.message ?? 'OTP verification failed',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        otpError.value = res?.message ?? 'OTP verification failed. Please try again.';
+        update();
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar(
-        'Error',
-        'Network error. Please try again.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      otpError.value = 'Network error. Please try again.';
+      update();
     }
   }
 

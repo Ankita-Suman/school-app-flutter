@@ -190,6 +190,21 @@ class TeacherHomeUseCases {
         sectionId: sectionId,
       );
 
+ Future<StudentFeeStatusResponse?> getStudentFeeList({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async =>
+      await repository.getStudentFeeList(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+
   Future<TermAttendanceStudentsResponse?> getTermAttendanceStudents({
     required bool isLoading,
     required String token,

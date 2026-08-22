@@ -7,7 +7,6 @@ import 'my_student_list.dart';
 /// A list of bindings which will be used in the route of [MyStudentListScreen].
 class MyStudentListBinding extends Bindings {
 
-
   @override
   void dependencies() {
     Get.put<MyStudentListController>(

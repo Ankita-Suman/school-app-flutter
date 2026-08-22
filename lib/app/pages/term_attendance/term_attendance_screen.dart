@@ -242,7 +242,7 @@ class _TermAttendanceScreenState extends State<TermAttendanceScreen> {
                               Text('Enter Attendance', style: Styles.darkBlcW60015),
                               Text(
                                 'Max Days: ${controller.maxAttendanceDisplay}',
-                                style: Styles.darkBlueW400,
+                                style: Styles.darkBlueW500,
                               ),
                             ],
                           ),
@@ -321,7 +321,7 @@ class _TermAttendanceScreenState extends State<TermAttendanceScreen> {
     );
   }
 
-  // ========== DROPDOWN FIELD ==========
+// ========== DROPDOWN FIELD ==========
   Widget _buildDropdownField({
     required String label,
     required String value,
@@ -333,31 +333,107 @@ class _TermAttendanceScreenState extends State<TermAttendanceScreen> {
       children: [
         Text(label, style: Styles.darkBlueW40010),
         const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300, width: 1),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value.isNotEmpty ? value : null,
-              hint: Text('Select', style: Styles.darkBlcW600),
-              isExpanded: true,
-              icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-              items: items.map((item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item, style: Styles.darkBlcW600),
-                );
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
+        Builder(
+          builder: (btnContext) {
+            return GestureDetector(
+              onTap: () {
+                if (items.isEmpty) return;
+
+                final RenderBox renderBox =
+                btnContext.findRenderObject() as RenderBox;
+                final Offset offset = renderBox.localToGlobal(Offset.zero);
+                final Size size = renderBox.size;
+
+                showMenu<String>(
+                  context: btnContext,
+                  color: Colors.white,
+                  surfaceTintColor: Colors.transparent,
+                  position: RelativeRect.fromLTRB(
+                    offset.dx,
+                    offset.dy + size.height,
+                    offset.dx + size.width,
+                    offset.dy + size.height + 100,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  elevation: 4,
+                  constraints: BoxConstraints(
+                    minWidth: size.width,
+                    maxWidth: size.width,
+                  ),
+                  items: _buildGenericMenuItems(items),
+                ).then((newValue) {
+                  if (newValue != null) {
+                    onChanged(newValue);
+                  }
+                });
+              },
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.grey.shade400, width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.15),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        value.isNotEmpty ? value : '--',
+                        style: value.isNotEmpty
+                            ? Styles.darkBlcW600.copyWith(fontSize: 12)
+                            : const TextStyle(fontSize: 12, color: Colors.grey),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
+  }
+
+// ========== BUILD GENERIC MENU ITEMS WITH DIVIDER ==========
+  List<PopupMenuEntry<String>> _buildGenericMenuItems(List<String> items) {
+    final List<PopupMenuEntry<String>> menuItems = [];
+
+    for (int i = 0; i < items.length; i++) {
+      menuItems.add(
+        PopupMenuItem<String>(
+          value: items[i],
+          height: 40,
+          child: SizedBox(
+            width: 220,
+            child: Text(
+              items[i],
+              style: Styles.darkBlcW600.copyWith(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      );
+
+      if (i != items.length - 1) {
+        menuItems.add(const PopupMenuDivider(height: 1));
+      }
+    }
+
+    return menuItems;
   }
 
   // ========== STUDENT CARD (with improved input) ==========

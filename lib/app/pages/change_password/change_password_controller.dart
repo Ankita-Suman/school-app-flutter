@@ -16,7 +16,7 @@ class ChangePasswordController extends GetxController {
   FocusNode newPasswordFocusNode = FocusNode();
   var isNewPasswordFocused = false.obs;
   var isNewPasswordVisible = false.obs;
-  var passwordErrors = ''.obs;
+  var passwordErrors = ''.obs;            // ✅ inline error
   var isPasswordValid = false.obs;
   bool _passwordErrorShown = false;
 
@@ -25,7 +25,7 @@ class ChangePasswordController extends GetxController {
   FocusNode confirmPasswordFocusNode = FocusNode();
   var isConfirmPasswordFocused = false.obs;
   var isConfirmPasswordVisible = false.obs;
-  var confirmPasswordErrors = ''.obs;
+  var confirmPasswordErrors = ''.obs;     // ✅ inline error
   var isConfirmPasswordValid = false.obs;
   bool _confirmErrorShown = false;
 
@@ -82,15 +82,9 @@ class ChangePasswordController extends GetxController {
       String? storedUsername = await deviceRepository.getSecuredValue(DeviceConstants.username);
       String? storedBranchCode = await deviceRepository.getSecuredValue(DeviceConstants.branchCode);
 
-      if (token.isNotEmpty) {
-        resetToken = token;
-      }
-      if (storedUsername.isNotEmpty) {
-        username = storedUsername;
-      }
-      if (storedBranchCode.isNotEmpty) {
-        branchCode = storedBranchCode;
-      }
+      if (token.isNotEmpty) resetToken = token;
+      if (storedUsername.isNotEmpty) username = storedUsername;
+      if (storedBranchCode.isNotEmpty) branchCode = storedBranchCode;
     } catch (e) {
       debugPrint("Error: $e");
     }
@@ -104,6 +98,7 @@ class ChangePasswordController extends GetxController {
     _validateConfirmPassword();
   }
 
+  // ========== VALIDATION (no snackbars, only inline errors) ==========
   void _validatePassword() {
     String password = newPasswordController.text;
 
@@ -114,11 +109,6 @@ class ChangePasswordController extends GetxController {
     } else if (password.length < 6) {
       isPasswordValid.value = false;
       passwordErrors.value = 'Password must be at least 6 characters';
-      // Show error only when user is focused on this field AND error not shown yet
-      if (!_passwordErrorShown && newPasswordFocusNode.hasFocus) {
-        showErrorSnackbar('Password must be at least 6 characters');
-        _passwordErrorShown = true;
-      }
     } else {
       isPasswordValid.value = true;
       passwordErrors.value = '';
@@ -134,13 +124,6 @@ class ChangePasswordController extends GetxController {
     if (!isPasswordValid.value) {
       isConfirmPasswordValid.value = false;
       confirmPasswordErrors.value = '';
-      // Only show error when focused and not shown yet
-      if (confirmPasswordFocusNode.hasFocus && password.isNotEmpty && password.length < 6) {
-        if (!_confirmErrorShown) {
-          showErrorSnackbar('Password must be at least 6 characters');
-          _confirmErrorShown = true;
-        }
-      }
       return;
     }
 
@@ -148,19 +131,9 @@ class ChangePasswordController extends GetxController {
     if (confirmPassword.isEmpty) {
       isConfirmPasswordValid.value = false;
       confirmPasswordErrors.value = '';
-      // Only show error when focused and not shown yet
-      if (confirmPasswordFocusNode.hasFocus && !_confirmErrorShown) {
-        showErrorSnackbar('Please confirm your password');
-        _confirmErrorShown = true;
-      }
     } else if (password != confirmPassword) {
       isConfirmPasswordValid.value = false;
       confirmPasswordErrors.value = 'Passwords do not match';
-      // Only show error when focused and not shown yet
-      if (!_confirmErrorShown && confirmPasswordFocusNode.hasFocus) {
-        showErrorSnackbar('Passwords do not match');
-        _confirmErrorShown = true;
-      }
     } else {
       isConfirmPasswordValid.value = true;
       confirmPasswordErrors.value = '';
@@ -172,17 +145,19 @@ class ChangePasswordController extends GetxController {
     isFormValid.value = isPasswordValid.value && isConfirmPasswordValid.value;
   }
 
+  // ========== SNACKBARS (only non-red, kept for success / API errors) ==========
   void showErrorSnackbar(String message) {
+    // Changed to blue to avoid red
     Get.snackbar(
       'Error',
       message,
       snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.blue.shade700,
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
       margin: const EdgeInsets.all(10),
       borderRadius: 10,
-      icon: const Icon(Icons.error_outline, color: Colors.white),
+      icon: const Icon(Icons.info_outline, color: Colors.white),
     );
   }
 
@@ -228,28 +203,52 @@ class ChangePasswordController extends GetxController {
     _passwordErrorShown = false;
     _confirmErrorShown = false;
 
-    // Validate New Password
+    bool hasError = false;
+
+    // Validate New Password (inline)
     if (newPassword.isEmpty) {
-      showErrorSnackbar('Please enter new password');
-      return;
-    }
-    if (newPassword.length < 6) {
-      showErrorSnackbar('Password must be at least 6 characters');
-      return;
+      passwordErrors.value = 'Please enter new password';
+      hasError = true;
+    } else if (newPassword.length < 6) {
+      passwordErrors.value = 'Password must be at least 6 characters';
+      hasError = true;
+    } else {
+      passwordErrors.value = '';
     }
 
-    // Validate Confirm Password
+    // Validate Confirm Password (inline)
     if (confirmPassword.isEmpty) {
-      showErrorSnackbar('Please confirm your password');
-      return;
+      confirmPasswordErrors.value = 'Please confirm your password';
+      hasError = true;
+    } else if (newPassword != confirmPassword) {
+      confirmPasswordErrors.value = 'Passwords do not match';
+      hasError = true;
+    } else {
+      confirmPasswordErrors.value = '';
     }
-    if (newPassword != confirmPassword) {
-      showErrorSnackbar('Passwords do not match');
+
+    if (hasError) {
+      if (passwordErrors.value.isNotEmpty) {
+        newPasswordFocusNode.requestFocus();
+      } else if (confirmPasswordErrors.value.isNotEmpty) {
+        confirmPasswordFocusNode.requestFocus();
+      }
       return;
     }
 
     if (resetToken.isEmpty) {
-      showErrorSnackbar('Reset token not found. Please request a new password reset.');
+      // Show a non-red snackbar for token missing (critical)
+      Get.snackbar(
+        'Error',
+        'Reset token not found. Please request a new password reset.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.blue.shade700,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 10,
+        icon: const Icon(Icons.info_outline, color: Colors.white),
+      );
       return;
     }
 

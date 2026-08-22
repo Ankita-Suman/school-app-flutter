@@ -16,13 +16,14 @@ class InternalMarksScreen extends StatefulWidget {
 class _InternalMarksScreenState extends State<InternalMarksScreen> {
   late final InternalMarksController controller;
 
-  // For multi‑field layout (2D controllers)
-  final List<List<TextEditingController>> markControllers = [];
-  final List<List<FocusNode>> focusNodes = [];
+  // Persistent controllers and focus nodes: studentId -> list of controllers/nodes
+  final Map<String, List<TextEditingController>> _markControllers = {};
+  final Map<String, List<FocusNode>> _focusNodes = {};
 
-  // For single‑field layout (1D controllers)
-  final List<TextEditingController> singleControllers = [];
-  final List<FocusNode> singleFocusNodes = [];
+  // Keep track of current student IDs to detect changes
+  Set<String> _currentStudentIds = {};
+
+  // ✅ removed hardcoded max marks – now using API values directly
 
   @override
   void initState() {
@@ -32,15 +33,19 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
 
   @override
   void dispose() {
-    for (var list in markControllers) {
+    for (var list in _markControllers.values) {
       for (var c in list) c.dispose();
     }
-    for (var list in focusNodes) {
+    for (var list in _focusNodes.values) {
       for (var f in list) f.dispose();
     }
-    for (var c in singleControllers) c.dispose();
-    for (var f in singleFocusNodes) f.dispose();
     super.dispose();
+  }
+
+  // ✅ Returns the API max marks list as List<int> (null → 0)
+  List<int> _getEffectiveMaxMarks(List<int?> apiMaxMarks, int fieldCount) {
+    if (apiMaxMarks.isEmpty) return List.filled(fieldCount, 0);
+    return apiMaxMarks.map((m) => m ?? 0).toList();
   }
 
   @override
@@ -89,7 +94,6 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
 
                 Expanded(
                   child: Obx(() {
-                    // ✅ Fixed: removed .value – isLoadingData is already a bool
                     if (controller.isLoadingData &&
                         controller.examGroups.isEmpty &&
                         controller.termClasses.isEmpty) {
@@ -99,49 +103,56 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                     final students = controller.studentList;
                     final fieldCount = controller.internalCount.value;
                     final labels = controller.internalLabels;
-                    final maxMarks = controller.maxMarks;
+                    final apiMaxMarks = controller.maxMarks;
+                    final effectiveMaxMarks = _getEffectiveMaxMarks(apiMaxMarks, fieldCount);
 
-                    // Build controllers based on layout
-                    if (fieldCount == 1) {
-                      while (singleControllers.length < students.length) {
-                        final initialMark = students[singleControllers.length]['marks'] as List<String>?;
-                        final text = (initialMark != null && initialMark.isNotEmpty) ? initialMark.first : '0';
-                        final isZero = text == '0';
-                        singleControllers.add(TextEditingController(text: isZero ? '' : text));
-                        singleFocusNodes.add(FocusNode());
+                    // Detect student list change (subject switch)
+                    final currentIds = students.map((s) => s['id'] as String).toSet();
+                    if (_currentStudentIds != currentIds) {
+                      // Remove controllers for students that are gone
+                      final toRemove = _currentStudentIds.difference(currentIds);
+                      for (var id in toRemove) {
+                        if (_markControllers.containsKey(id)) {
+                          for (var c in _markControllers[id]!) c.dispose();
+                          _markControllers.remove(id);
+                        }
+                        if (_focusNodes.containsKey(id)) {
+                          for (var f in _focusNodes[id]!) f.dispose();
+                          _focusNodes.remove(id);
+                        }
                       }
-                      while (singleControllers.length > students.length) {
-                        singleControllers.removeLast().dispose();
-                        singleFocusNodes.removeLast().dispose();
+                      // Add new students
+                      for (var id in currentIds) {
+                        if (!_markControllers.containsKey(id)) {
+                          final initialMarks = students.firstWhere((s) => s['id'] == id)['marks'] as List<String>? ?? List<String>.filled(fieldCount, '0');
+                          _markControllers[id] = initialMarks.map((m) {
+                            final isZero = m == '0';
+                            return TextEditingController(text: isZero ? '' : m);
+                          }).toList();
+                          _focusNodes[id] = List.generate(fieldCount, (_) => FocusNode());
+                        } else {
+                          // Update text only if not focused (to avoid cursor jump)
+                          final controllers = _markControllers[id]!;
+                          final currentMarks = students.firstWhere((s) => s['id'] == id)['marks'] as List<String>? ?? List<String>.filled(fieldCount, '0');
+                          for (int i = 0; i < controllers.length; i++) {
+                            final node = _focusNodes[id]![i];
+                            if (!node.hasFocus && controllers[i].text != currentMarks[i]) {
+                              final isZero = currentMarks[i] == '0';
+                              controllers[i].text = isZero ? '' : currentMarks[i];
+                            }
+                          }
+                        }
                       }
-                    } else {
-                      while (markControllers.length < students.length) {
-                        final studentMarks = students[markControllers.length]['marks'] as List<String>?;
-                        final defaultMarks = List<String>.filled(fieldCount, '0');
-                        final initialMarks = (studentMarks != null && studentMarks.length == fieldCount)
-                            ? studentMarks
-                            : defaultMarks;
-                        final controllers = initialMarks.map((m) {
-                          final isZero = m == '0';
-                          return TextEditingController(text: isZero ? '' : m);
-                        }).toList();
-                        markControllers.add(controllers);
-                        focusNodes.add(List.generate(fieldCount, (_) => FocusNode()));
-                      }
-                      while (markControllers.length > students.length) {
-                        markControllers.removeLast().forEach((c) => c.dispose());
-                        focusNodes.removeLast().forEach((f) => f.dispose());
-                      }
+                      _currentStudentIds = currentIds;
                     }
 
-                    final bool isSingleField = fieldCount == 1;
-
+                    // Now build the student rows
                     return SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // ===== SELECT CRITERIA =====
+                          // Select Criteria card (unchanged)
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -159,10 +170,8 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Select Criteria',
-                                    style: Styles.darkBlcW60015),
+                                Text('Select Criteria', style: Styles.darkBlcW60015),
                                 const SizedBox(height: 12),
-
                                 Row(
                                   children: [
                                     Expanded(
@@ -199,7 +208,6 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-
                                 Row(
                                   children: [
                                     Expanded(
@@ -236,26 +244,18 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                   // Text('Subject', style: Styles.darkBlueW40010),
-                                    const SizedBox(height: 4),
-                                    _buildDropdownWithLoading(
-                                      label: 'Select Subject',
-                                      value: controller.selectedSubjectName.value,
-                                      items: controller.subjectList.map((s) => s.name).toList(),
-                                      isLoading: controller.isLoadingSubjects.value,
-                                      onChanged: (val) {
-                                        if (val != null) {
-                                          final subject = controller.subjectList
-                                              .firstWhere((s) => s.name == val);
-                                          controller.onSubjectChanged(subject.id);
-                                        }
-                                      },
-                                    ),
-                                  ],
+                                _buildDropdownWithLoading(
+                                  label: 'Select Subject',
+                                  value: controller.selectedSubjectName.value,
+                                  items: controller.subjectList.map((s) => s.name).toList(),
+                                  isLoading: controller.isLoadingSubjects.value,
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      final subject = controller.subjectList
+                                          .firstWhere((s) => s.name == val);
+                                      controller.onSubjectChanged(subject.id);
+                                    }
+                                  },
                                 ),
                               ],
                             ),
@@ -263,7 +263,7 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
 
                           const SizedBox(height: 16),
 
-                          if (students.isEmpty && !controller.isLoadingStudents) // ✅ fixed
+                          if (students.isEmpty && !controller.isLoadingStudents)
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 30),
                               child: Center(
@@ -274,7 +274,7 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                                 ),
                               ),
                             )
-                          else if (controller.isLoadingStudents) // ✅ fixed
+                          else if (controller.isLoadingStudents)
                             const Center(
                               child: Padding(
                                 padding: EdgeInsets.all(16.0),
@@ -282,15 +282,24 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                               ),
                             )
                           else ...[
-                              Text(
-                                'Enter Internal Marks',
-                                style: Styles.darkBlcW60015,
+                              // Header row – shows REAL max marks from API
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Enter Internal Marks', style: Styles.darkBlcW60015),
+                                  Text(
+                                    'Max Marks: ${effectiveMaxMarks.join(', ')}',
+                                    style: Styles.darkBlackW60012,
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 12),
-                              if (isSingleField)
-                                _buildSingleFieldStudents(students)
+
+                              // Students list
+                              if (fieldCount == 1)
+                                _buildSingleFieldStudents(students, effectiveMaxMarks)
                               else
-                                _buildMultiFieldStudents(students, labels, maxMarks),
+                                _buildMultiFieldStudents(students, labels, effectiveMaxMarks),
                             ],
 
                           const SizedBox(height: 20),
@@ -300,7 +309,7 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                   }),
                 ),
 
-                // ===== SAVE BUTTON =====
+                // Save Button with validation (computes invalid on the fly)
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -315,13 +324,40 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                     ],
                   ),
                   child: Obx(() {
-                    final bool canSave = controller.canSave && controller.studentList.isNotEmpty;
+                    bool hasInvalidMarks = false;
+                    final students = controller.studentList;
+                    final fieldCount = controller.internalCount.value;
+                    final effectiveMax = _getEffectiveMaxMarks(controller.maxMarks, fieldCount);
+
+                    for (var student in students) {
+                      final isAbsent = student['isAbsent'] as bool? ?? false;
+                      if (!isAbsent) {
+                        final marksList = student['marks'] as List<String>? ?? [];
+                        for (int i = 0; i < marksList.length && i < fieldCount; i++) {
+                          final markStr = marksList[i];
+                          if (markStr.isNotEmpty) {
+                            final mark = int.tryParse(markStr);
+                            final max = (i < effectiveMax.length) ? effectiveMax[i] : 0;
+                            if (mark != null && max > 0 && mark > max) {
+                              hasInvalidMarks = true;
+                              break;
+                            }
+                          }
+                        }
+                      }
+                      if (hasInvalidMarks) break;
+                    }
+
+                    final bool canSave = controller.canSave && controller.studentList.isNotEmpty && !hasInvalidMarks;
                     return SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: GradientButton(
-                        onPressed: canSave ? () { controller.saveInternalMarks(); } : (){},
-                        text: controller.isSaving.value ? 'Saving...' : 'Save Marks',
+                      child: Opacity(
+                        opacity: canSave ? 1.0 : 0.5,
+                        child: GradientButton(
+                          onPressed: canSave ? () { controller.saveInternalMarks(); } : () {},
+                          text: controller.isSaving.value ? 'Saving...' : 'Save Marks',
+                        ),
                       ),
                     );
                   }),
@@ -334,7 +370,7 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
     );
   }
 
-  // ========== DROPDOWN WITH LOADING INDICATOR ==========
+  // ========== DROPDOWN WITH LOADING INDICATOR (unchanged) ==========
   Widget _buildDropdownWithLoading({
     required String label,
     required String value,
@@ -347,64 +383,137 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
       children: [
         Text(label, style: Styles.darkBlueW40010),
         const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        isLoading
+            ? Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300, width: 1),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: DropdownButtonHideUnderline(
-                  child: isLoading
-                      ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ],
-                    ),
-                  )
-                      : DropdownButton<String>(
-                    value: value.isNotEmpty ? value : null,
-                    hint: Text('Select', style: Styles.darkBlcW600),
-                    isExpanded: true,
-                    icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-                    items: items.map((item) {
-                      return DropdownMenuItem<String>(
-                        value: item,
-                        child: Text(item, style: Styles.darkBlcW600),
-                      );
-                    }).toList(),
-                    onChanged: onChanged,
-                  ),
-                ),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.grey.shade400, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.15),
+                spreadRadius: 0,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
+          child: const Center(
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        )
+            : Builder(
+          builder: (btnContext) {
+            return GestureDetector(
+              onTap: () {
+                if (items.isEmpty) return;
+                final RenderBox renderBox = btnContext.findRenderObject() as RenderBox;
+                final Offset offset = renderBox.localToGlobal(Offset.zero);
+                final Size size = renderBox.size;
+                showMenu<String>(
+                  context: btnContext,
+                  color: Colors.white,
+                  surfaceTintColor: Colors.transparent,
+                  position: RelativeRect.fromLTRB(
+                    offset.dx,
+                    offset.dy + size.height,
+                    offset.dx + size.width,
+                    offset.dy + size.height + 100,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  elevation: 4,
+                  constraints: BoxConstraints(
+                    minWidth: size.width,
+                    maxWidth: size.width,
+                  ),
+                  items: _buildGenericMenuItems(items),
+                ).then((newValue) {
+                  if (newValue != null) onChanged(newValue);
+                });
+              },
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.grey.shade400, width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.15),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        value.isNotEmpty ? value : '--',
+                        style: value.isNotEmpty
+                            ? Styles.darkBlcW600.copyWith(fontSize: 12)
+                            : const TextStyle(fontSize: 12, color: Colors.grey),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
   }
 
-  // ===== SINGLE‑FIELD LAYOUT (internalCount == 1) =====
-  Widget _buildSingleFieldStudents(List<Map<String, dynamic>> students) {
+  List<PopupMenuEntry<String>> _buildGenericMenuItems(List<String> items) {
+    final List<PopupMenuEntry<String>> menuItems = [];
+    for (int i = 0; i < items.length; i++) {
+      menuItems.add(
+        PopupMenuItem<String>(
+          value: items[i],
+          height: 40,
+          child: SizedBox(
+            width: 220,
+            child: Text(
+              items[i],
+              style: Styles.darkBlcW600.copyWith(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      );
+      if (i != items.length - 1) {
+        menuItems.add(const PopupMenuDivider(height: 1));
+      }
+    }
+    return menuItems;
+  }
+
+  // ===== SINGLE‑FIELD LAYOUT using the new _InvalidMarkField =====
+  Widget _buildSingleFieldStudents(List<Map<String, dynamic>> students, List<int> maxMarks) {
+    final max = maxMarks.isNotEmpty ? maxMarks.first : 0; // ✅ real API value or 0
     return Column(
-      children: students.asMap().entries.map((entry) {
-        final index = entry.key;
-        final student = entry.value;
-        final TextEditingController controllers = singleControllers[index];
-        final FocusNode focusNode = singleFocusNodes[index];
+      children: students.map((student) {
+        final id = student['id'] as String;
+        final controllers = _markControllers[id]![0];
+        final focusNode = _focusNodes[id]![0];
+        final index = students.indexWhere((s) => s['id'] == id);
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(top: 10, bottom: 4),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -431,15 +540,11 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                   final current = student['isAbsent'] as bool? ?? false;
                   controller.studentList[index]['isAbsent'] = !current;
                   setState(() {
+                    controller.studentList[index]['marks'] = [''];
                     controllers.text = '';
-                    final marksList = controller.studentList[index]['marks'] as List<String>?;
-                    if (marksList != null && marksList.isNotEmpty) {
-                      marksList[0] = '';
-                    } else {
-                      controller.studentList[index]['marks'] = [''];
-                    }
                   });
                   controller.markChanges();
+                  controller.studentList.refresh();
                 },
                 child: Row(
                   children: [
@@ -477,47 +582,16 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              Container(
-                width: 55,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300, width: 1),
-                ),
-                child: TextField(
-                  controller: controllers,
-                  focusNode: focusNode
-                    ..addListener(() {
-                      if (focusNode.hasFocus && controllers.text == '0') {
-                        controllers.clear();
-                      }
-                    }),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  style: Styles.skyBlueW60012,
-                  enabled: !(student['isAbsent'] as bool? ?? false),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(3),
-                  ],
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    hintText: '0',
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
-                  ),
-                  onChanged: (value) {
-                    final marksList = controller.studentList[index]['marks'] as List<String>?;
-                    if (marksList != null && marksList.isNotEmpty) {
-                      marksList[0] = value;
-                    } else {
-                      controller.studentList[index]['marks'] = [value];
-                    }
-                    controller.markChanges();
-                  },
-                ),
+              // Use the new _InvalidMarkField for single field
+              _InvalidMarkField(
+                controller: controllers,
+                focusNode: focusNode,
+                maxMark: max,
+                isAbsent: student['isAbsent'] as bool? ?? false,
+                onChanged: (value) {
+                  controller.studentList[index]['marks'] = [value.isEmpty ? '0' : value];
+                  controller.markChanges();
+                },
               ),
             ],
           ),
@@ -526,41 +600,43 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
     );
   }
 
-  // ===== MULTI‑FIELD LAYOUT (internalCount > 1) =====
+  // ===== MULTI‑FIELD LAYOUT using the new _InvalidMarkField =====
   Widget _buildMultiFieldStudents(
       List<Map<String, dynamic>> students,
       List<String> labels,
-      List<int?> maxMarks,
+      List<int> maxMarks,
       ) {
     return Column(
-      children: students.asMap().entries.map((entry) {
-        final index = entry.key;
-        final student = entry.value;
-        final controllers = markControllers[index];
-        final nodes = focusNodes[index];
+      children: students.map((student) {
+        final id = student['id'] as String;
+        final controllers = _markControllers[id]!;
+        final focusNodes = _focusNodes[id]!;
+        final index = students.indexWhere((s) => s['id'] == id);
 
         final List<Widget> markWidgets = [];
         for (int i = 0; i < controllers.length; i++) {
+          final max = (i < maxMarks.length) ? maxMarks[i] : 0; // ✅ real API value
           markWidgets.add(
-            _buildMarkField(
-              controller: controllers[i],
-              focusNode: nodes[i],
+            _buildMarkFieldWrapper(
+              controllers: controllers[i],
+              focusNode: focusNodes[i],
               isAbsent: student['isAbsent'] as bool? ?? false,
               index: index,
               fieldIndex: i,
               label: labels.length > i ? labels[i] : 'M${i+1}',
-              maxMark: maxMarks.length > i ? maxMarks[i] : null,
+              maxMark: max,
             ),
           );
         }
 
+        // Arrange fields in pairs
         List<Widget> rows = [];
         for (int i = 0; i < markWidgets.length; i += 2) {
           final first = markWidgets[i];
           final second = (i + 1 < markWidgets.length) ? markWidgets[i + 1] : null;
           rows.add(
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -574,7 +650,7 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
         }
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(top: 10, bottom: 12),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -626,6 +702,7 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
                         }
                       });
                       controller.markChanges();
+                      controller.studentList.refresh();
                     },
                     child: Row(
                       children: [
@@ -681,91 +758,146 @@ class _InternalMarksScreenState extends State<InternalMarksScreen> {
     );
   }
 
-  // ===== SINGLE MARK FIELD =====
-  Widget _buildMarkField({
-    required TextEditingController controller,
+  // Wrapper for a single mark field in multi‑field layout
+  Widget _buildMarkFieldWrapper({
+    required TextEditingController controllers,
     required FocusNode focusNode,
     required bool isAbsent,
     required int index,
     required int fieldIndex,
     required String label,
-    required int? maxMark,
+    required int maxMark,
   }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              label,
-              style: Styles.darkBlcW600,
-              textAlign: TextAlign.center,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Styles.darkBlcW600,
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  maxMark > 0 ? '(Max: $maxMark)' : '(Max: -)',
+                  style: const TextStyle(fontSize: 8, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-            Text(
-              maxMark != null ? '(Max: $maxMark)' : '(Max: -)',
-              style: const TextStyle(fontSize: 8, color: Colors.grey),
-              textAlign: TextAlign.center,
+            const SizedBox(width: 8),
+            // Use the new _InvalidMarkField
+            _InvalidMarkField(
+              controller: controllers,
+              focusNode: focusNode,
+              maxMark: maxMark,
+              isAbsent: isAbsent,
+              width: 70,
+              height: 48,
+              onChanged: (value) {
+                final marksList = controller.studentList[index]['marks'] as List<String>;
+                marksList[fieldIndex] = value.isEmpty ? '0' : value;
+                controller.markChanges();
+              },
             ),
           ],
-        ),
-        const SizedBox(width: 8),
-        _buildMarkInput(
-          textController: controller,
-          focusNode: focusNode,
-          isAbsent: isAbsent,
-          index: index,
-          fieldIndex: fieldIndex,
         ),
       ],
     );
   }
+}
 
-  // ===== MARK INPUT =====
-  Widget _buildMarkInput({
-    required TextEditingController textController,
-    required FocusNode focusNode,
-    required bool isAbsent,
-    required int index,
-    required int fieldIndex,
-  }) {
-    return SizedBox(
-      width: 40,
-      height: 30,
-      child: TextField(
-        controller: textController,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.black),
-        enabled: !isAbsent,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(3),
-        ],
-        focusNode: focusNode
-          ..addListener(() {
-            if (focusNode.hasFocus && textController.text == '0') {
-              textController.clear();
-            }
-          }),
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+// ===== NEW WIDGET: Self‑contained text field with red border based on current text =====
+class _InvalidMarkField extends StatelessWidget {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final int maxMark;
+  final bool isAbsent;
+  final double? width;
+  final double? height;
+  final ValueChanged<String> onChanged;
+
+  const _InvalidMarkField({
+    Key? key,
+    required this.controller,
+    required this.focusNode,
+    required this.maxMark,
+    required this.isAbsent,
+    this.width,
+    this.height,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (context, value, child) {
+        final text = value.text;
+        bool isInvalid = false;
+        if (text.isNotEmpty && maxMark > 0) {
+          final mark = int.tryParse(text);
+          if (mark != null && mark > maxMark) {
+            isInvalid = true;
+          }
+        }
+
+        return SizedBox(
+          width: width ?? 55,
+          height: height ?? 48,
+          child: TextField(
+            controller: controller,
+            focusNode: focusNode,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
+            enabled: !isAbsent,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(3),
+            ],
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(color: isInvalid ? Colors.red : Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(
+                  color: isInvalid ? Colors.red : Colors.grey.shade300,
+                  width: isInvalid ? 1.5 : 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(
+                  color: isInvalid ? Colors.red : Colors.blue.shade700,
+                  width: 1.5,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(
+                  color: isInvalid ? Colors.red : Colors.grey.shade300,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+              isDense: true,
+              hintText: '0',
+              hintStyle: const TextStyle(color: Colors.grey, fontSize: 10),
+            ),
+            onChanged: (value) {
+              onChanged(value);
+            },
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-          isDense: true,
-          hintText: '0',
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 10),
-        ),
-        onChanged: (value) {
-          final marksList = controller.studentList[index]['marks'] as List<String>;
-          marksList[fieldIndex] = value.isEmpty ? '0' : value;
-          controller.markChanges();
-        },
-      ),
+        );
+      },
     );
   }
 }

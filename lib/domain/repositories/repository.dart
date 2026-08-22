@@ -619,6 +619,30 @@ Future<LeaveBalanceResponse?> getLeaveBalanceAPI({
       return null;
     }
   }
+  Future<SchoolInfoResponse?> getSchoolInfo({
+    required bool isLoading, required String branchCode,
+
+  }) async {
+    try {
+      var res = await _dataRepository.getSchoolInfo(
+        isLoading: isLoading,
+        branchCode: branchCode,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return schoolInfoResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getSchoolInfo(
+        isLoading: isLoading,
+        branchCode: branchCode,
+      );
+      return null;
+    }
+  }
 
   Future<LeaveApplicationsResponse?> getLeaveStatusData({
     required bool isLoading,
@@ -1001,6 +1025,40 @@ Future<TermSectionResponse?> getTermSectionData({
       }
     } catch (e) {
       await _deviceRepository.getSubjectData(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+
+      );
+      return null;
+    }
+  }
+  Future<StudentFeeStatusResponse?> getStudentFeeList({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    try {
+      var res = await _dataRepository.getStudentFeeList(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        classId: classId,
+        sectionId: sectionId,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return studentFeeStatusResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getStudentFeeList(
         isLoading: isLoading,
         token: token,
         branchId: branchId,

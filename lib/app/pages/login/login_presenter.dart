@@ -17,4 +17,13 @@ class LoginPresenter {
           loginName: loginName,
           password: password,
           branchCode: branchCode);
+
+  Future<SchoolInfoResponse?> getSchoolInfo(
+          { required bool isLoading,
+            required String branchCode
+           }) async =>
+      await _loginUseCases.getSchoolInfo(
+        isLoading: isLoading,
+        branchCode: branchCode,
+       );
 }

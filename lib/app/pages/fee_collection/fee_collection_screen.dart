@@ -15,13 +15,13 @@ class FeeCollectionScreen extends StatelessWidget {
       'color': Colors.blue,
       'route': RouteManagement.goToStudentFeeList, // ✅ Add route reference
     },
-    {
-      'title': 'Defaulter List',
-      'subtitle': 'View students with pending dues',
-      'icon': Icons.warning_amber_outlined,
-      'color': Colors.orange,
-      'route': RouteManagement.goToDefaulterList, // ✅ Add route reference
-    },
+    // {
+    //   'title': 'Defaulter List',
+    //   'subtitle': 'View students with pending dues',
+    //   'icon': Icons.warning_amber_outlined,
+    //   'color': Colors.orange,
+    //   'route': RouteManagement.goToDefaulterList, // ✅ Add route reference
+    // },
   ];
 
   @override

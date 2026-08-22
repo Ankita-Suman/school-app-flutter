@@ -17,18 +17,20 @@ class StaffResetPasswordScreen extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          // ---------- Blue Header ----------
-          SizedBox(
-            width: double.infinity,
-            height: backgroundHeight,
+          // ---------- Top area: Blue Header + Overlapping White Container ----------
+          Expanded(
             child: Stack(
+              fit: StackFit.expand,
               children: [
+                // 1. Blue background – Positioned to fill the top part
                 Positioned(
                   top: 0,
                   left: 0,
                   right: 0,
+                  height: backgroundHeight,
                   child: SvgPicture.asset(
                     AssetConstants.icBlueBg,
                     width: double.infinity,
@@ -36,118 +38,128 @@ class StaffResetPasswordScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            controller.clearForm();
-                            Get.back();
-                          },
-                          child: SvgPicture.asset(AssetConstants.icBackBg),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Reset Password',
-                          style: Styles.whiteBold,
-                        ),
-                      ],
+
+                // 2. Back button + Title – placed on top of blue background
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              controller.clearForm();
+                              Get.back();
+                            },
+                            child: SvgPicture.asset(AssetConstants.icBackBg),
+                          ),
+                          const SizedBox(width: 8),
+                          Text('Reset Password', style: Styles.whiteBold),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 3. White rounded container – overlaps blue header by 24px
+                Positioned(
+                  top: backgroundHeight - 24,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
+                      ),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 10),
+                          SvgPicture.asset(AssetConstants.icPassLock),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Create New Password',
+                            style: Styles.blackDark16,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Your new password must be different from previous used passwords.',
+                            style: Styles.darkBlueW40013.copyWith(height: 1.5),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 20),
+
+                          _buildPasswordField(
+                            label: 'Current Password',
+                            hint: 'Enter current password',
+                            controller: controller.currentPasswordController,
+                            focusNode: controller.currentPasswordFocusNode,
+                            isFocused: controller.isCurrentPasswordFocused,
+                            isVisible: controller.isCurrentPasswordVisible,
+                            toggleVisibility: controller.toggleCurrentPasswordVisibility,
+                            errorText: controller.currentPasswordError,
+                            textInputAction: TextInputAction.next,
+                            onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                            screenWidth: screenWidth,
+                            screenHeight: screenHeight,
+                          ),
+                          const SizedBox(height: 16),
+
+                          _buildPasswordField(
+                            label: 'New Password',
+                            hint: 'Enter new password',
+                            controller: controller.newPasswordController,
+                            focusNode: controller.newPasswordFocusNode,
+                            isFocused: controller.isNewPasswordFocused,
+                            isVisible: controller.isNewPasswordVisible,
+                            toggleVisibility: controller.toggleNewPasswordVisibility,
+                            errorText: controller.newPasswordError,
+                            textInputAction: TextInputAction.next,
+                            onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                            screenWidth: screenWidth,
+                            screenHeight: screenHeight,
+                          ),
+                          const SizedBox(height: 16),
+
+                          _buildPasswordField(
+                            label: 'Confirm New Password',
+                            hint: 'Confirm new password',
+                            controller: controller.confirmPasswordController,
+                            focusNode: controller.confirmPasswordFocusNode,
+                            isFocused: controller.isConfirmPasswordFocused,
+                            isVisible: controller.isConfirmPasswordVisible,
+                            toggleVisibility: controller.toggleConfirmPasswordVisibility,
+                            errorText: controller.confirmPasswordError,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) {
+                              FocusScope.of(context).unfocus();
+                              if (controller.isFormValid.value) {
+                                controller.resetPassword();
+                              }
+                            },
+                            screenWidth: screenWidth,
+                            screenHeight: screenHeight,
+                          ),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
-            ),
-          ),
-
-          // ---------- White Content Area ----------
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 10),
-                    SvgPicture.asset(AssetConstants.icPassLock),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Create New Password',
-                      style: Styles.blackDark16,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Your new password must be different from previous used passwords.',
-                      style: Styles.darkBlueW40013.copyWith(height: 1.5),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // ---- Current Password (styled like ChangePasswordScreen) ----
-                    _buildPasswordField(
-                      label: 'Current Password',
-                      hint: 'Enter current password',
-                      controller: controller.currentPasswordController,
-                      focusNode: controller.currentPasswordFocusNode,
-                      isFocused: controller.isCurrentPasswordFocused,
-                      isVisible: controller.isCurrentPasswordVisible,
-                      toggleVisibility:
-                          controller.toggleCurrentPasswordVisibility,
-                      errorText: controller.currentPasswordError,
-                      textInputAction: TextInputAction.next,
-                      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      screenWidth: screenWidth,
-                      screenHeight: screenHeight,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // ---- New Password ----
-                    _buildPasswordField(
-                      label: 'New Password',
-                      hint: 'Enter new password',
-                      controller: controller.newPasswordController,
-                      focusNode: controller.newPasswordFocusNode,
-                      isFocused: controller.isNewPasswordFocused,
-                      isVisible: controller.isNewPasswordVisible,
-                      toggleVisibility: controller.toggleNewPasswordVisibility,
-                      errorText: controller.newPasswordError,
-                      textInputAction: TextInputAction.next,
-                      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      screenWidth: screenWidth,
-                      screenHeight: screenHeight,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // ---- Confirm Password ----
-                    _buildPasswordField(
-                      label: 'Confirm New Password',
-                      hint: 'Confirm new password',
-                      controller: controller.confirmPasswordController,
-                      focusNode: controller.confirmPasswordFocusNode,
-                      isFocused: controller.isConfirmPasswordFocused,
-                      isVisible: controller.isConfirmPasswordVisible,
-                      toggleVisibility:
-                          controller.toggleConfirmPasswordVisibility,
-                      errorText: controller.confirmPasswordError,
-                      textInputAction: TextInputAction.done,
-                      onSubmitted: (_) {
-                        FocusScope.of(context).unfocus();
-                        if (controller.isFormValid.value) {
-                          controller.resetPassword();
-                        }
-                      },
-                      screenWidth: screenWidth,
-                      screenHeight: screenHeight,
-                    ),
-                    const SizedBox(height: 40),
-                  ],
-                ),
-              ),
             ),
           ),
 
@@ -170,18 +182,18 @@ class StaffResetPasswordScreen extends StatelessWidget {
               ],
             ),
             child: Obx(
-              () => Opacity(
+                  () => Opacity(
                 opacity: controller.isFormValid.value ? 1.0 : 0.5,
                 child: SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: GradientButton(
                     onPressed: controller.isFormValid.value &&
-                            !controller.isLoading.value
+                        !controller.isLoading.value
                         ? () {
-                            FocusScope.of(context).unfocus();
-                            controller.resetPassword();
-                          }
+                      FocusScope.of(context).unfocus();
+                      controller.resetPassword();
+                    }
                         : () {},
                     text: controller.isLoading.value
                         ? 'Resetting...'
@@ -196,7 +208,7 @@ class StaffResetPasswordScreen extends StatelessWidget {
     );
   }
 
-  // ---------- Password Field (exact styling from ChangePasswordScreen) ----------
+  // ---------- Password Field (unchanged) ----------
   Widget _buildPasswordField({
     required String label,
     required String hint,
@@ -219,16 +231,16 @@ class StaffResetPasswordScreen extends StatelessWidget {
       final borderColor = isError
           ? Colors.red
           : (hasFocus || hasContent)
-              ? Colors.blue.shade700
-              : Colors.grey.shade300;
+          ? Colors.blue.shade700
+          : Colors.grey.shade300;
       final borderWidth = (hasFocus || hasContent || isError) ? 1.5 : 1.0;
       final bgColor = isError
           ? Colors.red.shade50
           : hasFocus
-              ? Colors.white
-              : hasContent
-                  ? Colors.blue.shade50
-                  : Colors.grey.shade50;
+          ? Colors.white
+          : hasContent
+          ? Colors.blue.shade50
+          : Colors.grey.shade50;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,7 +255,6 @@ class StaffResetPasswordScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Prefix icon (lock)
                 Padding(
                   padding: EdgeInsets.only(left: screenWidth * 0.03),
                   child: Icon(
@@ -254,7 +265,6 @@ class StaffResetPasswordScreen extends StatelessWidget {
                         : Colors.grey.shade500,
                   ),
                 ),
-                // TextField
                 Expanded(
                   child: TextField(
                     controller: controller,
@@ -274,7 +284,6 @@ class StaffResetPasswordScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Suffix visibility toggle
                 IconButton(
                   icon: Icon(
                     isVisible.value ? Icons.visibility_off : Icons.visibility,

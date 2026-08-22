@@ -16,10 +16,7 @@ class StudentProfileScreen extends StatefulWidget {
 }
 
 class _StudentProfileScreenState extends State<StudentProfileScreen> {
-  // ========== CONTROLLER ==========
   late final StudentProfileController controller;
-
-  // ========== SELECTED TAB ==========
   int _selectedTab = 0; // 0: Overview, 1: Documents
 
   @override
@@ -28,10 +25,8 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     controller = Get.put(StudentProfileController(Get.find()));
   }
 
-  // ========== MAKE PHONE CALL ==========
   Future<void> _makePhoneCall(String phoneNumber) async {
     if (phoneNumber.isEmpty || phoneNumber == '--') return;
-    // Clean the number: keep only digits and '+'
     final String cleanedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9+]'), '');
     if (cleanedNumber.isEmpty) return;
     final Uri phoneUri = Uri(scheme: 'tel', path: cleanedNumber);
@@ -48,7 +43,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     }
   }
 
-  // ========== COPY TO CLIPBOARD ==========
   void _copyToClipboard(String text) {
     if (text.isEmpty || text == '--') return;
     Clipboard.setData(ClipboardData(text: text));
@@ -82,7 +76,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
 
         return Stack(
           children: [
-            // ========== HEADER BACKGROUND ==========
             Positioned(
               top: 0,
               left: 0,
@@ -94,12 +87,9 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-
-            // ========== MAIN CONTENT ==========
             SafeArea(
               child: Column(
                 children: [
-                  // ========== HEADER ==========
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
@@ -118,10 +108,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-                  // ========== PROFILE SECTION ==========
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.only(top: 16),
@@ -129,7 +116,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                     color: Colors.white,
                     child: Column(
                       children: [
-                        // ========== PROFILE IMAGE ==========
                         Container(
                           width: 80,
                           height: 80,
@@ -166,10 +152,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // ========== TABS ==========
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Container(
@@ -193,10 +176,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // ========== CONTENT ==========
                   Expanded(
                     child: _selectedTab == 0
                         ? _buildOverviewContent()
@@ -211,7 +191,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     );
   }
 
-  // ========== BUILD HEADER ==========
   Widget _buildHeader(double backgroundHeight) {
     return Stack(
       children: [
@@ -245,7 +224,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     );
   }
 
-  // ========== BUILD DEFAULT AVATAR ==========
   Widget _buildDefaultAvatar() {
     return Center(
       child: Icon(
@@ -256,10 +234,8 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     );
   }
 
-  // ========== BUILD TAB BUTTON ==========
   Widget _buildTabButton(String title, int index) {
     final isSelected = _selectedTab == index;
-
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _selectedTab = index),
@@ -276,8 +252,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color:
-                  isSelected ? Colors.blue.shade700 : Colors.grey.shade600,
+                  color: isSelected ? Colors.blue.shade700 : Colors.grey.shade600,
                 ),
               ),
               const SizedBox(height: 4),
@@ -297,7 +272,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     );
   }
 
-  // ========== BUILD OVERVIEW CONTENT ==========
+  // ========== OVERVIEW CONTENT ==========
   Widget _buildOverviewContent() {
     final data = controller.profileData.value;
 
@@ -305,72 +280,44 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Column(
         children: [
-          // ========== BASIC INFO ==========
+          // Basic Info
           _buildInfoCard(
             title: 'Basic Info',
             children: [
-              _buildInfoRow(
-                'Date of Birth',
-                data?.personal?.dateOfBirth ?? '--',
-              ),
-              _buildInfoRow(
-                'Blood Group',
-                data?.personal?.bloodGroup ?? '--',
-              ),
-              _buildInfoRow(
-                'Gender',
-                data?.personal?.gender ?? '--',
-              ),
+              _buildInfoRow('Date of Birth', data?.personal.dateOfBirth ?? '--'),
+              _buildInfoRow('Blood Group', data?.personal.bloodGroup ?? '--'),
+              _buildInfoRow('Gender', data?.personal.gender ?? '--'),
             ],
           ),
-
           const SizedBox(height: 12),
 
-          // ========== PARENT INFO (UPDATED) ==========
+          // Parent Info
           _buildInfoCard(
             title: 'Parent Info',
             children: [
-              _buildInfoRow(
-                "Father's Name",
-                data?.parents?.father.name ?? '--',
-              ),
-              _buildInfoRow(
-                "Father's Contact",
-                data?.parents?.father.phone ?? '--',
-                isContact: true, // ✅ mark as contact
-              ),
-              _buildInfoRow(
-                "Mother's Name",
-                data?.parents?.mother.name ?? '--',
-              ),
-              // ✅ ADDED: Mother's Contact Number
-              _buildInfoRow(
-                "Mother's Contact",
-                data?.parents?.mother.phone ?? '--',
-                isContact: true, // ✅ mark as contact
-              ),
+              _buildInfoRow("Father's Name", data?.parents.father.name ?? '--'),
+              _buildInfoRow("Father's Contact", data?.parents.father.phone ?? '--', isContact: true),
+              _buildInfoRow("Mother's Name", data?.parents.mother.name ?? '--'),
+              _buildInfoRow("Mother's Contact", data?.parents.mother.phone ?? '--', isContact: true),
             ],
           ),
-
           const SizedBox(height: 12),
 
-          // ========== ACADEMIC INFO ==========
+          // Academic Info
           _buildInfoCard(
             title: 'Academic Info',
             children: [
-              _buildInfoRow('Class', data?.personal?.name ?? '--'),
-              _buildInfoRow('Roll No.', data?.personal?.rollNumber ?? '--'),
-              _buildInfoRow(
-                'Admission No.',
-                data?.personal?.admissionNumber ?? '--',
-              ),
+              _buildInfoRow('Class', data?.personal.classInfo.name ?? '--'),
+              _buildInfoRow('Roll No.', data?.personal.rollNumber ?? '--'),
+              _buildInfoRow('Admission No.', data?.personal.admissionNumber ?? '--'),
               _buildInfoRow('Email', '--'),
-              _buildInfoRow(
-                'Address',
-                data?.personal?.address.permanent ?? '--',
-              ),
+              _buildInfoRow('Address', data?.personal.address.permanent ?? '--'),
             ],
           ),
+          const SizedBox(height: 12),
+
+          // ========== SIBLINGS CARD (NEW) ==========
+          _buildSiblingsCard(),
 
           const SizedBox(height: 20),
         ],
@@ -378,7 +325,94 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     );
   }
 
-  // ========== BUILD DOCUMENTS CONTENT ==========
+  // ========== SIBLINGS CARD ==========
+  Widget _buildSiblingsCard() {
+    final siblings = controller.profileData.value?.personal.siblings ?? [];
+    if (siblings.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.06),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.people_outline, size: 18, color: Colors.blue.shade700),
+              const SizedBox(width: 8),
+              Text('Siblings', style: Styles.darkBlcW70016),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...siblings.asMap().entries.map((entry) {
+            final index = entry.key;
+            final sibling = entry.value;
+            return Column(
+              children: [
+                _buildSiblingRow(sibling),
+                if (index < siblings.length - 1)
+                  Divider(height: 1, color: Colors.grey.shade200),
+              ],
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  // ========== SIBLING ROW ==========
+  Widget _buildSiblingRow(dynamic sibling) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Icon(Icons.person_outline, size: 16, color: Colors.blue.shade700),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  sibling.fullName,
+                  style: Styles.darkBlcW600.copyWith(fontSize: 14),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${sibling.classInfo.name} • ${sibling.section.name} • Roll No. ${sibling.rollNumber}',
+                  style: Styles.darkBlueW400.copyWith(fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ========== DOCUMENTS CONTENT ==========
   Widget _buildDocumentsContent() {
     return Center(
       child: Column(
@@ -402,7 +436,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     );
   }
 
-  // ========== BUILD INFO CARD ==========
+  // ========== INFO CARD ==========
   Widget _buildInfoCard({
     required String title,
     required List<Widget> children,
@@ -434,7 +468,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     );
   }
 
-  // ========== BUILD INFO ROW (UPDATED WITH CONTACT HANDLING) ==========
+  // ========== INFO ROW ==========
   Widget _buildInfoRow(
       String label,
       String value, {
@@ -443,55 +477,35 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
         Color? iconBgColor,
         Color? iconColor,
       }) {
-    // Default icon based on label
     IconData getIcon(String label) {
-      if (label.contains('Date') || label.contains('Birth')) {
-        return Icons.calendar_today_outlined;
-      } else if (label.contains('Blood')) {
-        return Icons.favorite;
-      } else if (label.contains("Father") || label.contains("Mother")) {
-        return Icons.person_outline;
-      } else if (label.contains('Contact') ||
-          label.contains('Phone') ||
-          label.contains('Number')) {
+      if (label.contains('Date') || label.contains('Birth')) return Icons.calendar_today_outlined;
+      if (label.contains('Blood')) return Icons.favorite;
+      if (label.contains("Father") || label.contains("Mother")) return Icons.person_outline;
+      if (label.contains('Contact') || label.contains('Phone') || label.contains('Number'))
         return Icons.phone_outlined;
-      } else if (label.contains('Email')) {
-        return Icons.email_outlined;
-      } else if (label.contains('Address')) {
-        return Icons.location_on_outlined;
-      } else if (label.contains('Class')) {
-        return Icons.school_outlined;
-      } else if (label.contains('Roll')) {
-        return Icons.numbers_outlined;
-      } else if (label.contains('Admission')) {
-        return Icons.assignment_outlined;
-      } else if (label.contains('Gender')) {
-        return Icons.person_outline;
-      }
+      if (label.contains('Email')) return Icons.email_outlined;
+      if (label.contains('Address')) return Icons.location_on_outlined;
+      if (label.contains('Class')) return Icons.school_outlined;
+      if (label.contains('Roll')) return Icons.numbers_outlined;
+      if (label.contains('Admission')) return Icons.assignment_outlined;
+      if (label.contains('Gender')) return Icons.person_outline;
       return Icons.info_outline;
     }
 
     Color getBgColor(String label) {
-      if (label.contains('Blood')) {
-        return Colors.red.shade50;
-      }
+      if (label.contains('Blood')) return Colors.red.shade50;
       return Colors.blue.shade50;
     }
 
     Color getIconColor(String label) {
-      if (label.contains('Blood')) {
-        return Colors.red.shade700;
-      }
+      if (label.contains('Blood')) return Colors.red.shade700;
       return Colors.blue.shade700;
     }
 
     final iconData = icon ?? getIcon(label);
     final bgColor = iconBgColor ?? getBgColor(label);
     final fgColor = iconColor ?? getIconColor(label);
-
-    // Determine if this is a contact field (either flag or label contains keywords)
-    final bool isContactField =
-        isContact || label.contains('Contact') || label.contains('Phone');
+    final bool isContactField = isContact || label.contains('Contact') || label.contains('Phone');
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -516,7 +530,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
               children: [
                 Text(label, style: Styles.darkBlueW400),
                 const SizedBox(height: 2),
-                // ✅ Contact fields: tap to dial, long press to copy
                 isContactField && value.isNotEmpty && value != '--'
                     ? GestureDetector(
                   onTap: () => _makePhoneCall(value),

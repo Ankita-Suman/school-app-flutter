@@ -29,7 +29,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
       final statuses = students.first.attendanceStatuses;
       if (statuses.isNotEmpty) {
         var unique = statuses.map((s) => s.toUpperCase()).toSet().toList();
-        // Convert any "HALF_DAY" to "HALF DAY" for display
         unique = unique.map((s) => _displayStatus(s)).toSet().toList();
         unique.sort((a, b) =>
         a == 'PRESENT' ? -1 : (b == 'PRESENT' ? 1 : a.compareTo(b)));
@@ -48,9 +47,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   void initState() {
     super.initState();
     controller = Get.put(MarkAttendanceController(Get.find()));
-    ever(controller.classAttendanceData, (_) {
-      // No need to track changes anymore; button always enabled
-    });
+    ever(controller.classAttendanceData, (_) {});
   }
 
   @override
@@ -107,7 +104,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     }
 
     setState(() {
-      // Store display format (HALF DAY)
       students[index].currentStatus = _displayStatus(status);
     });
   }
@@ -185,7 +181,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     );
   }
 
-  // ========== CONFIRMATION DIALOG ==========
   void _showConfirmationDialog() {
     if (controller.isAttendanceAlreadyMarked.value) {
       Get.snackbar('Info', 'Attendance already marked.',
@@ -198,7 +193,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     final students = controller.attendanceStudents;
     if (students == null || students.isEmpty) return;
 
-    // Compute counts per status (using display format)
     final statusCounts = controller.getStatusCounts();
     if (statusCounts.isEmpty) {
       Get.snackbar('Info', 'No status selected. Please mark at least one student.',
@@ -228,7 +222,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                 style: Styles.darkBlueW400,
               ),
               const SizedBox(height: 16),
-              // Status counts (display statuses with proper case)
               ...statusCounts.entries.map((entry) {
                 final displayStatus = _displayStatus(entry.key);
                 return Padding(
@@ -267,7 +260,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                   Expanded(
                     child: TextButton(
                       onPressed: () {
-                        // Cancel: revert changes and close dialog
                         controller.revertChanges();
                         Get.back();
                       },
@@ -290,7 +282,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.back(); // close dialog
+                        Get.back();
                         controller.saveAttendance();
                       },
                       style: ElevatedButton.styleFrom(
@@ -320,6 +312,281 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     if (controller.hasMorePages && !controller.isLoadingMoreData) {
       controller.loadMoreData();
     }
+  }
+
+  // ========== BUILD CLASS MENU ITEMS ==========
+  List<PopupMenuEntry<String>> _buildClassMenuItems(List<dynamic> classes) {
+    final List<PopupMenuEntry<String>> items = [];
+
+    for (int i = 0; i < classes.length; i++) {
+      final classItem = classes[i];
+      items.add(
+        PopupMenuItem<String>(
+          value: classItem.classId,
+          height: 40,
+          child: SizedBox(
+            width: 220,
+            child: Text(
+              classItem.className,
+              style: Styles.darkBlcW600.copyWith(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      );
+
+      if (i != classes.length - 1) {
+        items.add(const PopupMenuDivider(height: 1));
+      }
+    }
+
+    return items;
+  }
+
+  // ========== BUILD SECTION MENU ITEMS ==========
+  List<PopupMenuEntry<String>> _buildSectionMenuItems(List<dynamic> sections) {
+    final List<PopupMenuEntry<String>> items = [];
+
+    for (int i = 0; i < sections.length; i++) {
+      final item = sections[i];
+      items.add(
+        PopupMenuItem<String>(
+          value: item.sectionId,
+          height: 40,
+          child: Text(
+            item.sectionName,
+            style: Styles.darkBlcW600.copyWith(fontSize: 13),
+          ),
+        ),
+      );
+
+      if (i != sections.length - 1) {
+        items.add(const PopupMenuDivider(height: 1));
+      }
+    }
+
+    return items;
+  }
+
+// ========== CLASS DROPDOWN (reactive with Obx) ==========
+  Widget _buildClassDropdown() {
+    return Obx(() {
+      final allClasses = controller.uniqueClassList;
+      if (allClasses == null || allClasses.isEmpty) {
+        return Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.grey.shade400, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.15),
+                spreadRadius: 0,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Align(
+            alignment: Alignment.centerLeft,
+            child: Text('--', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          ),
+        );
+      }
+
+      final selectedId = controller.selectedClassId.value;
+      final selectedClass = allClasses.firstWhere(
+            (c) => c.classId == selectedId,
+        orElse: () => allClasses.first,
+      );
+
+      return Builder(
+        builder: (btnContext) {
+          return GestureDetector(
+            onTap: () {
+              final currentClasses = controller.uniqueClassList;
+              if (currentClasses == null || currentClasses.isEmpty) return;
+
+              final RenderBox renderBox =
+              btnContext.findRenderObject() as RenderBox;
+              final Offset offset = renderBox.localToGlobal(Offset.zero);
+              final Size size = renderBox.size;
+
+              showMenu<String>(
+                context: btnContext,
+                color: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                position: RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy + size.height,
+                  offset.dx + size.width,
+                  offset.dy + size.height + 100,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                elevation: 4,
+                constraints: BoxConstraints(
+                  minWidth: size.width,
+                  maxWidth: size.width,
+                ),
+                items: _buildClassMenuItems(currentClasses),
+              ).then((newValue) {
+                if (newValue != null) {
+                  controller.onClassSelected(newValue);
+                }
+              });
+            },
+            child: Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.grey.shade400, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.15),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedClass.className,
+                      style: Styles.darkBlcW600.copyWith(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    });
+  }
+
+// ========== SECTION DROPDOWN (reactive with Obx) ==========
+  Widget _buildSectionDropdown() {
+    return Obx(() {
+      final latestSections =
+          controller.classGroups[controller.selectedClassId.value] ?? [];
+      if (latestSections.isEmpty) {
+        return Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.grey.shade400, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.15),
+                spreadRadius: 0,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Align(
+            alignment: Alignment.centerLeft,
+            child: Text('--', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          ),
+        );
+      }
+
+      final selectedId = controller.selectedSectionId.value;
+      String displayName = '--';
+      try {
+        final selectedItem = latestSections.firstWhere(
+              (item) => item.sectionId == selectedId,
+          orElse: () => latestSections.first,
+        );
+        displayName = selectedItem.sectionName;
+      } catch (_) {
+        displayName = latestSections.first.sectionName;
+      }
+
+      return Builder(
+        builder: (btnContext) {
+          return GestureDetector(
+            onTap: () {
+              final currentSections =
+                  controller.classGroups[controller.selectedClassId.value] ?? [];
+              if (currentSections.isEmpty) return;
+
+              final RenderBox renderBox =
+              btnContext.findRenderObject() as RenderBox;
+              final Offset offset = renderBox.localToGlobal(Offset.zero);
+              final Size size = renderBox.size;
+
+              showMenu<String>(
+                context: btnContext,
+                color: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                position: RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy + size.height,
+                  offset.dx + size.width,
+                  offset.dy + size.height + 100,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                elevation: 4,
+                constraints: BoxConstraints(
+                  minWidth: size.width,
+                  maxWidth: size.width,
+                ),
+                items: _buildSectionMenuItems(currentSections),
+              ).then((newId) {
+                if (newId != null) {
+                  controller.onSectionSelected(newId);
+                }
+              });
+            },
+            child: Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.grey.shade400, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.15),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      displayName,
+                      style: Styles.darkBlcW600.copyWith(fontSize: 12),
+                    ),
+                  ),
+                  const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    });
   }
 
   @override
@@ -377,9 +644,9 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
-                // Date + Class + Section
+                // Top Row: Date + Class + Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Container(
@@ -407,8 +674,15 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      color: Colors.grey.shade300, width: 1),
+                                  border: Border.all(color: Colors.grey.shade400, width: 1),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.15),
+                                      spreadRadius: 0,
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
                                 child: Align(
                                   alignment: Alignment.centerLeft,
@@ -426,193 +700,31 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
                         // Class
                         Expanded(
-                          child: Obx(() {
-                            final classNames = controller.classNames;
-                            if (classNames.isEmpty) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Class',
-                                      style: Styles.darkBlueW400
-                                          .copyWith(fontSize: 10)),
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    height: 40,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                          color: Colors.grey.shade300,
-                                          width: 1),
-                                    ),
-                                    child: const Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text('--',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey)),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Class',
-                                    style: Styles.darkBlueW400
-                                        .copyWith(fontSize: 10)),
-                                const SizedBox(height: 4),
-                                Container(
-                                  height: 40,
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(
-                                        color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: controller.selectedClassId.value,
-                                      items: classNames.map((classId) {
-                                        final name = controller
-                                            .classGroups[classId]
-                                            ?.first
-                                            .className ??
-                                            classId;
-                                        return DropdownMenuItem<String>(
-                                          value: classId,
-                                          child: Text(name,
-                                              style: Styles.darkBlcW600
-                                                  .copyWith(fontSize: 12)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newId) {
-                                        if (newId != null) {
-                                          controller.onClassSelected(newId);
-                                        }
-                                      },
-                                      icon: const Icon(
-                                          Icons.keyboard_arrow_down,
-                                          size: 16,
-                                          color: Colors.grey),
-                                      style: Styles.darkBlcW600
-                                          .copyWith(fontSize: 12),
-                                      isExpanded: true,
-                                      underline: const SizedBox(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Class',
+                                  style: Styles.darkBlueW400
+                                      .copyWith(fontSize: 10)),
+                              const SizedBox(height: 4),
+                              _buildClassDropdown(),
+                            ],
+                          ),
                         ),
                         const SizedBox(width: 8),
 
                         // Section
                         Expanded(
-                          child: Obx(() {
-                            final sections = controller.classGroups[
-                            controller.selectedClassId.value] ??
-                                [];
-                            if (sections.isEmpty) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Section',
-                                      style: Styles.darkBlueW400
-                                          .copyWith(fontSize: 10)),
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    height: 40,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                          color: Colors.grey.shade300,
-                                          width: 1),
-                                    ),
-                                    child: const Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text('--',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey)),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-                            // Ensure selected section is valid
-                            String currentSection =
-                                controller.selectedSectionId.value;
-                            bool isValid = sections.any(
-                                    (item) => item.sectionId == currentSection);
-                            if (!isValid && sections.isNotEmpty) {
-                              currentSection = sections.first.sectionId;
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (controller.selectedSectionId.value !=
-                                    currentSection) {
-                                  controller.selectedSectionId.value =
-                                      currentSection;
-                                  controller.selectedSectionName.value =
-                                      sections.first.sectionName;
-                                }
-                              });
-                            }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Section',
-                                    style: Styles.darkBlueW400
-                                        .copyWith(fontSize: 10)),
-                                const SizedBox(height: 4),
-                                Container(
-                                  height: 40,
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(
-                                        color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: currentSection,
-                                      items: sections.map((item) {
-                                        return DropdownMenuItem<String>(
-                                          value: item.sectionId,
-                                          child: Text(item.sectionName,
-                                              style: Styles.darkBlcW600
-                                                  .copyWith(fontSize: 12)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newId) {
-                                        if (newId != null) {
-                                          controller.onSectionSelected(newId);
-                                        }
-                                      },
-                                      icon: const Icon(
-                                          Icons.keyboard_arrow_down,
-                                          size: 16,
-                                          color: Colors.grey),
-                                      style: Styles.darkBlcW600
-                                          .copyWith(fontSize: 12),
-                                      isExpanded: true,
-                                      underline: const SizedBox(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Section',
+                                  style: Styles.darkBlueW400
+                                      .copyWith(fontSize: 10)),
+                              const SizedBox(height: 4),
+                              _buildSectionDropdown(),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -623,13 +735,13 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                 // Student List
                 Expanded(
                   child: Obx(() {
-                    // Show loader while data is being fetched (initial or reload)
-                    if (controller.isLoadingData || controller.isLoading.value || controller.isFirstLoad) {
+                    if (controller.isLoadingData ||
+                        controller.isLoading.value ||
+                        controller.isFirstLoad) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
                     final students = controller.attendanceStudents;
-                    // Only show empty state when loading is complete and list is empty
                     if (students == null || students.isEmpty) {
                       return const Center(
                         child: Text(
@@ -719,7 +831,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                   }),
                 ),
 
-                // ---------- SAVE BUTTON (Always enabled unless already marked) ----------
+                // Save Button
                 Obx(() {
                   if (controller.isLoadingData || controller.isLoading.value) {
                     return const SizedBox.shrink();
@@ -780,7 +892,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     final options = statusOptions;
     final bool alreadyMarked = controller.isAttendanceAlreadyMarked.value;
 
-    // Ensure currentStatus is displayed with proper format
     final String? selectedStatus = student.currentStatus != null
         ? _displayStatus(student.currentStatus!)
         : null;

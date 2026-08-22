@@ -16,4 +16,14 @@ class LoginUseCases {
           loginName: loginName,
           password: password,
           branchCode: branchCode);
+
+  Future<SchoolInfoResponse?> getSchoolInfo({
+    required bool isLoading,
+    required String branchCode,
+
+  }) async =>
+      await repository.getSchoolInfo(
+        isLoading: isLoading,
+        branchCode: branchCode,
+      );
 }

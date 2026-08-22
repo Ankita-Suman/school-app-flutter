@@ -12,7 +12,6 @@ class NewOtpVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions for responsive sizing
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
@@ -22,23 +21,19 @@ class NewOtpVerificationScreen extends StatelessWidget {
         resizeToAvoidBottomInset: true,
         body: Stack(
           children: [
-            // SVG Background
             SvgPicture.asset(
               AssetConstants.icBackG,
               width: double.infinity,
               height: double.infinity,
               fit: BoxFit.cover,
             ),
-
-            // Content
             SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top Content
                   Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                    EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -79,8 +74,6 @@ class NewOtpVerificationScreen extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Bottom Card - Align Bottom Center
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -108,28 +101,46 @@ class NewOtpVerificationScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // OTP Label
                         Text(
                           'OTP CODE',
                           style: Styles.darkGryW700,
                         ),
                         SizedBox(height: screenHeight * 0.025),
 
-                        // Pinput Widget
-                        const PinputExample(),
+                        // Pinput with inline error
+                        Obx(
+                              () => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PinputExample(
+                                // Pass controller and focus node if needed; PinputExample already uses its own or the passed one?
+                                // PinputExample is a separate widget; we'll assume it uses the same controller.
+                                // We'll keep it as is.
+                              ),
+                              if (controller.otpError.value.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4, left: 4),
+                                  child: Text(
+                                    controller.otpError.value,
+                                    style: const TextStyle(fontSize: 12, color: Colors.red),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                         SizedBox(height: screenHeight * 0.06),
 
                         // Verify Button
                         Obx(
-                          () => Opacity(
+                              () => Opacity(
                             opacity: controller.isOtpComplete.value ? 1.0 : 0.5,
                             child: GradientButton(
                               onPressed: controller.isOtpComplete.value &&
-                                      !controller.isLoading.value
+                                  !controller.isLoading.value
                                   ? () {
-                                      FocusScope.of(context).unfocus();
-                                      controller.verifyOtpAPI();
-                                    }
+                                FocusScope.of(context).unfocus();
+                                controller.verifyOtpAPI();
+                              }
                                   : () {},
                               text: 'Verify OTP',
                               icon: SvgPicture.asset(
@@ -142,7 +153,7 @@ class NewOtpVerificationScreen extends StatelessWidget {
                         ),
                         SizedBox(height: screenHeight * 0.05),
 
-                        // Resend OTP Timer Container - ✅ Fixed timer display
+                        // Resend OTP Timer Container
                         Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: screenWidth * 0.04,
@@ -166,17 +177,16 @@ class NewOtpVerificationScreen extends StatelessWidget {
                                     style: Styles.darkBlackW70011,
                                   ),
                                   SizedBox(height: screenHeight * 0.005),
-                                  // ✅ Fixed: Show timer only when enableResend is false AND counter > 0
                                   (!controller.enableResend &&
-                                          controller.counter > 0)
+                                      controller.counter > 0)
                                       ? Text(
-                                          '00:${controller.counter.toString().padLeft(2, '0')}',
-                                          style: Styles.blueExBold,
-                                        )
+                                    '00:${controller.counter.toString().padLeft(2, '0')}',
+                                    style: Styles.blueExBold,
+                                  )
                                       : Text(
-                                          '00:00',
-                                          style: Styles.blueExBold,
-                                        )
+                                    '00:00',
+                                    style: Styles.blueExBold,
+                                  )
                                 ],
                               ),
                               GestureDetector(
@@ -192,7 +202,6 @@ class NewOtpVerificationScreen extends StatelessWidget {
                         ),
                         SizedBox(height: screenHeight * 0.025),
 
-                        // Rich Text - Entered wrong email? Change email
                         Center(
                           child: GestureDetector(
                             onTap: () {

@@ -11,7 +11,6 @@ class ChangePasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions for responsive sizing
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
@@ -20,23 +19,18 @@ class ChangePasswordScreen extends StatelessWidget {
       builder: (controller) => Scaffold(
         body: Stack(
           children: [
-            // SVG Background
             SvgPicture.asset(
               AssetConstants.icBackG,
               width: double.infinity,
               height: double.infinity,
               fit: BoxFit.cover,
             ),
-
-            // Content
             SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top Content
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -46,9 +40,7 @@ class ChangePasswordScreen extends StatelessWidget {
                             controller.clearForm();
                             Get.back();
                           },
-                          child: SvgPicture.asset(
-                            AssetConstants.icBackBg,
-                          ),
+                          child: SvgPicture.asset(AssetConstants.icBackBg),
                         ),
                         SizedBox(
                           height: screenWidth * 0.25,
@@ -79,7 +71,6 @@ class ChangePasswordScreen extends StatelessWidget {
               ),
             ),
 
-            // Bottom Card - Align Bottom Center
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -111,74 +102,85 @@ class ChangePasswordScreen extends StatelessWidget {
                         Text('New Password', style: Styles.darkGryW700),
                         SizedBox(height: screenHeight * 0.01),
                         Obx(
-                          () => Container(
-                            decoration: BoxDecoration(
-                              color: controller.isNewPasswordFocused.value
-                                  ? Colors.white
-                                  : (controller
-                                          .newPasswordController.text.isNotEmpty
+                              () => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: controller.isNewPasswordFocused.value
+                                      ? Colors.white
+                                      : (controller.newPasswordController.text.isNotEmpty
                                       ? Colors.blue.shade50
                                       : Colors.grey.shade50),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: (controller.isNewPasswordFocused.value ||
-                                        controller.newPasswordController.text
-                                            .isNotEmpty)
-                                    ? Colors.blue.shade700
-                                    : Colors.grey.shade300,
-                                width: (controller.isNewPasswordFocused.value ||
-                                        controller.newPasswordController.text
-                                            .isNotEmpty)
-                                    ? 1.5
-                                    : 1,
-                              ),
-                            ),
-                            child: TextField(
-                              controller: controller.newPasswordController,
-                              focusNode: controller.newPasswordFocusNode,
-                              obscureText:
-                                  !controller.isNewPasswordVisible.value,
-                              style: Styles.darkBlcW400,
-                              onChanged: (value) {
-                                controller.validateNewPassword(value);
-                                //controller.clearNewPasswordError();
-                              },
-                              decoration: InputDecoration(
-                                hintText: 'Enter new password',
-                                hintStyle: Styles.darkGryW40014,
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.04,
-                                  vertical: screenHeight * 0.02,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: controller.passwordErrors.value.isNotEmpty
+                                        ? Colors.red
+                                        : (controller.isNewPasswordFocused.value ||
+                                        controller.newPasswordController.text.isNotEmpty)
+                                        ? Colors.blue.shade700
+                                        : Colors.grey.shade300,
+                                    width: controller.passwordErrors.value.isNotEmpty
+                                        ? 1.5
+                                        : (controller.isNewPasswordFocused.value ||
+                                        controller.newPasswordController.text.isNotEmpty)
+                                        ? 1.5
+                                        : 1,
+                                  ),
                                 ),
-                                prefixIcon: Icon(
-                                  Icons.lock_outline,
-                                  size: screenWidth * 0.05,
-                                  color:
-                                      (controller.isNewPasswordFocused.value ||
-                                              controller.newPasswordController
-                                                  .text.isNotEmpty)
+                                child: TextField(
+                                  controller: controller.newPasswordController,
+                                  focusNode: controller.newPasswordFocusNode,
+                                  obscureText: !controller.isNewPasswordVisible.value,
+                                  style: Styles.darkBlcW400,
+                                  onChanged: (value) {
+                                    controller.validateNewPassword(value);
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter new password',
+                                    hintStyle: Styles.darkGryW40014,
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: screenWidth * 0.04,
+                                      vertical: screenHeight * 0.02,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.lock_outline,
+                                      size: screenWidth * 0.05,
+                                      color: controller.passwordErrors.value.isNotEmpty
+                                          ? Colors.red
+                                          : (controller.isNewPasswordFocused.value ||
+                                          controller.newPasswordController.text.isNotEmpty)
                                           ? Colors.blue.shade700
                                           : Colors.grey.shade500,
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    controller.isNewPasswordVisible.value
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    size: screenWidth * 0.05,
-                                    color: (controller
-                                                .isNewPasswordFocused.value ||
-                                            controller.newPasswordController
-                                                .text.isNotEmpty)
-                                        ? Colors.blue.shade700
-                                        : Colors.grey.shade500,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        controller.isNewPasswordVisible.value
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        size: screenWidth * 0.05,
+                                        color: controller.passwordErrors.value.isNotEmpty
+                                            ? Colors.red
+                                            : (controller.isNewPasswordFocused.value ||
+                                            controller.newPasswordController.text.isNotEmpty)
+                                            ? Colors.blue.shade700
+                                            : Colors.grey.shade500,
+                                      ),
+                                      onPressed: () => controller.toggleNewPasswordVisibility(),
+                                    ),
                                   ),
-                                  onPressed: () =>
-                                      controller.toggleNewPasswordVisibility(),
                                 ),
                               ),
-                            ),
+                              if (controller.passwordErrors.value.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4, left: 4),
+                                  child: Text(
+                                    controller.passwordErrors.value,
+                                    style: const TextStyle(fontSize: 12, color: Colors.red),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.025),
@@ -187,91 +189,100 @@ class ChangePasswordScreen extends StatelessWidget {
                         Text('Confirm Password', style: Styles.darkGryW700),
                         SizedBox(height: screenHeight * 0.01),
                         Obx(
-                          () => Container(
-                            decoration: BoxDecoration(
-                              color: controller.isConfirmPasswordFocused.value
-                                  ? Colors.white
-                                  : (controller.confirmPasswordController.text
-                                          .isNotEmpty
+                              () => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: controller.isConfirmPasswordFocused.value
+                                      ? Colors.white
+                                      : (controller.confirmPasswordController.text.isNotEmpty
                                       ? Colors.blue.shade50
                                       : Colors.grey.shade50),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: (controller
-                                            .isConfirmPasswordFocused.value ||
-                                        controller.confirmPasswordController
-                                            .text.isNotEmpty)
-                                    ? Colors.blue.shade700
-                                    : Colors.grey.shade300,
-                                width: (controller
-                                            .isConfirmPasswordFocused.value ||
-                                        controller.confirmPasswordController
-                                            .text.isNotEmpty)
-                                    ? 1.5
-                                    : 1,
-                              ),
-                            ),
-                            child: TextField(
-                              controller: controller.confirmPasswordController,
-                              focusNode: controller.confirmPasswordFocusNode,
-                              obscureText:
-                                  !controller.isConfirmPasswordVisible.value,
-                              style: Styles.darkBlcW400,
-                              onChanged: (value) {
-                                controller.validateConfirmPassword(value);
-                                //controller.clearConfirmPasswordError();
-                              },
-                              decoration: InputDecoration(
-                                hintText: 'Confirm new password',
-                                hintStyle: Styles.darkGryW40014,
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.04,
-                                  vertical: screenHeight * 0.02,
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.lock_outline,
-                                  size: screenWidth * 0.05,
-                                  color: (controller
-                                              .isConfirmPasswordFocused.value ||
-                                          controller.confirmPasswordController
-                                              .text.isNotEmpty)
-                                      ? Colors.blue.shade700
-                                      : Colors.grey.shade500,
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    controller.isConfirmPasswordVisible.value
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    size: screenWidth * 0.05,
-                                    color: (controller.isConfirmPasswordFocused
-                                                .value ||
-                                            controller.confirmPasswordController
-                                                .text.isNotEmpty)
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: controller.confirmPasswordErrors.value.isNotEmpty
+                                        ? Colors.red
+                                        : (controller.isConfirmPasswordFocused.value ||
+                                        controller.confirmPasswordController.text.isNotEmpty)
                                         ? Colors.blue.shade700
-                                        : Colors.grey.shade500,
+                                        : Colors.grey.shade300,
+                                    width: controller.confirmPasswordErrors.value.isNotEmpty
+                                        ? 1.5
+                                        : (controller.isConfirmPasswordFocused.value ||
+                                        controller.confirmPasswordController.text.isNotEmpty)
+                                        ? 1.5
+                                        : 1,
                                   ),
-                                  onPressed: () => controller
-                                      .toggleConfirmPasswordVisibility(),
+                                ),
+                                child: TextField(
+                                  controller: controller.confirmPasswordController,
+                                  focusNode: controller.confirmPasswordFocusNode,
+                                  obscureText: !controller.isConfirmPasswordVisible.value,
+                                  style: Styles.darkBlcW400,
+                                  onChanged: (value) {
+                                    controller.validateConfirmPassword(value);
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Confirm new password',
+                                    hintStyle: Styles.darkGryW40014,
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: screenWidth * 0.04,
+                                      vertical: screenHeight * 0.02,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.lock_outline,
+                                      size: screenWidth * 0.05,
+                                      color: controller.confirmPasswordErrors.value.isNotEmpty
+                                          ? Colors.red
+                                          : (controller.isConfirmPasswordFocused.value ||
+                                          controller.confirmPasswordController.text.isNotEmpty)
+                                          ? Colors.blue.shade700
+                                          : Colors.grey.shade500,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        controller.isConfirmPasswordVisible.value
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        size: screenWidth * 0.05,
+                                        color: controller.confirmPasswordErrors.value.isNotEmpty
+                                            ? Colors.red
+                                            : (controller.isConfirmPasswordFocused.value ||
+                                            controller.confirmPasswordController.text.isNotEmpty)
+                                            ? Colors.blue.shade700
+                                            : Colors.grey.shade500,
+                                      ),
+                                      onPressed: () => controller.toggleConfirmPasswordVisibility(),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              if (controller.confirmPasswordErrors.value.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4, left: 4),
+                                  child: Text(
+                                    controller.confirmPasswordErrors.value,
+                                    style: const TextStyle(fontSize: 12, color: Colors.red),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.04),
 
                         // Reset Password Button
                         Obx(
-                          () => Opacity(
+                              () => Opacity(
                             opacity: controller.isFormValid.value ? 1.0 : 0.5,
                             child: GradientButton(
                               onPressed: controller.isFormValid.value &&
-                                      !controller.isLoading.value
+                                  !controller.isLoading.value
                                   ? () {
-                                      FocusScope.of(context).unfocus();
-                                      controller.changePassword();
-                                    }
+                                FocusScope.of(context).unfocus();
+                                controller.changePassword();
+                              }
                                   : () {},
                               text: 'Reset Password',
                               icon: SvgPicture.asset(
@@ -294,8 +305,9 @@ class ChangePasswordScreen extends StatelessWidget {
                                 children: [
                                   const TextSpan(text: 'Back to '),
                                   TextSpan(
-                                      text: 'Login',
-                                      style: Styles.darkBlueW700),
+                                    text: 'Login',
+                                    style: Styles.darkBlueW700,
+                                  ),
                                 ],
                               ),
                             ),

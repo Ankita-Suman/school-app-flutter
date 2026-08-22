@@ -1,3 +1,4 @@
+// controllers/new_forgot_password_controller.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -18,7 +19,7 @@ class NewForgotPasswordController extends GetxController {
   var isBranchCodeFocused = false.obs;
   var isBranchCodeValid = false.obs;
   bool _branchCodeErrorShown = false;
-  var branchCodeError = ''.obs;
+  var branchCodeError = ''.obs; // ✅ inline error
 
   // Email
   TextEditingController emailController = TextEditingController();
@@ -26,7 +27,7 @@ class NewForgotPasswordController extends GetxController {
   var isEmailFocused = false.obs;
   var isEmailValid = false.obs;
   bool _emailErrorShown = false;
-  var emailError = ''.obs;
+  var emailError = ''.obs; // ✅ inline error
 
   // Form Validity
   var isFormValid = false.obs;
@@ -36,11 +37,9 @@ class NewForgotPasswordController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Add listeners for focus changes
     branchCodeFocusNode.addListener(() {
       isBranchCodeFocused.value = branchCodeFocusNode.hasFocus;
-      if (!branchCodeFocusNode.hasFocus &&
-          branchCodeController.text.isNotEmpty) {
+      if (!branchCodeFocusNode.hasFocus && branchCodeController.text.isNotEmpty) {
         validateBranchCode(branchCodeController.text, showSnackbar: false);
       }
     });
@@ -52,11 +51,11 @@ class NewForgotPasswordController extends GetxController {
       }
     });
 
-    // Add listeners for text changes
     branchCodeController.addListener(_checkFormValidity);
     emailController.addListener(_checkFormValidity);
   }
 
+  // ========== VALIDATION (no red snackbars) ==========
   void validateBranchCode(String value, {bool showSnackbar = true}) {
     if (value.isEmpty) {
       isBranchCodeValid.value = false;
@@ -65,10 +64,6 @@ class NewForgotPasswordController extends GetxController {
     } else if (value.length < 3) {
       isBranchCodeValid.value = false;
       branchCodeError.value = 'Branch code must be at least 3 characters';
-      if (showSnackbar && !_branchCodeErrorShown) {
-        showErrorSnackbar('Branch code must be at least 3 characters');
-        _branchCodeErrorShown = true;
-      }
     } else {
       isBranchCodeValid.value = true;
       branchCodeError.value = '';
@@ -86,7 +81,6 @@ class NewForgotPasswordController extends GetxController {
       return;
     }
 
-    // Check if it's a valid email (with @ symbol)
     if (value.contains('@')) {
       if (_isValidEmail(value)) {
         isEmailValid.value = true;
@@ -95,16 +89,11 @@ class NewForgotPasswordController extends GetxController {
       } else {
         isEmailValid.value = false;
         emailError.value = 'Please enter valid email address';
-        if (showSnackbar && !_emailErrorShown) {
-          showErrorSnackbar('Please enter valid email address');
-          _emailErrorShown = true;
-        }
       }
       _checkFormValidity();
       return;
     }
 
-    // Check if it's a valid phone number (10 digits)
     if (RegExp(r'^[0-9]+$').hasMatch(value)) {
       if (value.length == 10) {
         isEmailValid.value = true;
@@ -113,22 +102,14 @@ class NewForgotPasswordController extends GetxController {
       } else {
         isEmailValid.value = false;
         emailError.value = 'Mobile number must be 10 digits';
-        if (showSnackbar && !_emailErrorShown) {
-          showErrorSnackbar('Mobile number must be 10 digits');
-          _emailErrorShown = true;
-        }
       }
       _checkFormValidity();
       return;
     }
 
-    // ✅ REMOVED: Username validation - only email or phone number allowed
+    // Invalid input
     isEmailValid.value = false;
     emailError.value = 'Please enter valid email or 10-digit mobile number';
-    if (showSnackbar && !_emailErrorShown) {
-      showErrorSnackbar('Please enter valid email or 10-digit mobile number');
-      _emailErrorShown = true;
-    }
     _checkFormValidity();
   }
 
@@ -141,17 +122,18 @@ class NewForgotPasswordController extends GetxController {
         .hasMatch(email);
   }
 
+  // ========== SNACKBARS (non-red for API errors) ==========
   void showErrorSnackbar(String message) {
     Get.snackbar(
       'Error',
       message,
       snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.blue.shade700,
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
       margin: const EdgeInsets.all(10),
       borderRadius: 10,
-      icon: const Icon(Icons.error_outline, color: Colors.white),
+      icon: const Icon(Icons.info_outline, color: Colors.white),
     );
   }
 
@@ -169,61 +151,65 @@ class NewForgotPasswordController extends GetxController {
     );
   }
 
-  // Send Reset Link with API
+  // ========== SEND RESET LINK (inline errors) ==========
   void sendResetLink() async {
     String branchCode = branchCodeController.text.trim();
     String email = emailController.text.trim();
 
-    // Reset error shown flags
+    // Reset error flags
     _branchCodeErrorShown = false;
     _emailErrorShown = false;
 
-    // Validate Branch Code
+    bool hasError = false;
+
+    // Branch code
     if (branchCode.isEmpty) {
-      showErrorSnackbar('Please enter branch code');
-      return;
-    }
-    if (branchCode.length < 3) {
-      showErrorSnackbar('Branch code must be at least 3 characters');
-      return;
+      branchCodeError.value = 'Please enter branch code';
+      hasError = true;
+    } else if (branchCode.length < 3) {
+      branchCodeError.value = 'Branch code must be at least 3 characters';
+      hasError = true;
+    } else {
+      branchCodeError.value = '';
     }
 
-    // Validate Email
+    // Email
     if (email.isEmpty) {
-      showErrorSnackbar('Please enter email or mobile number');
-      return;
-    }
-
-    // Check email format
-    if (email.contains('@')) {
+      emailError.value = 'Please enter email or mobile number';
+      hasError = true;
+    } else if (email.contains('@')) {
       if (!_isValidEmail(email)) {
-        showErrorSnackbar('Please enter valid email address');
-        return;
+        emailError.value = 'Please enter valid email address';
+        hasError = true;
+      } else {
+        emailError.value = '';
       }
-    }
-    // Check phone number
-    else if (RegExp(r'^[0-9]+$').hasMatch(email)) {
+    } else if (RegExp(r'^[0-9]+$').hasMatch(email)) {
       if (email.length != 10) {
-        showErrorSnackbar('Mobile number must be 10 digits');
-        return;
+        emailError.value = 'Mobile number must be 10 digits';
+        hasError = true;
+      } else {
+        emailError.value = '';
       }
+    } else {
+      emailError.value = 'Please enter valid email or 10-digit mobile number';
+      hasError = true;
     }
-    // ✅ For any other input
-    else {
-      showErrorSnackbar('Please enter valid email or 10-digit mobile number');
+
+    if (hasError) {
+      if (branchCodeError.value.isNotEmpty) {
+        branchCodeFocusNode.requestFocus();
+      } else if (emailError.value.isNotEmpty) {
+        emailFocusNode.requestFocus();
+      }
       return;
     }
 
-    // Set valid states
-    isBranchCodeValid.value = true;
-    isEmailValid.value = true;
-    _checkFormValidity();
-
-    // Call API
+    // Proceed with API
     await forgotPasswordAPI();
   }
 
-  // API Method
+  // ========== API METHOD ==========
   Future<void> forgotPasswordAPI() async {
     String login = emailController.text.trim();
     String branchCode = branchCodeController.text.trim();
@@ -242,12 +228,10 @@ class NewForgotPasswordController extends GetxController {
           await deviceRepository.saveValueSecurely(
               DeviceConstants.otp, res.data!.otp!);
         }
-
         if (res.data?.branchCode != null) {
           await deviceRepository.saveValueSecurely(
               DeviceConstants.branchCode, res.data!.branchCode!);
         }
-
         if (res.data?.login != null) {
           await deviceRepository.saveValueSecurely(
               DeviceConstants.username, res.data!.login!);
@@ -257,15 +241,35 @@ class NewForgotPasswordController extends GetxController {
       } else {
         String errorMessage = res?.message ??
             'Failed to send OTP. Please check your credentials.';
-        showErrorSnackbar(errorMessage);
+        // Use non-red snackbar for API error
+        Get.snackbar(
+          'Error',
+          errorMessage,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.blue.shade700,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: const Icon(Icons.info_outline, color: Colors.white),
+        );
       }
     } catch (e) {
-      showErrorSnackbar('Network error. Please try again.');
+      Get.snackbar(
+        'Error',
+        'Network error. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.blue.shade700,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 10,
+        icon: const Icon(Icons.info_outline, color: Colors.white),
+      );
     }
   }
 
   Future<void> openCheckEmailDialog(String message) async {
-    // Show dialog
     Get.dialog(
       barrierDismissible: false,
       AlertDialog(
@@ -275,7 +279,7 @@ class NewForgotPasswordController extends GetxController {
           borderRadius: BorderRadius.all(Radius.circular(32.0)),
         ),
         contentPadding:
-            const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+        const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         content: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -305,15 +309,10 @@ class NewForgotPasswordController extends GetxController {
       ),
     );
 
-    // ✅ Wait for 2 seconds then close dialog and navigate
     await Future.delayed(const Duration(seconds: 2));
-
-    // Close dialog if still open
     if (Get.isDialogOpen == true) {
       Get.back();
     }
-
-    // Navigate to OTP screen
     RouteManagement.goToNewOtpVerification();
   }
 

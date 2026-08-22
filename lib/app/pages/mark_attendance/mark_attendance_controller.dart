@@ -501,4 +501,15 @@ class MarkAttendanceController extends GetxController {
   bool get isLoadingData => isLoading.value;
 
   bool get isLoadingMoreData => isLoadingMore.value;
+  // ========== UNIQUE CLASS LIST (ek class = ek entry) ==========
+  List<ClassItem> get uniqueClassList {
+    final result = <ClassItem>[];
+    for (var classId in classGroups.keys) {
+      final sections = classGroups[classId];
+      if (sections != null && sections.isNotEmpty) {
+        result.add(sections.first); // pehla section representative ke taur pe
+      }
+    }
+    return result;
+  }
 }

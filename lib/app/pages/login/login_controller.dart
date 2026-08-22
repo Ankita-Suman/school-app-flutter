@@ -1,3 +1,5 @@
+// login_controller.dart
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import '../../../device/device_constants.dart';
 import '../../../device/repositories/device_repositories.dart';
 import '../../../domain/models/login_response.dart';
+import '../../../domain/models/school_info_response.dart';
 import '../../navigators/routes_management.dart';
 import 'login_presenter.dart';
 
@@ -14,8 +17,8 @@ class LoginController extends GetxController {
   final LoginPresenter loginStudentPresenter;
 
   // ========== ROLE SELECTION ==========
-  var selectedRole = 'student'.obs; // 'student', 'parent', 'staff'
-  var selectedTab = 0.obs; // 0 = Student, 1 = Parent, 2 = Teacher
+  var selectedRole = 'student'.obs;
+  var selectedTab = 0.obs;
 
   final Map<String, String> displayToApiRole = {
     'student': 'student',
@@ -63,7 +66,6 @@ class LoginController extends GetxController {
   // Form Validity
   var isFormValid = false.obs;
 
-  // Additional variables
   bool onPasswordListening = false;
   bool isEmail = false;
   bool isNumberValid = false;
@@ -78,6 +80,12 @@ class LoginController extends GetxController {
   final headerText = ''.obs;
   final fromScreen = ''.obs;
   final headerImage = ''.obs;
+  var isLoading = false.obs;
+  var schoolInfoData = Rxn<SchoolInfoResponse>();
+
+  // Track last fetched branch to avoid duplicate calls
+  var _lastFetchedBranch = ''.obs;
+  bool _isFetching = false;
 
   @override
   void onInit() {
@@ -99,57 +107,98 @@ class LoginController extends GetxController {
     passwordController?.addListener(_checkFormValidity);
   }
 
-  // ========== ROLE SELECTION METHODS ==========
-  void selectRole(String role) {
-    if (selectedRole.value != role) {
-      clearAllFields();
-      selectedRole.value = role;
+  // ========== FETCH SCHOOL INFO BY BRANCH CODE ==========
+  Future<void> fetchSchoolInfoForBranch(String branchCode) async {
+    if (branchCode.isEmpty || branchCode.length < 3) return;
+    if (_isFetching) return;
 
-      // Update tab index based on role
-      if (role == 'student') selectedTab.value = 0;
-      else if (role == 'parent') selectedTab.value = 1;
-      else if (role == 'teacher') selectedTab.value = 2;
+    // If same branch and already have valid data, no need to fetch again
+    if (_lastFetchedBranch.value == branchCode && schoolInfoData.value != null) {
+      return;
+    }
 
-      String displayName =
-          apiToDisplayRole[selectedRole.value] ?? selectedRole.value;
-      Get.snackbar(
-        'Role Selected',
-        'You are logging in as ${displayName.toUpperCase()}',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.blue.shade700,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(10),
-        borderRadius: 10,
+    _isFetching = true;
+    try {
+      var deviceRepo = Get.find<DeviceRepository>();
+      await deviceRepo.saveValueSecurely(DeviceConstants.branchCode, branchCode);
+
+      isLoading.value = true;
+
+      var res = await loginStudentPresenter.getSchoolInfo(
+        isLoading: false,
+        branchCode: branchCode,
       );
+
+      debugPrint("🔍 School Info Response: ${res?.toJson()}");
+
+      if (res != null && res.status == true && res.data != null) {
+        final schoolName = res.data?.schoolName ?? '';
+        final branchName = res.data?.branchName ?? '';
+        if (schoolName.isNotEmpty && branchName.isNotEmpty) {
+          schoolInfoData.value = res;
+          _lastFetchedBranch.value = branchCode;
+          debugPrint("✅ School info set: $schoolName - $branchName");
+        } else {
+          schoolInfoData.value = null;
+          _lastFetchedBranch.value = '';
+          debugPrint("❌ Branch not found: Empty school/branch names");
+        }
+      } else {
+        schoolInfoData.value = null;
+        _lastFetchedBranch.value = '';
+        debugPrint("❌ School info failed: ${res?.message}");
+      }
+    } catch (e) {
+      debugPrint("❌ School info error: $e");
+      schoolInfoData.value = null;
+      _lastFetchedBranch.value = '';
+    } finally {
+      isLoading.value = false;
+      _isFetching = false;
     }
   }
 
-  void clearAllFields() {
-    branchCodeController?.clear();
-    emailController?.clear();
-    passwordController?.clear();
+  // ========== VALIDATION (no debounce, only validation) ==========
+  void validateBranchCode(String value) {
+    if (value.isEmpty) {
+      isBranchCodeValid.value = false;
+      branchCodeError.value = '';
+      _branchCodeErrorShown = false;
+      schoolInfoData.value = null;
+      _lastFetchedBranch.value = '';
+      _checkFormValidity();
+      return;
+    }
 
-    isBranchCodeValid.value = false;
-    isEmailValid.value = false;
-    isPasswordValid.value = false;
-    isFormValid.value = false;
+    if (value.length < 3) {
+      isBranchCodeValid.value = false;
+      branchCodeError.value = 'Branch code must be at least 3 characters';
+      schoolInfoData.value = null;
+      _lastFetchedBranch.value = '';
+      _checkFormValidity();
+      return;
+    }
 
+    // Valid branch code
+    isBranchCodeValid.value = true;
     branchCodeError.value = '';
-    emailError.value = '';
-    passwordError.value = '';
-
     _branchCodeErrorShown = false;
-    _emailErrorShown = false;
-    _passwordErrorShown = false;
+    _checkFormValidity();
+
+    // ❌ DO NOT call fetch here – only on focus loss
   }
 
+  // ========== FOCUS CHANGE HANDLERS ==========
   void _onBranchCodeFocusChange() {
     if (branchCodeFocusNode == null) return;
     isBranchCodeFocused.value = branchCodeFocusNode!.hasFocus;
-    if (!branchCodeFocusNode!.hasFocus &&
-        branchCodeController?.text.isNotEmpty == true) {
-      validateBranchCode(branchCodeController!.text, showSnackbar: false);
+
+    // When focus is lost and branch code is valid → fetch immediately
+    if (!branchCodeFocusNode!.hasFocus) {
+      final branchCode = branchCodeController?.text.trim() ?? '';
+      if (branchCode.length >= 3 && isBranchCodeValid.value) {
+        fetchSchoolInfoForBranch(branchCode);
+      }
     }
   }
 
@@ -164,37 +213,12 @@ class LoginController extends GetxController {
   void _onPasswordFocusChange() {
     if (passwordFocusNode == null) return;
     isPasswordFocused.value = passwordFocusNode!.hasFocus;
-    if (!passwordFocusNode!.hasFocus &&
-        passwordController?.text.isNotEmpty == true) {
+    if (!passwordFocusNode!.hasFocus && passwordController?.text.isNotEmpty == true) {
       validatePassword(passwordController!.text, showSnackbar: false);
     }
   }
 
-  void _checkFormValidity() {
-    isFormValid.value =
-        isEmailValid.value && isPasswordValid.value && isBranchCodeValid.value;
-  }
-
-  void validateBranchCode(String value, {bool showSnackbar = true}) {
-    if (value.isEmpty) {
-      isBranchCodeValid.value = false;
-      branchCodeError.value = '';
-      _branchCodeErrorShown = false;
-    } else if (value.length < 3) {
-      isBranchCodeValid.value = false;
-      branchCodeError.value = 'Branch code must be at least 3 characters';
-      if (showSnackbar && !_branchCodeErrorShown) {
-        showErrorSnackbar('Branch code must be at least 3 characters');
-        _branchCodeErrorShown = true;
-      }
-    } else {
-      isBranchCodeValid.value = true;
-      branchCodeError.value = '';
-      _branchCodeErrorShown = false;
-    }
-    _checkFormValidity();
-  }
-
+  // ========== OTHER VALIDATION METHODS ==========
   void validateEmail(String value, {bool showSnackbar = true}) {
     if (value.isEmpty) {
       isEmailValid.value = false;
@@ -211,48 +235,26 @@ class LoginController extends GetxController {
       } else {
         isEmailValid.value = false;
         emailError.value = 'Please enter valid email address';
-        if (showSnackbar && !_emailErrorShown) {
-          showErrorSnackbar('Please enter valid email address');
-          _emailErrorShown = true;
-        }
       }
       _checkFormValidity();
       return;
     }
 
-    if (value.length == 10 && RegExp(r'^[0-9]+$').hasMatch(value)) {
-      isEmailValid.value = true;
-      emailError.value = '';
-      _emailErrorShown = false;
-      _checkFormValidity();
-      return;
-    }
-
-    if (RegExp(r'^[0-9]+$').hasMatch(value) && value.length < 10) {
-      isEmailValid.value = false;
-      emailError.value = 'Mobile number must be 10 digits';
-      if (showSnackbar && !_emailErrorShown) {
-        showErrorSnackbar('Mobile number must be 10 digits');
-        _emailErrorShown = true;
+    if (RegExp(r'^[0-9]+$').hasMatch(value)) {
+      if (value.length == 10) {
+        isEmailValid.value = true;
+        emailError.value = '';
+        _emailErrorShown = false;
+      } else {
+        isEmailValid.value = false;
+        emailError.value = 'Mobile number must be 10 digits';
       }
-      _checkFormValidity();
-      return;
-    }
-
-    if (value.length >= 3 && RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(value)) {
-      isEmailValid.value = true;
-      emailError.value = '';
-      _emailErrorShown = false;
       _checkFormValidity();
       return;
     }
 
     isEmailValid.value = false;
-    emailError.value = 'Please enter valid email, phone number';
-    if (showSnackbar && !_emailErrorShown) {
-      showErrorSnackbar('Please enter valid email or mobile number');
-      _emailErrorShown = true;
-    }
+    emailError.value = 'Please enter valid email or 10-digit mobile number';
     _checkFormValidity();
   }
 
@@ -264,10 +266,6 @@ class LoginController extends GetxController {
     } else if (value.trim().length < 8) {
       isPasswordValid.value = false;
       passwordError.value = 'Password must be at least 8 characters';
-      if (showSnackbar && !_passwordErrorShown) {
-        showErrorSnackbar('Password must be at least 8 characters');
-        _passwordErrorShown = true;
-      }
     } else {
       isPasswordValid.value = true;
       passwordError.value = '';
@@ -277,21 +275,25 @@ class LoginController extends GetxController {
   }
 
   bool _isValidEmail(String email) {
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-        .hasMatch(email);
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
   }
 
+  void _checkFormValidity() {
+    isFormValid.value = isEmailValid.value && isPasswordValid.value && isBranchCodeValid.value;
+  }
+
+  // ========== SNACKBARS & DIALOGS ==========
   void showErrorSnackbar(String message) {
     Get.snackbar(
       'Error',
       message,
       snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.blue.shade700,
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
       margin: const EdgeInsets.all(10),
       borderRadius: 10,
-      icon: const Icon(Icons.error_outline, color: Colors.white),
+      icon: const Icon(Icons.info_outline, color: Colors.white),
     );
   }
 
@@ -309,7 +311,6 @@ class LoginController extends GetxController {
     );
   }
 
-  // ========== SHOW COMING SOON DIALOG ==========
   void showComingSoonDialog() {
     Get.defaultDialog(
       title: 'Coming Soon',
@@ -321,9 +322,8 @@ class LoginController extends GetxController {
     );
   }
 
-  // ========== LOGIN WITH VALIDATION (UPDATED) ==========
+  // ========== LOGIN WITH VALIDATION ==========
   void loginWithValidation() {
-    // ✅ Block only Parent (tab index 1). Student (0) and Teacher (2) are allowed.
     if (selectedTab.value == 1) {
       showComingSoonDialog();
       return;
@@ -337,61 +337,74 @@ class LoginController extends GetxController {
     _emailErrorShown = false;
     _passwordErrorShown = false;
 
+    bool hasError = false;
+
     if (branchCode.isEmpty) {
-      showErrorSnackbar('Please enter branch code');
-      return;
-    }
-    if (branchCode.length < 3) {
-      showErrorSnackbar('Branch code must be at least 3 characters');
-      return;
+      branchCodeError.value = 'Please enter branch code';
+      hasError = true;
+    } else if (branchCode.length < 3) {
+      branchCodeError.value = 'Branch code must be at least 3 characters';
+      hasError = true;
+    } else {
+      branchCodeError.value = '';
     }
 
     if (email.isEmpty) {
-      showErrorSnackbar('Please enter email or mobile number');
-      return;
-    }
-
-    if (email.contains('@')) {
+      emailError.value = 'Please enter email or mobile number';
+      hasError = true;
+    } else if (email.contains('@')) {
       if (!_isValidEmail(email)) {
-        showErrorSnackbar('Please enter valid email address');
-        return;
+        emailError.value = 'Please enter valid email address';
+        hasError = true;
+      } else {
+        emailError.value = '';
       }
     } else if (RegExp(r'^[0-9]+$').hasMatch(email)) {
       if (email.length != 10) {
-        showErrorSnackbar('Mobile number must be 10 digits');
-        return;
+        emailError.value = 'Mobile number must be 10 digits';
+        hasError = true;
+      } else {
+        emailError.value = '';
       }
-    } else if (email.length < 3 ||
-        !RegExp(r'^[a-zA-Z0-9._-]+$').hasMatch(email)) {
-      showErrorSnackbar('Please enter valid email or mobile number');
-      return;
+    } else {
+      emailError.value = 'Please enter valid email or 10-digit mobile number';
+      hasError = true;
     }
 
     if (password.isEmpty) {
-      showErrorSnackbar('Please enter password');
-      return;
+      passwordError.value = 'Please enter password';
+      hasError = true;
+    } else if (password.length < 8) {
+      passwordError.value = 'Password must be at least 8 characters';
+      hasError = true;
+    } else {
+      passwordError.value = '';
     }
-    if (password.length < 8) {
-      showErrorSnackbar('Password must be at least 8 characters');
+
+    if (hasError) {
+      if (branchCodeError.value.isNotEmpty) {
+        branchCodeFocusNode?.requestFocus();
+      } else if (emailError.value.isNotEmpty) {
+        emailFocusNode?.requestFocus();
+      } else if (passwordError.value.isNotEmpty) {
+        passwordFocusNode?.requestFocus();
+      }
       return;
     }
 
-    // Proceed with login (student or teacher)
     loginAPI();
   }
 
-  // ========== FULL LOGIN RESPONSE STORAGE ==========
+  // ========== LOGIN API & STORAGE ==========
   Future<void> saveFullLoginResponse(LoginResponse response) async {
     final deviceRepository = Get.find<DeviceRepository>();
     final jsonString = loginResponseToJson(response);
-    await deviceRepository.saveValueSecurely(
-        DeviceConstants.loginResponse, jsonString);
+    await deviceRepository.saveValueSecurely(DeviceConstants.loginResponse, jsonString);
   }
 
   Future<LoginResponse?> getFullLoginResponse() async {
     final deviceRepository = Get.find<DeviceRepository>();
-    final jsonString =
-    await deviceRepository.getSecuredValue(DeviceConstants.loginResponse);
+    final jsonString = await deviceRepository.getSecuredValue(DeviceConstants.loginResponse);
     if (jsonString.isNotEmpty) {
       try {
         final Map<String, dynamic> jsonMap = json.decode(jsonString);
@@ -408,7 +421,6 @@ class LoginController extends GetxController {
     await GetStorage().remove(DeviceConstants.loginResponse);
   }
 
-  // ========== LOGIN API ==========
   Future<void> loginAPI() async {
     String loginName = emailController?.text.trim() ?? '';
     String branchCode = branchCodeController?.text.trim() ?? '';
@@ -432,35 +444,35 @@ class LoginController extends GetxController {
 
       String token = '${res.data?.token}';
       await deviceRepository.saveValueSecurely(DeviceConstants.token, token);
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.userRole, navigationRole);
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.branchId, '${res.data?.branchId}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.branchCode, '${res.data?.branchCode}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.email, '${res.data?.user.email}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.username, '${res.data?.user.username}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.studentId, '${res.data?.user.studentId}');
-      await deviceRepository.saveValueSecurely(
-          DeviceConstants.staffId, res.data?.user.staffId ?? '');
+      await deviceRepository.saveValueSecurely(DeviceConstants.userRole, navigationRole);
+      await deviceRepository.saveValueSecurely(DeviceConstants.branchId, '${res.data?.branchId}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.branchCode, '${res.data?.branchCode}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.email, '${res.data?.user.email}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.username, '${res.data?.user.username}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.studentId, '${res.data?.user.studentId}');
+      await deviceRepository.saveValueSecurely(DeviceConstants.staffId, res.data?.user.staffId ?? '');
 
       await Future.delayed(const Duration(milliseconds: 500));
 
       navigateBasedOnRole(navigationRole);
     } else {
-      showErrorSnackbar('Login failed. Please check your credentials.');
+      Get.snackbar(
+        'Login Failed',
+        'Please check your credentials and try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.blue.shade700,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 10,
+        icon: const Icon(Icons.info_outline, color: Colors.white),
+      );
     }
   }
 
-  // ========== NAVIGATE BASED ON ROLE (UPDATED) ==========
   void navigateBasedOnRole(String role) {
     String roleLower = role.toLowerCase();
-
     if (roleLower == 'student') {
-      // ✅ Navigate to Student Dashboard
       RouteManagement.goToHome();
       clearAllFields();
     } else if (roleLower == 'staff') {
@@ -475,17 +487,14 @@ class LoginController extends GetxController {
     }
   }
 
-  // ========== GET USER ROLE ==========
   Future<String?> getUserRole() async {
     var deviceRepository = Get.find<DeviceRepository>();
     return await deviceRepository.getSecuredValue(DeviceConstants.userRole);
   }
 
-  // ========== CHECK LOGIN STATUS ==========
   Future<bool> isUserLoggedIn() async {
     var deviceRepository = Get.find<DeviceRepository>();
-    String? token =
-    await deviceRepository.getSecuredValue(DeviceConstants.token);
+    String? token = await deviceRepository.getSecuredValue(DeviceConstants.token);
     return token.isNotEmpty;
   }
 
@@ -495,13 +504,9 @@ class LoginController extends GetxController {
 
   void changeTab(int index) {
     selectedTab.value = index;
-    if (index == 0) {
-      selectedRole.value = 'student';
-    } else if (index == 1) {
-      selectedRole.value = 'parent';
-    } else if (index == 2) {
-      selectedRole.value = 'teacher';
-    }
+    if (index == 0) selectedRole.value = 'student';
+    else if (index == 1) selectedRole.value = 'parent';
+    else if (index == 2) selectedRole.value = 'teacher';
   }
 
   void clearEmailError() {
@@ -526,6 +531,28 @@ class LoginController extends GetxController {
       isPasswordValid.value = false;
       _checkFormValidity();
     }
+  }
+
+  void clearAllFields() {
+    branchCodeController?.clear();
+    emailController?.clear();
+    passwordController?.clear();
+
+    isBranchCodeValid.value = false;
+    isEmailValid.value = false;
+    isPasswordValid.value = false;
+    isFormValid.value = false;
+
+    branchCodeError.value = '';
+    emailError.value = '';
+    passwordError.value = '';
+
+    _branchCodeErrorShown = false;
+    _emailErrorShown = false;
+    _passwordErrorShown = false;
+
+    schoolInfoData.value = null;
+    _lastFetchedBranch.value = '';
   }
 
   @override

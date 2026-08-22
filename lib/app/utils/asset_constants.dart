@@ -46,6 +46,7 @@ abstract class AssetConstants {
   static const String icTrans = 'assets/icons/ic_trans.svg';
   static const String icLoc = 'assets/icons/loc.svg';
   static const String icLocks = 'assets/icons/ic_lock.svg';
+  static const String icForLocks = 'assets/icons/icforlock.svg';
   static const String icInfo = 'assets/icons/info.svg';
   static const String icView = 'assets/icons/ic_view.svg';
   static const String download = 'assets/icons/download.svg';

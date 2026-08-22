@@ -263,6 +263,11 @@ class DeviceRepository extends DomainRepository {
   }) {
     throw UnimplementedError();
   }
+  Future<ResponseModel> getSchoolInfo({
+    required bool isLoading, required String branchCode,
+  }) {
+    throw UnimplementedError();
+  }
 
 
   Future<ResponseModel> getLeaveStatusData({
@@ -457,6 +462,16 @@ class DeviceRepository extends DomainRepository {
 
 
   Future<ResponseModel> getSubjectData({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) {
+    throw UnimplementedError();
+  }
+
+Future<ResponseModel> getStudentFeeList({
     required bool isLoading,
     required String token,
     required String branchId,

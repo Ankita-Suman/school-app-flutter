@@ -236,4 +236,14 @@ class AttendanceReportController extends GetxController {
   String get month => reportData?.reportInfo?.month ?? '';
   List<AttendanceStat>? get attendanceStats => reportData?.attendanceStats;
   List<TopDefaulter>? get topDefaulters => reportData?.topDefaulters;
+  List<ClassItem> get uniqueClassList {
+    final result = <ClassItem>[];
+    for (var classId in classGroups.keys) {
+      final sections = classGroups[classId];
+      if (sections != null && sections.isNotEmpty) {
+        result.add(sections.first);
+      }
+    }
+    return result;
+  }
 }

@@ -1,3 +1,5 @@
+// external_marks_controller.dart (updated)
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../device/device_constants.dart';
@@ -50,6 +52,9 @@ class ExternalMarksController extends GetxController {
   var studentList = <Map<String, dynamic>>[].obs;
   final _isLoadingStudents = false.obs;
 
+  // 🔁 Track subject ID for each API call to ignore stale responses
+  String _lastRequestSubjectId = '';
+
   @override
   void onInit() {
     super.onInit();
@@ -61,6 +66,13 @@ class ExternalMarksController extends GetxController {
       getExamGroupData(),
       getTermClassData(),
     ]);
+  }
+
+  // ========== CLEAR STUDENT DATA ==========
+  void _clearStudentData() {
+    studentList.clear();
+    externalMarksData.value = null;
+    hasChanges.value = false;
   }
 
   // ========== GET EXAM GROUPS ==========
@@ -284,7 +296,7 @@ class ExternalMarksController extends GetxController {
     }
   }
 
-  // ========== GET EXTERNAL MARKS ==========
+  // ========== GET EXTERNAL MARKS (with stale response guard) ==========
   Future<void> getExternalMarks() async {
     try {
       if (selectedExamGroupId.isEmpty ||
@@ -295,6 +307,10 @@ class ExternalMarksController extends GetxController {
         studentList.clear();
         return;
       }
+
+      // 🔑 Store the subject ID for this request
+      final String requestSubjectId = selectedSubjectId.value;
+      _lastRequestSubjectId = requestSubjectId;
 
       _isLoadingStudents.value = true;
       var deviceRepo = Get.find<DeviceRepository>();
@@ -325,22 +341,29 @@ class ExternalMarksController extends GetxController {
         internalCount: '1',
       );
 
+      // 🛡️ If the subject changed while waiting, ignore this response
+      if (_lastRequestSubjectId != selectedSubjectId.value) {
+        debugPrint("⏳ Ignoring stale response for subject: $requestSubjectId (current: ${selectedSubjectId.value})");
+        return;
+      }
+
       if (res != null && res.status == true && res.data != null) {
         externalMarksData.value = res;
         final students = res.data!.students;
-
-        // ✅ Correct mapping: use theory_obtained (or practical_obtained if needed)
-        studentList.assignAll(students.map((student) {
-          return {
-            'id': student.id,
-            'name': student.fullName,
-            'reg': student.registrationNumber,
-            'roll': student.rollNumber,
-            // ✅ Use theory_obtained instead of internalMarks
-            'marks': (student.theoryObtained ?? 0).toString(),
-            'isAbsent': student.isStudentAbsent,
-          };
-        }).toList());
+        if (students.isEmpty) {
+          studentList.clear();
+        } else {
+          studentList.assignAll(students.map((student) {
+            return {
+              'id': student.id,
+              'name': student.fullName,
+              'reg': student.registrationNumber,
+              'roll': student.rollNumber,
+              'marks': (student.theoryObtained ?? 0).toString(),
+              'isAbsent': student.isStudentAbsent,
+            };
+          }).toList());
+        }
         hasChanges.value = false;
       } else {
         studentList.clear();
@@ -357,6 +380,7 @@ class ExternalMarksController extends GetxController {
 
   // ========== SAVE EXTERNAL MARKS ==========
   Future<void> saveExternalMarks() async {
+    // ... (unchanged, same as before) ...
     try {
       if (studentList.isEmpty) {
         Get.snackbar('Error', 'No students to save.',
@@ -438,9 +462,26 @@ class ExternalMarksController extends GetxController {
     hasChanges.value = true;
   }
 
+  // ========== CHECK FOR INVALID MARKS ==========
+  bool get hasInvalidMarks {
+    final max = externalMarksData.value?.data?.maxMarks ?? 0;
+    if (max == 0) return false;
+    for (var student in studentList) {
+      final markStr = student['marks'] as String?;
+      if (markStr != null && markStr.isNotEmpty) {
+        final mark = int.tryParse(markStr);
+        if (mark != null && mark > max) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   // ========== HANDLE DROPDOWN CHANGES ==========
   void onExamGroupChanged(String newGroupId) {
     selectedExamGroupId.value = newGroupId;
+    _clearStudentData();
     final group = examGroupData.value?.data.firstWhere((g) => g.id == newGroupId);
     if (group != null) {
       selectedExamGroupName.value = group.groupName;
@@ -451,6 +492,7 @@ class ExternalMarksController extends GetxController {
 
   void onTermChanged(String newTermId) {
     selectedTermId.value = newTermId;
+    _clearStudentData();
     final term = examTermData.value?.data.firstWhere((t) => t.id == newTermId);
     if (term != null) {
       selectedTermName.value = term.term;
@@ -460,6 +502,7 @@ class ExternalMarksController extends GetxController {
 
   void onClassChanged(String newClassId) {
     selectedClassId.value = newClassId;
+    _clearStudentData();
     final classItem = termClassData.value?.data.firstWhere((c) => c.id == newClassId);
     if (classItem != null) {
       selectedClassName.value = classItem.name;
@@ -470,6 +513,7 @@ class ExternalMarksController extends GetxController {
 
   void onSectionChanged(String newSectionId) {
     selectedSectionId.value = newSectionId;
+    _clearStudentData();
     final section = termSectionData.value?.data.firstWhere((s) => s.id == newSectionId);
     if (section != null) {
       selectedSectionName.value = section.name;
@@ -482,6 +526,7 @@ class ExternalMarksController extends GetxController {
 
   void onSubjectChanged(String newSubjectId) {
     selectedSubjectId.value = newSubjectId;
+    _clearStudentData(); // ✅ clear list immediately
     final subject = subjects.firstWhere((s) => s.id == newSubjectId);
     if (subject != null) {
       selectedSubjectName.value = subject.name;
@@ -516,5 +561,5 @@ class ExternalMarksController extends GetxController {
   List<Subjects> get subjectList => subjects;
   bool get isLoadingData => isLoading.value;
   bool get isLoadingStudents => _isLoadingStudents.value;
-  bool get canSave => hasChanges.value && !isSaving.value;
+  bool get canSave => hasChanges.value && !isSaving.value && !hasInvalidMarks;
 }

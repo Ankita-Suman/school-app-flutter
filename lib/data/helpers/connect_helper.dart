@@ -422,6 +422,31 @@ class ConnectHelper {
     return res;
   }
 
+  Future<ResponseModel> getSchoolInfo({
+    required bool isLoading,
+    required String branchCode, // new parameter
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+    };
+
+    // Append branch_code as query parameter
+    String url = '${DataConstants.getProfile}/branch/school-info?branch_code=$branchCode';
+
+    debugPrint("🔍 School Info URL: $url");
+
+    var res = await apiWrapper.makeRequest(
+      url,
+      Request.get,
+      null,
+      isLoading,
+      headers,
+    );
+
+    debugPrint("✅ School Dashboard URL: $url");
+    debugPrint("✅ School Dashboard URL: $res");
+    return res;
+  }
   Future<ResponseModel> getLeaveStatusData({
     required bool isLoading,
     required String token,
@@ -613,6 +638,30 @@ class ConnectHelper {
         headers);
 
     debugPrint("✅ term section Dashboard URL: $url");
+    return res;
+  }
+
+ Future<ResponseModel> getStudentFeeList({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final url = '${DataConstants.getProfile}/$branchId/fees/students?class_id=$classId&section_id=$sectionId';
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers);
+
+    debugPrint("✅ student fee section Dashboard URL: $url");
     return res;
   }
 

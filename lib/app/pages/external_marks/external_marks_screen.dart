@@ -15,8 +15,16 @@ class ExternalMarksScreen extends StatefulWidget {
 
 class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
   late final ExternalMarksController controller;
-  final List<TextEditingController> markControllers = [];
-  final List<FocusNode> focusNodes = [];
+
+  // Persistent maps keyed by student id → controller / focus node
+  final Map<String, TextEditingController> _markControllers = {};
+  final Map<String, FocusNode> _focusNodes = {};
+
+  // Temporary hardcoded max marks until backend is fixed
+  static const int maxMarks = 80;
+
+  // Keep track of current student ids to clean up removed ones
+  Set<String> _currentStudentIds = {};
 
   @override
   void initState() {
@@ -26,12 +34,8 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
 
   @override
   void dispose() {
-    for (var c in markControllers) {
-      c.dispose();
-    }
-    for (var f in focusNodes) {
-      f.dispose();
-    }
+    for (var c in _markControllers.values) c.dispose();
+    for (var f in _focusNodes.values) f.dispose();
     super.dispose();
   }
 
@@ -90,7 +94,7 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // ===== SELECT CRITERIA =====
+                          // ---------- SELECT CRITERIA ----------
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -111,7 +115,6 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                                 Text('Select Criteria',
                                     style: Styles.darkBlcW60015),
                                 const SizedBox(height: 12),
-
                                 Row(
                                   children: [
                                     Expanded(
@@ -155,7 +158,6 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-
                                 Row(
                                   children: [
                                     Expanded(
@@ -202,59 +204,19 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-
-                                Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Subject',
-                                        style: Styles.darkBlueW40010),
-                                    const SizedBox(height: 4),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 0),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade50,
-                                        borderRadius:
-                                        BorderRadius.circular(8),
-                                        border: Border.all(
-                                            color: Colors.grey.shade300,
-                                            width: 1),
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButton<String>(
-                                          value: controller.selectedSubjectName
-                                              .value.isNotEmpty
-                                              ? controller
-                                              .selectedSubjectName.value
-                                              : null,
-                                          hint: Text('Select Subject',
-                                              style: Styles.darkBlcW600),
-                                          isExpanded: true,
-                                          icon: Icon(Icons.arrow_drop_down,
-                                              color: Colors.grey.shade600),
-                                          items: controller.subjectList
-                                              .map((subject) {
-                                            return DropdownMenuItem<String>(
-                                              value: subject.name,
-                                              child: Text(subject.name,
-                                                  style: Styles.darkBlcW600),
-                                            );
-                                          }).toList(),
-                                          onChanged: (val) {
-                                            if (val != null) {
-                                              final subject = controller
-                                                  .subjectList
-                                                  .firstWhere((s) =>
-                                              s.name == val);
-                                              controller.onSubjectChanged(
-                                                  subject.id);
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                _buildDropdown(
+                                  label: 'Subject',
+                                  value: controller.selectedSubjectName.value,
+                                  items: controller.subjectList
+                                      .map((s) => s.name)
+                                      .toList(),
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      final subject = controller.subjectList
+                                          .firstWhere((s) => s.name == val);
+                                      controller.onSubjectChanged(subject.id);
+                                    }
+                                  },
                                 ),
                               ],
                             ),
@@ -262,10 +224,21 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
 
                           const SizedBox(height: 16),
 
-                          Text('Enter External Marks',
-                              style: Styles.darkBlcW60015),
+                          // ---------- HEADER WITH MAX MARKS ----------
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Enter External Marks',
+                                  style: Styles.darkBlcW60015),
+                              Text(
+                                'Max Marks: $maxMarks',
+                                style: Styles.darkBlueW500,
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 12),
 
+                          // ---------- STUDENT LIST ----------
                           Obx(() {
                             if (controller.isLoadingStudents) {
                               return const Center(
@@ -286,23 +259,46 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                               );
                             }
 
-                            // Ensure controllers
-                            while (markControllers.length < students.length) {
-                              markControllers.add(TextEditingController(
-                                  text: students[markControllers.length]
-                                  ['marks'] ??
-                                      '0'));
-                              focusNodes.add(FocusNode());
+                            // Clean up controllers for students no longer in the list
+                            final currentIds =
+                            students.map((s) => s['id'] as String).toSet();
+                            final toRemove = _currentStudentIds
+                                .difference(currentIds)
+                                .toList();
+                            for (var id in toRemove) {
+                              _markControllers[id]?.dispose();
+                              _markControllers.remove(id);
+                              _focusNodes[id]?.dispose();
+                              _focusNodes.remove(id);
                             }
-                            while (markControllers.length > students.length) {
-                              markControllers.removeLast().dispose();
-                              focusNodes.removeLast().dispose();
+                            _currentStudentIds = currentIds;
+
+                            // Ensure controllers for all students
+                            for (var student in students) {
+                              final id = student['id'] as String;
+                              if (!_markControllers.containsKey(id)) {
+                                final initialMark = student['marks'] ?? '0';
+                                _markControllers[id] =
+                                    TextEditingController(text: initialMark);
+                                _focusNodes[id] = FocusNode();
+                              } else {
+                                final newMark = student['marks'] ?? '0';
+                                final controller = _markControllers[id]!;
+                                if (!_focusNodes[id]!.hasFocus &&
+                                    controller.text != newMark) {
+                                  controller.text = newMark;
+                                }
+                              }
                             }
 
                             return Column(
                               children: students.asMap().entries.map((entry) {
                                 final index = entry.key;
                                 final student = entry.value;
+                                final id = student['id'] as String;
+                                final textController = _markControllers[id]!;
+                                final focusNode = _focusNodes[id]!;
+
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 12),
                                   padding: const EdgeInsets.all(12),
@@ -314,12 +310,36 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                                         width: 1),
                                   ),
                                   child: _buildStudentRow(
-                                    index: index,
+                                    studentId: id,
                                     name: student['name'] as String? ?? '',
                                     reg: student['reg'] as String? ?? '',
                                     roll: student['roll'] as String? ?? '',
                                     isAbsent:
                                     student['isAbsent'] as bool? ?? false,
+                                    textController: textController,
+                                    focusNode: focusNode,
+                                    onMarkChanged: (value) {
+                                      controller.studentList[index]['marks'] =
+                                      value.isEmpty ? '0' : value;
+                                      controller.studentList.refresh();
+                                      controller.markChanges();
+                                    },
+                                    onAbsentToggled: () {
+                                      final current = controller
+                                          .studentList[index]['isAbsent']
+                                      as bool? ??
+                                          false;
+                                      controller.studentList[index]
+                                      ['isAbsent'] = !current;
+                                      if (controller.studentList[index]
+                                      ['isAbsent'] as bool) {
+                                        textController.text = '';
+                                      } else {
+                                        textController.text = '0';
+                                      }
+                                      controller.studentList.refresh();
+                                      controller.markChanges();
+                                    },
                                   ),
                                 );
                               }).toList(),
@@ -333,7 +353,7 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                   }),
                 ),
 
-                // ===== SAVE BUTTON =====
+                // ---------- SAVE BUTTON (with validation) ----------
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -348,19 +368,37 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
                     ],
                   ),
                   child: Obx(() {
-                    final bool canSave = controller.canSave;
+                    // Check if any student has an invalid mark (exceeds maxMarks)
+                    bool hasInvalidMarks = false;
+                    final students = controller.studentList;
+                    for (var student in students) {
+                      final isAbsent = student['isAbsent'] as bool? ?? false;
+                      if (!isAbsent) {
+                        final markStr = student['marks'] as String? ?? '0';
+                        final mark = int.tryParse(markStr);
+                        if (mark != null && mark > maxMarks) {
+                          hasInvalidMarks = true;
+                          break;
+                        }
+                      }
+                    }
+
+                    final bool canSave = controller.canSave && !hasInvalidMarks;
+                    final bool isSaving = controller.isSaving.value;
+
                     return SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: GradientButton(
-                        onPressed: canSave
-                            ? () {
-                          controller.saveExternalMarks();
-                        }
-                            : (){},
-                        text: controller.isSaving.value
-                            ? 'Saving...'
-                            : 'Save Marks',
+                      child: Opacity(
+                        opacity: canSave ? 1.0 : 0.5,
+                        child: GradientButton(
+                          onPressed: canSave
+                              ? () {
+                            controller.saveExternalMarks();
+                          }
+                              : () {},
+                          text: isSaving ? 'Saving...' : 'Save Marks',
+                        ),
                       ),
                     );
                   }),
@@ -373,7 +411,7 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
     );
   }
 
-  // ========== DROPDOWN BUILDER ==========
+  // ========== DROPDOWN BUILDER (unchanged) ==========
   Widget _buildDropdown({
     required String label,
     required String value,
@@ -385,138 +423,236 @@ class _ExternalMarksScreenState extends State<ExternalMarksScreen> {
       children: [
         Text(label, style: Styles.darkBlueW40010),
         const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300, width: 1),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value.isNotEmpty ? value : null,
-              hint: Text('Select', style: Styles.darkBlcW600),
-              isExpanded: true,
-              icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-              items: items.map((item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item, style: Styles.darkBlcW600),
-                );
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
+        Builder(
+          builder: (btnContext) {
+            return GestureDetector(
+              onTap: () {
+                if (items.isEmpty) return;
+
+                final RenderBox renderBox =
+                btnContext.findRenderObject() as RenderBox;
+                final Offset offset = renderBox.localToGlobal(Offset.zero);
+                final Size size = renderBox.size;
+
+                showMenu<String>(
+                  context: btnContext,
+                  color: Colors.white,
+                  surfaceTintColor: Colors.transparent,
+                  position: RelativeRect.fromLTRB(
+                    offset.dx,
+                    offset.dy + size.height,
+                    offset.dx + size.width,
+                    offset.dy + size.height + 100,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  elevation: 4,
+                  constraints: BoxConstraints(
+                    minWidth: size.width,
+                    maxWidth: size.width,
+                  ),
+                  items: _buildGenericMenuItems(items),
+                ).then((newValue) {
+                  if (newValue != null) {
+                    onChanged(newValue);
+                  }
+                });
+              },
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.grey.shade400, width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.15),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        value.isNotEmpty ? value : '--',
+                        style: value.isNotEmpty
+                            ? Styles.darkBlcW600.copyWith(fontSize: 12)
+                            : const TextStyle(fontSize: 12, color: Colors.grey),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
   }
 
-  // ========== STUDENT ROW ==========
+  // ========== GENERIC MENU ITEMS (unchanged) ==========
+  List<PopupMenuEntry<String>> _buildGenericMenuItems(List<String> items) {
+    final List<PopupMenuEntry<String>> menuItems = [];
+
+    for (int i = 0; i < items.length; i++) {
+      menuItems.add(
+        PopupMenuItem<String>(
+          value: items[i],
+          height: 40,
+          child: SizedBox(
+            width: 220,
+            child: Text(
+              items[i],
+              style: Styles.darkBlcW600.copyWith(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      );
+
+      if (i != items.length - 1) {
+        menuItems.add(const PopupMenuDivider(height: 1));
+      }
+    }
+
+    return menuItems;
+  }
+
+  // ========== STUDENT ROW (unchanged) ==========
   Widget _buildStudentRow({
-    required int index,
+    required String studentId,
     required String name,
     required String reg,
     required String roll,
     required bool isAbsent,
+    required TextEditingController textController,
+    required FocusNode focusNode,
+    required ValueChanged<String> onMarkChanged,
+    required VoidCallback onAbsentToggled,
   }) {
-    final focusNode = focusNodes[index];
-    final textController = markControllers[index];
+    // Validate mark against max
+    final String markStr = textController.text;
+    bool isInvalid = false;
+    if (markStr.isNotEmpty) {
+      final mark = int.tryParse(markStr);
+      if (mark != null && mark > maxMarks) {
+        isInvalid = true;
+      }
+    }
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          flex: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(name, style: Styles.darkBlcW70013),
-              Text('$reg $roll', style: Styles.darkBlueW400),
-            ],
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            final current =
-                controller.studentList[index]['isAbsent'] as bool? ?? false;
-            controller.studentList[index]['isAbsent'] = !current;
-            // Update controller data and local controller
-            setState(() {
-              if (controller.studentList[index]['isAbsent'] as bool) {
-                textController.text = '';
-              } else {
-                textController.text = '0';
-              }
-            });
-            controller.markChanges(); // ✅ mark change
-          },
-          child: Row(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: isAbsent ? Colors.blue.shade700 : Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: isAbsent ? Colors.blue.shade700 : Colors.grey.shade400,
-                    width: 2,
-                  ),
-                ),
-                child: isAbsent
-                    ? const Icon(Icons.check, size: 14, color: Colors.white)
-                    : null,
+        // ---------- Main row ----------
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Student info
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: Styles.darkBlcW70013),
+                  Text('$reg $roll', style: Styles.darkBlueW400),
+                ],
               ),
-              const SizedBox(width: 6),
-              Text(
-                'Absent',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: isAbsent ? Colors.blue.shade700 : Colors.grey.shade600,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          width: 55,
-          height: 34,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300, width: 1),
-          ),
-          child: TextField(
-            controller: textController,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            style: Styles.skyBlueW60012,
-            enabled: !isAbsent,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(3),
-            ],
-            focusNode: focusNode
-              ..addListener(() {
-                if (focusNode.hasFocus && textController.text == '0') {
-                  textController.clear();
-                }
-              }),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              hintText: '0',
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
             ),
-            onChanged: (value) {
-              controller.studentList[index]['marks'] = value.isEmpty ? '0' : value;
-              controller.markChanges(); // ✅ mark change
-            },
-          ),
+            // Absent toggle
+            GestureDetector(
+              onTap: onAbsentToggled,
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: isAbsent ? Colors.blue.shade700 : Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: isAbsent ? Colors.blue.shade700 : Colors.grey.shade400,
+                        width: 2,
+                      ),
+                    ),
+                    child: isAbsent
+                        ? const Icon(Icons.check, size: 14, color: Colors.white)
+                        : null,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Absent',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: isAbsent ? Colors.blue.shade700 : Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Marks input
+            Container(
+              width: 55,
+              height: 34,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isInvalid ? Colors.red : Colors.grey.shade300,
+                  width: isInvalid ? 1.5 : 1,
+                ),
+              ),
+              child: TextField(
+                controller: textController,
+                focusNode: focusNode,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: Styles.skyBlueW60012,
+                enabled: !isAbsent,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  hintText: '0',
+                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                ),
+                onChanged: (value) {
+                  onMarkChanged(value);
+                },
+              ),
+            ),
+          ],
         ),
+
+        // ---------- Error message (right‑aligned below the text field) ----------
+        if (isInvalid)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'Max marks is $maxMarks',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.red,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

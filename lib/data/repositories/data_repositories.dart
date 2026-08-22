@@ -262,6 +262,16 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
+  Future<ResponseModel> getSchoolInfo({required bool isLoading,
+    required String branchCode,
+
+  }) async {
+    var res = await connectHelper.getSchoolInfo(
+      isLoading: isLoading,
+      branchCode: branchCode,
+    );
+    return res;
+  }
 
   Future<ResponseModel> getLeaveStatusData({required bool isLoading,
     required String token,
@@ -433,6 +443,21 @@ class DataRepository extends DomainRepository {
     required String sectionId,
   }) async {
     var res = await connectHelper.getSubjectData(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      classId: classId,
+      sectionId: sectionId,
+    );
+    return res;
+  }
+  Future<ResponseModel> getStudentFeeList({required bool isLoading,
+    required String token,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var res = await connectHelper.getStudentFeeList(
       isLoading: isLoading,
       token: token,
       branchId: branchId,

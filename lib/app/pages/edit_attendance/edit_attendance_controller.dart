@@ -1,3 +1,4 @@
+// edit_attendance_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,6 +37,10 @@ class EditAttendanceController extends GetxController {
   // ========== ORIGINAL STATUSES & REMARKS FOR REVERT ==========
   final Map<String, String> originalStatuses = {};
   final Map<String, String> originalRemarks = {};
+
+  // ========== ATTENDANCE MARKED FLAG ==========
+  var isAttendanceMarkedForToday = false.obs;
+  var attendanceStatusMessage = ''.obs;
 
   @override
   void onInit() {
@@ -218,7 +223,6 @@ class EditAttendanceController extends GetxController {
   // ========== FETCH WITH DATE FALLBACK ==========
   void _fetchAttendanceForCurrentSelection() {
     if (selectedClassId.value.isNotEmpty && selectedSectionId.value.isNotEmpty) {
-      // ✅ Ensure date is never empty – use storedDate or today
       final date = (storedDate != null && storedDate!.isNotEmpty)
           ? storedDate!
           : _getCurrentDate();
@@ -235,13 +239,12 @@ class EditAttendanceController extends GetxController {
     return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
   }
 
-  // ========== GET CLASS ATTENDANCE DATA (FIXED: date never empty) ==========
+  // ========== GET CLASS ATTENDANCE DATA ==========
   Future<void> getClassAttendanceData({
     required String classId,
     required String sectionId,
     required String date,
   }) async {
-    // ✅ If date is empty, use today
     String effectiveDate = (date.isNotEmpty) ? date : _getCurrentDate();
 
     try {
@@ -269,7 +272,7 @@ class EditAttendanceController extends GetxController {
         branchId: branchId,
         classId: classId,
         sectionId: sectionId,
-        date: effectiveDate,  // ✅ Always non‑empty
+        date: effectiveDate,
       );
 
       if (res != null && res.status == true && res.data != null) {
@@ -285,11 +288,31 @@ class EditAttendanceController extends GetxController {
           originalRemarks[student.studentId] = remarks;
         }
 
+        // ---------- CHECK IF ATTENDANCE IS MARKED ----------
+        if (allStudents.isNotEmpty) {
+          bool marked = allStudents.any((s) =>
+          s.attendance != null &&
+              s.attendance!.status != null &&
+              s.attendance!.status!.isNotEmpty);
+          isAttendanceMarkedForToday.value = marked;
+          if (!marked) {
+            attendanceStatusMessage.value = 'You haven\'t marked attendance for today yet. Please mark attendance first.';
+          } else {
+            attendanceStatusMessage.value = '';
+          }
+        } else {
+          isAttendanceMarkedForToday.value = false;
+          attendanceStatusMessage.value = 'No students found for this class/section.';
+        }
+
         for (var student in allStudents) {
           debugPrint("📚 ${student.fullName}: ${student.attendance?.status ?? 'Not Marked'}");
         }
       } else {
-        // ❌ Only show snackbar for errors that are not date‑related
+        // Error or no data
+        allStudents.clear();
+        isAttendanceMarkedForToday.value = false;
+        attendanceStatusMessage.value = 'No attendance data found.';
         if (res?.message != null && !res!.message.toLowerCase().contains('attendance date is required')) {
           Get.snackbar(
             'Error',
@@ -301,8 +324,10 @@ class EditAttendanceController extends GetxController {
         }
       }
     } catch (e) {
-      // Handle errors silently for date issues, but log them
       debugPrint('❌ getClassAttendanceData error: $e');
+      allStudents.clear();
+      isAttendanceMarkedForToday.value = false;
+      attendanceStatusMessage.value = 'Failed to load attendance data.';
     } finally {
       isLoading.value = false;
     }
@@ -578,4 +603,6 @@ class EditAttendanceController extends GetxController {
   String get className => selectedClassName.value.isNotEmpty ? selectedClassName.value : '';
   String get sectionName => selectedSectionName.value.isNotEmpty ? selectedSectionName.value : '';
   List<ClassItem>? get classList => teacherClassData.value?.data?.classes;
+  bool get isAttendanceMarked => isAttendanceMarkedForToday.value;
+  String get attendanceMessage => attendanceStatusMessage.value;
 }
