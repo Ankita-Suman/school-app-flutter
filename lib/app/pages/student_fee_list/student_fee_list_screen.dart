@@ -46,7 +46,7 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
           SafeArea(
             child: Column(
               children: [
-                // ===== HEADER with Filter on Right =====
+                // ===== HEADER =====
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -62,8 +62,6 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
                           Text('Student Fee List', style: Styles.whiteBold),
                         ],
                       ),
-                      // Filter dropdown on the right side
-                      _buildFilterDropdown(),
                     ],
                   ),
                 ),
@@ -76,6 +74,7 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
                       return const Center(child: CircularProgressIndicator());
                     }
 
+                    // ✅ FIXED: Filter hata diya — saare students dikhenge
                     final students = controller.filteredStudents;
                     final summary = controller.summary;
 
@@ -160,8 +159,8 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
 
                           const SizedBox(height: 25),
 
-                          // ===== FEE LIST HEADER (no filter here) =====
-                          if (summary != null && students.isNotEmpty) ...[
+                          // ===== FEE LIST HEADER =====
+                          if (students.isNotEmpty) ...[
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -170,7 +169,7 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
                                   style: Styles.darkBlcW70014,
                                 ),
                                 Text(
-                                  'Total: ${summary.total}',
+                                  'Total: ${students.length}',
                                   style: Styles.skyBlueW60012,
                                 ),
                               ],
@@ -214,57 +213,7 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
     );
   }
 
-  // ========== FILTER DROPDOWN (Square box, right side in header) ==========
-  Widget _buildFilterDropdown() {
-    return Obx(() {
-      final currentFilter = controller.selectedFilter.value;
-      return PopupMenuButton<String>(
-        offset: const Offset(0, 30),
-        color: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-        elevation: 4,
-        onSelected: (value) => controller.setFilter(value),
-        itemBuilder: (context) => [
-          'All',
-          'Paid',
-          'Pending',
-          'Partial',
-        ].map((filter) => PopupMenuItem<String>(
-          value: filter,
-          height: 40,
-          child: Text(
-            filter,
-            style: Styles.darkBlcW600.copyWith(
-              fontSize: 13,
-              color: currentFilter == filter ? Colors.blue.shade700 : Colors.black87,
-            ),
-          ),
-        )).toList(),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(4),
-           // border: Border.all(color: Colors.grey.shade600, width: 1),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                currentFilter,
-                style: Styles.darkBlcW600.copyWith(fontSize: 12),
-              ),
-              const SizedBox(width: 2),
-              const Icon(Icons.keyboard_arrow_down, size: 14, color: Colors.grey),
-            ],
-          ),
-        ),
-      );
-    });
-  }
-
-  // ========== DROPDOWN FIELD (unchanged) ==========
+  // ========== DROPDOWN FIELD ==========
   Widget _buildDropdownField({
     required String label,
     required String value,
@@ -379,7 +328,7 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
     return menuItems;
   }
 
-  // ========== FEE CARD (unchanged) ==========
+  // ========== FEE CARD ==========
   Widget _buildFeeCard(StudentFeeStudent student) {
     final status = student.status;
     final amount = student.netAmount;
@@ -392,10 +341,6 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
       case 'PAID':
         statusColor = Colors.green;
         statusIcon = Icons.check_circle;
-        break;
-      case 'PARTIAL':
-        statusColor = Colors.orange;
-        statusIcon = Icons.hourglass_top;
         break;
       default:
         statusColor = Colors.red;
@@ -455,51 +400,34 @@ class _StudentFeeListScreenState extends State<StudentFeeListScreen> {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(statusIcon, size: 12, color: statusColor),
-                    const SizedBox(width: 4),
-                    Text(
-                      status,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: statusColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              //   decoration: BoxDecoration(
+              //     color: statusColor.withOpacity(0.12),
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              //   child: Row(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: [
+              //       Icon(statusIcon, size: 12, color: statusColor),
+              //       const SizedBox(width: 4),
+              //       Text(
+              //         status,
+              //         style: TextStyle(
+              //           fontSize: 10,
+              //           fontWeight: FontWeight.w600,
+              //           color: statusColor,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
           const SizedBox(height: 8),
           Divider(color: Colors.grey.shade200, height: 1, thickness: 1),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                status.toUpperCase() == 'PAID' ? 'Amount Paid' : (status.toUpperCase() == 'UNPAID' ? 'Total Dues' : 'Amount Paid'),
-                style: Styles.darkBlueW40010,
-              ),
-              Text(
-                status.toUpperCase() == 'PAID' ? '₹$amount' : (status.toUpperCase() == 'UNPAID' ? '₹$amount' : '₹$paid'),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: statusColor,
-                ),
-              ),
-            ],
-          ),
-          if (status.toUpperCase() == 'PARTIAL' || status.toUpperCase() == 'UNPAID') ...[
+          // ✅ PAID ke alawa sab ke liye Pending Amount dikhega
+          if (status.toUpperCase() != 'PAID') ...[
             const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

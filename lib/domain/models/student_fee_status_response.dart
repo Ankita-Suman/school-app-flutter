@@ -1,3 +1,4 @@
+// student_fee_status_response.dart
 import 'dart:convert';
 
 StudentFeeStatusResponse studentFeeStatusResponseFromJson(String str) =>
@@ -45,7 +46,7 @@ class StudentFeeStatusData {
   final String? classId;
   final String? sectionId;
   final String? sessionId;
-  final StudentFeeSummary summary;
+  final StudentFeeSummary summary;   // ✅ ab safe (default empty)
   final List<StudentFeeStudent> students;
 
   StudentFeeStatusData({
@@ -61,9 +62,16 @@ class StudentFeeStatusData {
       classId: json['class_id'] as String?,
       sectionId: json['section_id'] as String?,
       sessionId: json['session_id'] as String?,
-      summary: StudentFeeSummary.fromJson(json['summary'] as Map<String, dynamic>),
+
+      // ✅ CHANGED: summary null-safe — agar nahi aaye to empty summary
+      summary: json['summary'] != null
+          ? StudentFeeSummary.fromJson(json['summary'] as Map<String, dynamic>)
+          : StudentFeeSummary.empty(),
+
+      // ✅ students null-safe (pehle se hi theek tha)
       students: (json['students'] as List<dynamic>?)
-          ?.map((e) => StudentFeeStudent.fromJson(e as Map<String, dynamic>))
+          ?.whereType<Map<String, dynamic>>()
+          .map((e) => StudentFeeStudent.fromJson(e))
           .toList() ??
           [],
     );
@@ -101,6 +109,20 @@ class StudentFeeSummary {
     required this.monthName,
     required this.label,
   });
+
+  // ✅ ADDED: Empty summary (jab API summary na bheje)
+  factory StudentFeeSummary.empty() {
+    return StudentFeeSummary(
+      total: 0,
+      paid: 0,
+      pending: 0,
+      partial: 0,
+      month: 0,
+      year: 0,
+      monthName: '',
+      label: '',
+    );
+  }
 
   factory StudentFeeSummary.fromJson(Map<String, dynamic> json) {
     return StudentFeeSummary(
@@ -163,19 +185,19 @@ class StudentFeeStudent {
 
   factory StudentFeeStudent.fromJson(Map<String, dynamic> json) {
     return StudentFeeStudent(
-      id: json['id'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
       fullName: json['full_name'] as String? ?? '',
-      rollNumber: json['roll_number'] as String? ?? '',
-      admissionNumber: json['admission_number'] as String? ?? '',
+      rollNumber: json['roll_number']?.toString() ?? '',
+      admissionNumber: json['admission_number']?.toString() ?? '',
       photo: json['photo'] as String?,
       classId: json['class_id'] as String? ?? '',
       className: json['class_name'] as String? ?? '',
       sectionId: json['section_id'] as String? ?? '',
       sectionName: json['section_name'] as String? ?? '',
       status: json['status'] as String? ?? '',
-      netAmount: json['net_amount'] as int? ?? 0,
-      paidAmount: json['paid_amount'] as int? ?? 0,
-      pendingAmount: json['pending_amount'] as int? ?? 0,
+      netAmount: _parseInt(json['net_amount']),
+      paidAmount: _parseInt(json['paid_amount']),
+      pendingAmount: _parseInt(json['pending_amount']),
     );
   }
 
@@ -195,5 +217,14 @@ class StudentFeeStudent {
       'paid_amount': paidAmount,
       'pending_amount': pendingAmount,
     };
+  }
+
+  // ✅ Helper — kabhi API string bhejta hai, kabhi int
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
   }
 }

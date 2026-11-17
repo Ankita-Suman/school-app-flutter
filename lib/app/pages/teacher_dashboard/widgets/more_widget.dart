@@ -115,11 +115,11 @@ class CombinedGridWidget extends StatelessWidget {
     {'icon': AssetConstants.icAttan, 'label': 'Attendance'},
     {'icon': AssetConstants.icExams, 'label': 'Examinations'},
     {'icon': AssetConstants.icTimeline, 'label': 'Timeline'},
-    {'icon': AssetConstants.icDoc, 'label': 'My Documents'},
+    {'icon': AssetConstants.icDoc, 'label': 'My Documents'}, // Index 13
     {'icon': AssetConstants.icGrades, 'label': 'Grades'},
     {'icon': AssetConstants.icPc, 'label': 'CBSE Exams'},
-    {'icon': AssetConstants.icFee, 'label': 'Fees'},
-    {'icon': AssetConstants.icApply, 'label': 'Apply Leave'},
+    {'icon': AssetConstants.icFee, 'label': 'Fees'}, // Index 16
+    {'icon': AssetConstants.icApply, 'label': 'Apply Leave'}, // Index 17
     {'icon': AssetConstants.icRoutes, 'label': 'Routes'},
     {'icon': AssetConstants.icTo, 'label': 'To Do List'},
     {'icon': AssetConstants.icLib, 'label': 'Library'},
@@ -186,8 +186,11 @@ class CombinedGridWidget extends StatelessWidget {
           case 7:
             RouteManagement.goToTeamLiveClasses();
             break;
+          case 15: // ✅ Added My Documents Click
+            RouteManagement.goToStudentDocuments(); // ⚠️ अपने RouteManagement का सही नाम यहाँ इस्तेमाल करें
+            break;
           case 16:
-            // RouteManagement.goToFeesDetails();
+            RouteManagement.goToFeesDetails(); // ✅ Uncommented Fees Route
             break;
           case 17:
             RouteManagement.goToApplyLeave();

@@ -42,9 +42,9 @@ class MyClassesController extends GetxController {
       }
 
       var res = await myClassesPresenter.getMyClassData(
-        isLoading: true,
-        token: token, // ✅ dynamic
-        branchId: branchId, // ✅ dynamic
+        isLoading: false, // ✅ FIX: false कर दिया ताकि डबल लोडर न आए
+        token: token,
+        branchId: branchId,
       );
 
       if (res != null && res.status == true && res.data != null) {

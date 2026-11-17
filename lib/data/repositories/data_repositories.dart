@@ -93,7 +93,61 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
+  Future<ResponseModel> getClassmatesAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var res = await connectHelper.getClassmatesAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+    );
+    return res;
+  }
+  Future<ResponseModel> sendDeleteAccountOtp({
+    required bool isLoading,
+    required String branchCode,
+    required String username,
+  }) async {
+    var res = await connectHelper.sendDeleteAccountOtp(
+      isLoading: isLoading,
+      branchCode: branchCode,
+      username: username,
+    );
+    return res;
+  }
 
+  Future<ResponseModel> verifyDeleteAccountOtp({
+    required bool isLoading,
+    required String branchCode,
+    required String username,
+    required String otp,
+  }) async {
+    var res = await connectHelper.verifyDeleteAccountOtp(
+      isLoading: isLoading,
+      branchCode: branchCode,
+      username: username,
+      otp: otp,
+    );
+    return res;
+  }
+  Future<ResponseModel> getStudentNoticesAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var res = await connectHelper.getStudentNoticesAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+    );
+    return res;
+  }
   Future<ResponseModel> resendOtpAPI({required bool isLoading, required String login,
     required String branchCode}) async {
     var res = await connectHelper.resendOtpAPI(
@@ -117,7 +171,20 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
-
+  Future<ResponseModel> getStaffAnnouncementDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String tab,
+  }) async {
+    var res = await connectHelper.getStaffAnnouncementDetailsAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      tab: tab,
+    );
+    return res;
+  }
   Future<ResponseModel> resetPasswordAPI({required bool isLoading,
     required String login,
     required String branchCode,
@@ -135,7 +202,46 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
+  Future<ResponseModel> changePasswordAPI({required bool isLoading,
+    required String branchId,
+    required String token,
+    required String oldPassword,
+    required String newPassword,
+    required String passwordConfirmation,
+  }) async {
+    var res = await connectHelper.changePasswordAPI(
+      isLoading: isLoading,
+      branchId: branchId,
+      token: token,
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+      passwordConfirmation: passwordConfirmation,
+    );
+    return res;
+  }
   Future<ResponseModel> submitLeaveApplication({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String leaveType,
+    required String fromDate,
+    required String toDate,
+    required String reason, File? attachment, required String studentId,
+  }) async {
+    var res = await connectHelper.submitLeaveApplication(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+      leaveType: leaveType,
+      fromDate: fromDate,
+      toDate: toDate,
+      reason: reason,
+      attachment: attachment,
+    );
+    return res;
+  }
+  Future<ResponseModel> submitStaffLeaveApplication({
     required bool isLoading,
     required String token,
     required String branchId,
@@ -144,7 +250,7 @@ class DataRepository extends DomainRepository {
     required String toDate,
     required String reason, File? attachment,
   }) async {
-    var res = await connectHelper.submitLeaveApplication(
+    var res = await connectHelper.submitStaffLeaveApplication(
       isLoading: isLoading,
       token: token,
       branchId: branchId,
@@ -153,6 +259,20 @@ class DataRepository extends DomainRepository {
       toDate: toDate,
       reason: reason,
       attachment: attachment,
+    );
+    return res;
+  }
+  Future<ResponseModel> getStaffAttendanceRecordAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String month,
+  }) async {
+    var res = await connectHelper.getStaffAttendanceRecordAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      month: month,
     );
     return res;
   }
@@ -173,7 +293,20 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
-
+  Future<ResponseModel> getStudentDocumentsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var res = await connectHelper.getStudentDocumentsAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+    );
+    return res;
+  }
   Future<ResponseModel> getProfileDetailsAPI({required bool isLoading,
     required String token,
     required String branchId, required String studentId,
@@ -186,7 +319,22 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
-
+  Future<ResponseModel> getAttendanceRecordAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+    required String month,
+  }) async {
+    var res = await connectHelper.getAttendanceRecordAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+      month: month,
+    );
+    return res;
+  }
   Future<ResponseModel> getFeesDetailsAPI({required bool isLoading,
     required String token,
     required String branchId, required String studentId,
@@ -196,6 +344,17 @@ class DataRepository extends DomainRepository {
       token: token,
       branchId: branchId,
       studentId: studentId,
+    );
+    return res;
+  }
+ Future<ResponseModel> getAnnouncementDetailsAPI({required bool isLoading,
+    required String token,
+    required String branchId
+  }) async {
+    var res = await connectHelper.getAnnouncementDetailsAPI(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
     );
     return res;
   }
@@ -267,6 +426,16 @@ class DataRepository extends DomainRepository {
 
   }) async {
     var res = await connectHelper.getSchoolInfo(
+      isLoading: isLoading,
+      branchCode: branchCode,
+    );
+    return res;
+  }
+  Future<ResponseModel> getBranchInfo({required bool isLoading,
+    required String branchCode,
+
+  }) async {
+    var res = await connectHelper.getBranchInfo(
       isLoading: isLoading,
       branchCode: branchCode,
     );
@@ -352,7 +521,20 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
-
+  Future<ResponseModel> saveCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    var res = await connectHelper.saveCoCurricularMarks(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      payload: payload,
+    );
+    return res;
+  }
   Future<ResponseModel> saveInternalMarks({
     required bool isLoading,
     required String token,
@@ -568,8 +750,25 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
-
-
+  Future<ResponseModel> createPaymentOrder({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+    required List<String> invoiceIds,
+    required double amount,
+    required String sessionId,
+  }) async {
+    return await connectHelper.createPaymentOrder(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+      invoiceIds: invoiceIds,
+      amount: amount,
+      sessionId: sessionId,
+    );
+  }
   Future<ResponseModel> fetchClassAttendanceReport({required bool isLoading,
     required String token,
     required String branchId,
@@ -647,7 +846,29 @@ class DataRepository extends DomainRepository {
     );
     return res;
   }
-
+  // ============================================================
+  // ✅ NEW: Co-Curricular Marks
+  // ============================================================
+  Future<ResponseModel> getCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var res = await connectHelper.getCoCurricularMarks(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      examinationGroupId: examinationGroupId,
+      examinationTermId: examinationTermId,
+      classId: classId,
+      sectionId: sectionId,
+    );
+    return res;
+  }
 
   Future<ResponseModel> getClassAttendance({required bool isLoading,
     required String token,

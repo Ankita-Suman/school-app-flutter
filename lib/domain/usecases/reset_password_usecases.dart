@@ -23,6 +23,23 @@ class ResetPasswordUseCases {
         passwordConfirmation: passwordConfirmation,
       );
 
+Future<ResetPasswordResponse?> changePasswordAPI({
+    required bool isLoading,
+    required String branchId,
+    required String token,
+    required String oldPassword,
+    required String newPassword,
+    required String passwordConfirmation,
+  }) async =>
+      await repository.changePasswordAPI(
+        isLoading: isLoading,
+        branchId: branchId,
+        token: token,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        passwordConfirmation: passwordConfirmation,
+      );
+
   Future<StaffResetPasswordResponse?> resetStaffPassword({
     required bool isLoading,
     required String token,

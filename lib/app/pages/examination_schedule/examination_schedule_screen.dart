@@ -75,7 +75,6 @@ class _ExaminationScheduleScreenState extends State<ExaminationScheduleScreen> {
                     }
 
                     final schedule = controller.schedule;
-                    final examData = controller.examScheduleData.value?.data;
 
                     return SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 16),

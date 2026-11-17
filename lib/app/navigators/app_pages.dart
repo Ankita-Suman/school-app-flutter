@@ -4,12 +4,16 @@ import 'package:school_app/app/pages/add_leave/add_leave.dart';
 import 'package:school_app/app/pages/apply_leave/apply_leave.dart';
 import 'package:school_app/app/pages/approval_status/approval_status.dart';
 import 'package:school_app/app/pages/attendance_management/attendance_management.dart';
+import 'package:school_app/app/pages/attendance_record/attendance_record.dart';
 import 'package:school_app/app/pages/attendance_report/attendance_report.dart';
 import 'package:school_app/app/pages/change_password/change_password.dart';
 import 'package:school_app/app/pages/change_password_successfully/change_password_successfully.dart';
 import 'package:school_app/app/pages/create_homework/create_homework.dart';
 import 'package:school_app/app/pages/create_lesson_plan/create_lesson_plan.dart';
+import 'package:school_app/app/pages/create_password/create_password.dart';
+import 'package:school_app/app/pages/curricular_marks/curricular_marks_binding.dart';
 import 'package:school_app/app/pages/dashboard/dashboard.dart';
+import 'package:school_app/app/pages/delete_account/delete_account.dart';
 import 'package:school_app/app/pages/edit_attendance/edit_attendance.dart';
 import 'package:school_app/app/pages/external_marks/external_marks.dart';
 import 'package:school_app/app/pages/fees_details/fees_details.dart';
@@ -23,13 +27,16 @@ import 'package:school_app/app/pages/leave_balance/leave_balance.dart';
 import 'package:school_app/app/pages/lesson_planning/lesson_planning.dart';
 import 'package:school_app/app/pages/login/login.dart';
 import 'package:school_app/app/pages/mark_attendance/mark_attendance.dart';
+import 'package:school_app/app/pages/my_children_list/my_children_list.dart';
 import 'package:school_app/app/pages/my_class_details/my_class_details.dart';
 import 'package:school_app/app/pages/my_classes/my_classes.dart';
+import 'package:school_app/app/pages/my_classmates/my_classmates.dart';
 import 'package:school_app/app/pages/my_student_list/my_student_list.dart';
 import 'package:school_app/app/pages/new_forgot_password/new_forgot_password.dart';
 import 'package:school_app/app/pages/new_otp_verification/new_otp_verification.dart';
 import 'package:school_app/app/pages/notice_board/notice_board.dart';
 import 'package:school_app/app/pages/payment/payment.dart';
+import 'package:school_app/app/pages/staff_announcements/staff_announcement.dart';
 import 'package:school_app/app/pages/staff_apply_leave/staff_apply_leave.dart';
 import 'package:school_app/app/pages/staff_leave/staff_leave.dart';
 import 'package:school_app/app/pages/staff_leave_history/staff_leave_history.dart';
@@ -40,10 +47,13 @@ import 'package:school_app/app/pages/teacher_dashboard/teacher_dashboard_screen.
 import 'package:school_app/app/pages/team_live_classes/team_live_classes.dart';
 import 'package:school_app/app/pages/term_attendance/term_attendance.dart';
 import 'package:school_app/app/pages/upcoming_events/upcoming_events.dart';
+import 'package:school_app/app/pages/verify_branch_code/verify_branch_code.dart';
 import 'package:school_app/app/pages/zoom_live_classes/zoom_live_classes.dart';
 
 import '../pages/create_live_class/create_live_class_binding.dart';
 import '../pages/create_live_class/create_live_class_screen.dart';
+import '../pages/create_password/create_password_screen.dart';
+import '../pages/curricular_marks/curricular_marks_screen.dart';
 import '../pages/daily_teaching_log/daily_teaching_log_binding.dart';
 import '../pages/daily_teaching_log/daily_teaching_log_screen.dart';
 import '../pages/defaulter_list/defaulter_list_binding.dart';
@@ -62,6 +72,10 @@ import '../pages/my_student_class/my_student_class_binding.dart';
 import '../pages/my_student_class/my_student_class_screen.dart';
 import '../pages/share_material/share_material_binding.dart';
 import '../pages/share_material/share_material_screen.dart';
+import '../pages/staff_attendance_record/staff_attendance_record_binding.dart';
+import '../pages/staff_attendance_record/staff_attendance_record_screen.dart';
+import '../pages/student_documents/student_documents_binding.dart';
+import '../pages/student_documents/student_documents_screen.dart';
 import '../pages/syllabus_tracking/syllabus_tracking_binding.dart';
 import '../pages/syllabus_tracking/syllabus_tracking_screen.dart';
 import '../pages/teacher_dashboard/teacher_dashboard_binding.dart';
@@ -451,6 +465,76 @@ class AppPages {
       transitionDuration: transitionDuration,
       page: ExternalMarksScreen.new,
       binding: ExternalMarksBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<CreatePasswordScreen>(
+      name: _Paths.createPassword,
+      transitionDuration: transitionDuration,
+      page: CreatePasswordScreen.new,
+      binding: CreatePasswordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<MyChildrenListScreen>(
+      name: _Paths.myChildrenList,
+      transitionDuration: transitionDuration,
+      page: MyChildrenListScreen.new,
+      binding: MyChildrenListBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<CurricularMarksScreen>(
+      name: _Paths.curricularMarks,
+      transitionDuration: transitionDuration,
+      page: CurricularMarksScreen.new,
+      binding: CurricularMarksBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<VerifyBranchCodeScreen>(
+      name: _Paths.verifyBranchCode,
+      transitionDuration: transitionDuration,
+      page: VerifyBranchCodeScreen.new,
+      binding: VerifyBranchCodeBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<AttendanceRecordScreen>(
+      name: _Paths.attendanceRecord,
+      transitionDuration: transitionDuration,
+      page: AttendanceRecordScreen.new,
+      binding: AttendanceRecordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<StaffAttendanceRecordScreen>(
+      name: _Paths.staffAttendanceRecord,
+      transitionDuration: transitionDuration,
+      page: StaffAttendanceRecordScreen.new,
+      binding: StaffAttendanceRecordBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<StudentDocumentsScreen>(
+      name: _Paths.documents,
+      transitionDuration: transitionDuration,
+      page: StudentDocumentsScreen.new,
+      binding: StudentDocumentsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<StaffAnnouncementsScreen>(
+      name: _Paths.staffAnnouncements,
+      transitionDuration: transitionDuration,
+      page: StaffAnnouncementsScreen.new,
+      binding: StaffAnnouncementsBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<MyClassmatesScreen>(
+      name: _Paths.myClassmates,
+      transitionDuration: transitionDuration,
+      page: MyClassmatesScreen.new,
+      binding: MyClassmatesBinding(),
+      transition: Transition.cupertino,
+    ),
+    GetPage<DeleteAccountScreen>(
+      name: _Paths.deleteAccount,
+      transitionDuration: transitionDuration,
+      page: DeleteAccountScreen.new,
+      binding: DeleteAccountBinding(),
       transition: Transition.cupertino,
     ),
   ];

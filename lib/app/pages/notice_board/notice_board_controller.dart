@@ -1,77 +1,82 @@
-// pages/login/new_otp_verification_controller.dart
+// controllers/notice_board_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:school_app/domain/models/announcement_model.dart';
+
+import '../dashboard/dashboard_controller.dart';
 
 class NoticeBoardController extends GetxController {
-  var selectedTab = 0.obs;
+  final TextEditingController searchController = TextEditingController();
 
-  // Text Controllers
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  // ✅ RxString — Obx ke andar yahi use hoga
+  var searchText = ''.obs;
+  var allAnnouncements = <Announcement>[].obs;
+  var filteredAnnouncements = <Announcement>[].obs;
 
-  // Focus Nodes
-  FocusNode emailFocusNode = FocusNode();
-  FocusNode passwordFocusNode = FocusNode();
-
-  // Focus States
-  var isEmailFocused = false.obs;
-  var isPasswordFocused = false.obs;
-  var isPasswordVisible = false.obs;
+  // ✅ Loader state जोड़ा गया है
+  var isLoading = true.obs;
 
   @override
   void onInit() {
     super.onInit();
-
-    // Add listeners for focus changes
-    emailFocusNode.addListener(() {
-      isEmailFocused.value = emailFocusNode.hasFocus;
-    });
-
-    passwordFocusNode.addListener(() {
-      isPasswordFocused.value = passwordFocusNode.hasFocus;
-    });
+    _loadAnnouncements();
+    searchController.addListener(_applySearch);
   }
 
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  }
+  void _loadAnnouncements() async {
+    isLoading.value = true;
 
-  void changeTab(int index) {
-    selectedTab.value = index;
-  }
-
-  void login() {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
-
-    if (email.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter email address',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
+    // ✅ अगर Dashboard अभी भी API से Announcements लोड कर रहा है, तो उसका इंतज़ार करें
+    if (Get.isRegistered<DashboardController>()) {
+      final dashboard = Get.find<DashboardController>();
+      if (dashboard.isLoadingAnnouncements.value) {
+        await Future.doWhile(() async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return dashboard.isLoadingAnnouncements.value;
+        });
+      }
     }
-    if (password.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter password',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
+
+    List<Announcement> data = [];
+
+    if (Get.isRegistered<DashboardController>()) {
+      final dashboard = Get.find<DashboardController>();
+      data = dashboard.announcementData.value?.data ?? [];
     }
+
+    // ✅ डेटा को इस तरह सॉर्ट करें कि सबसे नई एनाउंसमेंट सबसे ऊपर आए।
+    data.sort((a, b) => b.announcementDate.compareTo(a.announcementDate));
+
+    allAnnouncements.value = data;
+    filteredAnnouncements.value = data;
+
+    // छोटा सा डिले ताकि UI पर लोडर अच्छे से दिखे
+    await Future.delayed(const Duration(milliseconds: 300));
+    isLoading.value = false;
+  }
+
+  void _applySearch() {
+    final q = searchController.text.trim().toLowerCase();
+    searchText.value = q;
+
+    if (q.isEmpty) {
+      filteredAnnouncements.value = allAnnouncements;
+    } else {
+      filteredAnnouncements.value = allAnnouncements.where((a) {
+        return a.title.toLowerCase().contains(q) ||
+            a.description.toLowerCase().contains(q) ||
+            a.category.toLowerCase().contains(q);
+      }).toList();
+    }
+  }
+
+  void clearSearch() {
+    searchController.clear();
   }
 
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    emailFocusNode.dispose();
-    passwordFocusNode.dispose();
+    searchController.dispose();
     super.onClose();
   }
 }

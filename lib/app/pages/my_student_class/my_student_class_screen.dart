@@ -20,20 +20,6 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
   final TextEditingController searchController = TextEditingController();
   var searchQuery = ''.obs;
 
-  // Color palette for class cards
-  final List<Color> colorPalette = [
-    Colors.blue,
-    Colors.orange,
-    Colors.green,
-    Colors.purple,
-    Colors.red,
-    Colors.teal,
-    Colors.pink,
-    Colors.indigo,
-    Colors.amber,
-    Colors.cyan,
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -49,11 +35,6 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
   void dispose() {
     searchController.dispose();
     super.dispose();
-  }
-
-  // Get color based on index
-  Color getColorForIndex(int index) {
-    return colorPalette[index % colorPalette.length];
   }
 
   // ========== GET FILTERED CLASS LIST ==========
@@ -80,8 +61,6 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
     // Get class ID and section ID
     final String classId = classItem.classId;
     final String sectionId = classItem.sectionId;
-    final String className = classItem.className;
-    final String sectionName = classItem.sectionName;
 
     // Navigate to class details screen with required data
     RouteManagement.goToStudentList(
@@ -93,7 +72,6 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
     final backgroundHeight = screenHeight < 700 ? 90.0 : 110.0;
 
     return Scaffold(
@@ -139,21 +117,21 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
                       ),
                       // Show total classes count
                       Obx(() => Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              '${controller.totalClasses} Classes',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          )),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          '${controller.totalClasses} Classes',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      )),
                     ],
                   ),
                 ),
@@ -205,18 +183,18 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
                                       horizontal: 4,
                                     ),
                                     suffixIcon: Obx(
-                                      () => searchQuery.value.isNotEmpty
+                                          () => searchQuery.value.isNotEmpty
                                           ? IconButton(
-                                              icon: Icon(
-                                                Icons.clear,
-                                                color: Colors.grey.shade400,
-                                                size: 20,
-                                              ),
-                                              onPressed: () {
-                                                searchController.clear();
-                                                searchQuery.value = '';
-                                              },
-                                            )
+                                        icon: Icon(
+                                          Icons.clear,
+                                          color: Colors.grey.shade400,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          searchController.clear();
+                                          searchQuery.value = '';
+                                        },
+                                      )
                                           : const SizedBox.shrink(),
                                     ),
                                   ),
@@ -331,14 +309,8 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
                             itemCount: filteredList.length,
                             itemBuilder: (context, index) {
                               final classItem = filteredList[index];
-                              // Find original index for color
-                              final originalIndex =
-                                  controller.classList?.indexOf(classItem) ??
-                                      index;
-
                               return _buildClassCard(
                                 classItem: classItem,
-                                color: getColorForIndex(originalIndex),
                                 onTap: () => navigateToClassDetails(classItem),
                               );
                             },
@@ -361,30 +333,17 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
   // ========== BUILD CLASS CARD ==========
   Widget _buildClassCard({
     required ClassItem classItem,
-    required Color color,
     required VoidCallback onTap,
   }) {
-    // Get section display name (e.g., "D" from section_name)
-    String sectionDisplay = classItem.sectionName.isNotEmpty
-        ? classItem.sectionName
-        : classItem.className.substring(0, 1).toUpperCase();
-
-    // Get grade display
-    String gradeDisplay =
-        '${classItem.className} - Section ${classItem.sectionName}';
-
-    // Get teacher type - You can modify this based on your data
-    String teacherType = 'Class Teacher';
-
-    // Get student count
+    // ✅ Student Count सेट किया गया है
     String studentCount = '${classItem.totalStudentCount} Students';
 
     return GestureDetector(
-      onTap: onTap, // ✅ Navigate on tap
+      onTap: onTap,
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -399,74 +358,44 @@ class _MyStudentClassScreenState extends State<MyStudentClassScreen> {
         ),
         child: Row(
           children: [
-            // ========== COLORED CONTAINER WITH SECTION NAME ==========
-            Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  sectionDisplay,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: color,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 12),
-
             // ========== CLASS DETAILS ==========
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ✅ RichText का इस्तेमाल करके Class और Section का रंग अलग किया गया है
+                  RichText(
+                    text: TextSpan(
+                      text: classItem.className, // जैसे: Grade V
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.blue.shade800, // Class Name का Color (Blue)
+                        fontFamily: 'Inter',
+                      ),
+                      children: [
+                        if (classItem.sectionName.isNotEmpty)
+                          TextSpan(
+                            text: ' - ${classItem.sectionName}', // जैसे: - A
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.black, // Section Name का Color (Black)
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // ✅ सिर्फ Student Count दिखेगा
                   Text(
-                    gradeDisplay,
-                    style: Styles.darkBlcW60015,
+                    studentCount,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        teacherType,
-                        style: Styles.darkBlueW400,
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 4,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        studentCount,
-                        style: Styles.darkBlueW400,
-                      ),
-                    ],
-                  ),
-                  // // Show subjects if available
-                  // if (classItem.subjects != null && classItem.subjects!.isNotEmpty)
-                  //   Padding(
-                  //     padding: const EdgeInsets.only(top: 4),
-                  //     child: Text(
-                  //       'Subjects: ${classItem.subjectNames}',
-                  //       style: TextStyle(
-                  //         fontSize: 11,
-                  //         color: Colors.grey.shade500,
-                  //       ),
-                  //       maxLines: 1,
-                  //       overflow: TextOverflow.ellipsis,
-                  //     ),
-                  //   ),
                 ],
               ),
             ),

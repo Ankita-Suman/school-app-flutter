@@ -8,6 +8,7 @@ abstract class DeviceConstants {
   static const String localLang = 'localLang';
   static const String appVersion = '0.0.1';
   static const String accessToken = 'accessToken';
+  static const String schoolInfo = 'schoolInfo';
   static const String registrationVia = 'registrationVia';
   static const String deviceToken = 'deviceToken';
   static const String profileData = 'profileData';

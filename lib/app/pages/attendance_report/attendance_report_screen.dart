@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:school_app/domain/models/my_classes_response.dart';
 import '../../../domain/models/get_attendance_report_response.dart';
 import '../../app.dart';
 import 'attendance_report_controller.dart';
@@ -164,7 +163,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                                           return GestureDetector(
                                             onTap: () {
                                               final allClasses = controller.uniqueClassList;
-                                              if (allClasses == null || allClasses.isEmpty) return;
+                                              if (allClasses.isEmpty) return;
 
                                               final RenderBox renderBox =
                                               btnContext.findRenderObject() as RenderBox;

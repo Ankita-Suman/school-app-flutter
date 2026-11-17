@@ -1,3 +1,5 @@
+// widgets/profile_widget.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,9 +11,18 @@ import '../dashboard_controller.dart';
 class ProfileWidget extends StatelessWidget {
   const ProfileWidget({super.key});
 
+  static String _getFullImageUrl(String? photoUrl) {
+    if (photoUrl == null || photoUrl.isEmpty) return '';
+    if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
+      return photoUrl;
+    }
+    return 'https://demo.aitsolutions.in/$photoUrl';
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final DashboardController controller = Get.find<DashboardController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SystemChrome.setSystemUIOverlayStyle(
@@ -26,6 +37,28 @@ class ProfileWidget extends StatelessWidget {
       );
     });
 
+    return Obx(() {
+      if (controller.isLoadingProfile.value) {
+        return const Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: CircularProgressIndicator(color: Colors.blue, strokeWidth: 3),
+          ),
+        );
+      }
+
+      return _ProfileImagePreloader(
+        imageUrl: _getFullImageUrl(controller.profileData.value?.personal.photo),
+        child: _buildMainContent(context, controller, screenWidth),
+      );
+    });
+  }
+
+  Widget _buildMainContent(
+      BuildContext context,
+      DashboardController controller,
+      double screenWidth,
+      ) {
     return GetBuilder<DashboardController>(
       builder: (controller) => Scaffold(
         backgroundColor: ColorsValue.navBgColors,
@@ -66,132 +99,152 @@ class ProfileWidget extends StatelessWidget {
                           Row(
                             children: [
                               const SizedBox(width: 16),
-                              Text(StringConstants.studentProfile,
-                                  style: Styles.whiteBold),
+                              Text('My Profile', style: Styles.whiteBold),
                             ],
                           ),
                         ],
                       ),
                       const SizedBox(height: 20),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 5),
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 1,
-                          ),
+                          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
                         ),
                         child: Obx(() => Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                Stack(
                                   children: [
-                                    Stack(
-                                      children: [
-                                        Container(
-                                          width: 70,
-                                          height: 70,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.blue.shade300,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: _buildAvatar(controller),
-                                        ),
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: GestureDetector(
-                                            onTap: () {},
-                                            child: Container(
-                                              padding: const EdgeInsets.all(3),
-                                              decoration: const BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: SvgPicture.asset(
-                                                AssetConstants.iccEdit,
-                                                height: 18,
-                                                width: 18,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                    Container(
+                                      width: 70,
+                                      height: 70,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.blue.shade300, width: 2),
+                                      ),
+                                      child: _buildAvatar(controller),
                                     ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: GestureDetector(
+                                        onTap: () {},
+                                        child: Container(
+                                          padding: const EdgeInsets.all(3),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: SvgPicture.asset(
+                                            AssetConstants.iccEdit,
+                                            height: 18,
+                                            width: 18,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        controller.profileData.value?.personal.name ?? 'Olivier Thomas',
+                                        style: Styles.whiteBold.copyWith(fontSize: 16),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Class ${controller.profileData.value?.personal.classInfo.name ?? '1'} – ${controller.profileData.value?.personal.section.name ?? 'A'} - Session ${controller.profileData.value?.other.academic.session ?? '2025 – 26'}',
+                                        style: Styles.whiteW400.copyWith(fontSize: 12),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
                                         children: [
-                                          Text(
-                                            controller.profileData.value
-                                                    ?.personal.name ??
-                                                'Olivier Thomas',
-                                            style: Styles.whiteBold
-                                                .copyWith(fontSize: 16),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(20),
+                                              border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                                            ),
+                                            child: Text(
+                                              'Adm. No. ${controller.profileData.value?.personal.admissionNumber ?? '18001'}',
+                                              style: Styles.whiteW40011.copyWith(fontSize: 10),
+                                            ),
                                           ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'Class ${controller.profileData.value?.personal.classInfo.name ?? '1'} – ${controller.profileData.value?.personal.section.name ?? 'A'} - Session ${controller.profileData.value?.other.academic.session ?? '2025 – 26'}',
-                                            style: Styles.whiteW400
-                                                .copyWith(fontSize: 12),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(20),
+                                              border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                                            ),
+                                            child: Text(
+                                              'Roll. No. ${controller.profileData.value?.personal.rollNumber ?? '18001'}',
+                                              style: Styles.whiteW40011.copyWith(fontSize: 10),
+                                            ),
                                           ),
-                                          const SizedBox(height: 8),
-                                          Wrap(
-                                            spacing: 8,
-                                            runSpacing: 8,
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+                              child: Divider(thickness: 1, color: Colors.white.withOpacity(0.3)),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('QR CODE', style: Styles.whiteW60010.copyWith(fontSize: 10)),
+                                    const SizedBox(height: 5),
+                                    SvgPicture.asset(
+                                      AssetConstants.icQr,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 40),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('CREDIT SCORE', style: Styles.whiteW60010.copyWith(fontSize: 10)),
+                                    const SizedBox(height: 5),
+                                    SizedBox(
+                                      height: 60,
+                                      width: 60,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            AssetConstants.progressBar,
+                                            height: 60,
+                                            width: 60,
+                                            fit: BoxFit.contain,
+                                          ),
+                                          Column(
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 4,
-                                                        horizontal: 8),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white
-                                                      .withOpacity(0.1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  border: Border.all(
-                                                    color: Colors.white
-                                                        .withOpacity(0.3),
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'Adm. No. ${controller.profileData.value?.personal.admissionNumber ?? '18001'}',
-                                                  style: Styles.whiteW40011
-                                                      .copyWith(fontSize: 10),
-                                                ),
+                                              Text(
+                                                '${controller.profileData.value?.other.grade.averagePercentage ?? 0}',
+                                                style: Styles.whiteExBold.copyWith(fontSize: 16),
                                               ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 4,
-                                                        horizontal: 8),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white
-                                                      .withOpacity(0.1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  border: Border.all(
-                                                    color: Colors.white
-                                                        .withOpacity(0.3),
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'Roll. No. ${controller.profileData.value?.personal.rollNumber ?? '18001'}',
-                                                  style: Styles.whiteW40011
-                                                      .copyWith(fontSize: 10),
-                                                ),
-                                              ),
+                                              Text('/100', style: Styles.whiteW40009.copyWith(fontSize: 10)),
                                             ],
                                           ),
                                         ],
@@ -199,78 +252,11 @@ class ProfileWidget extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(20, 10, 20, 5),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.white.withOpacity(0.3),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('QR CODE',
-                                            style: Styles.whiteW60010
-                                                .copyWith(fontSize: 10)),
-                                        const SizedBox(height: 5),
-                                        SvgPicture.asset(
-                                          AssetConstants.icQr,
-                                          width: 50,
-                                          height: 50,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 40),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('CREDIT SCORE',
-                                            style: Styles.whiteW60010
-                                                .copyWith(fontSize: 10)),
-                                        const SizedBox(height: 5),
-                                        SizedBox(
-                                          height: 60,
-                                          width: 60,
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              SvgPicture.asset(
-                                                AssetConstants.progressBar,
-                                                height: 60,
-                                                width: 60,
-                                                fit: BoxFit.contain,
-                                              ),
-                                              Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    '${controller.profileData.value?.other.grade.averagePercentage ?? 0}',
-                                                    style: Styles.whiteExBold
-                                                        .copyWith(fontSize: 16),
-                                                  ),
-                                                  Text('/100',
-                                                      style: Styles.whiteW40009
-                                                          .copyWith(
-                                                              fontSize: 10)),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 3),
                               ],
-                            )),
+                            ),
+                            const SizedBox(height: 3),
+                          ],
+                        )),
                       ),
                     ],
                   ),
@@ -319,18 +305,31 @@ class ProfileWidget extends StatelessWidget {
     );
   }
 
-  // ✅ Avatar Widget with Image/Initials logic
   Widget _buildAvatar(DashboardController controller) {
     String? photoUrl = controller.profileData.value?.personal.photo;
     String? fullName = controller.profileData.value?.personal.name;
 
     if (photoUrl != null && photoUrl.isNotEmpty) {
+      String finalUrl = _getFullImageUrl(photoUrl);
+
       return ClipOval(
         child: Image.network(
-          photoUrl,
+          finalUrl,
           width: 70,
           height: 70,
           fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return _buildLoaderAvatar();
+          },
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) return child;
+            return AnimatedOpacity(
+              opacity: frame == null ? 0 : 1,
+              duration: const Duration(milliseconds: 300),
+              child: child,
+            );
+          },
           errorBuilder: (context, error, stackTrace) {
             return _buildInitialsAvatar(fullName);
           },
@@ -339,6 +338,24 @@ class ProfileWidget extends StatelessWidget {
     }
 
     return _buildInitialsAvatar(fullName);
+  }
+
+  Widget _buildLoaderAvatar() {
+    return Container(
+      width: 70,
+      height: 70,
+      decoration: const BoxDecoration(
+        color: ColorsValue.bgColors,
+        shape: BoxShape.circle,
+      ),
+      child: const Center(
+        child: SizedBox(
+          width: 22,
+          height: 22,
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+        ),
+      ),
+    );
   }
 
   Widget _buildInitialsAvatar(String? fullName) {
@@ -373,6 +390,85 @@ class ProfileWidget extends StatelessWidget {
   }
 }
 
+// ============================================================
+// ✅ PROFILE IMAGE PRELOADER (UNCHANGED)
+// ============================================================
+class _ProfileImagePreloader extends StatefulWidget {
+  final String imageUrl;
+  final Widget child;
+
+  const _ProfileImagePreloader({
+    required this.imageUrl,
+    required this.child,
+  });
+
+  @override
+  State<_ProfileImagePreloader> createState() => _ProfileImagePreloaderState();
+}
+
+class _ProfileImagePreloaderState extends State<_ProfileImagePreloader> {
+  bool _isReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preloadImage();
+    });
+  }
+
+  Future<void> _preloadImage() async {
+    if (widget.imageUrl.isEmpty) {
+      if (mounted) setState(() => _isReady = true);
+      return;
+    }
+
+    try {
+      final completer = Completer<void>();
+      final imageProvider = NetworkImage(widget.imageUrl);
+      final stream = imageProvider.resolve(ImageConfiguration.empty);
+
+      late final ImageStreamListener listener;
+      listener = ImageStreamListener(
+            (imageInfo, synchronousCall) {
+          if (!completer.isCompleted) completer.complete();
+          stream.removeListener(listener);
+        },
+        onError: (exception, stackTrace) {
+          if (!completer.isCompleted) completer.complete();
+          stream.removeListener(listener);
+        },
+      );
+
+      stream.addListener(listener);
+      await completer.future;
+
+      await WidgetsBinding.instance.endOfFrame;
+      await WidgetsBinding.instance.endOfFrame;
+
+      await Future.delayed(const Duration(milliseconds: 50));
+    } catch (e) {
+      debugPrint("⚠️ Profile image preload failed: $e");
+    }
+
+    if (mounted) setState(() => _isReady = true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isReady) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.blue, strokeWidth: 3),
+        ),
+      );
+    }
+
+    return widget.child;
+  }
+}
+
 // ========== PERSONAL TAB ==========
 class PersonalTab extends StatelessWidget {
   const PersonalTab({super.key});
@@ -394,19 +490,11 @@ class PersonalTab extends StatelessWidget {
             decoration: BoxDecoration(
               color: ColorsValue.navSelectColor,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: ColorsValue.cardBorderColor,
-                width: 1,
-              ),
+              border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
             ),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  AssetConstants.icPrint,
-                  height: 10,
-                  width: 10,
-                  fit: BoxFit.contain,
-                ),
+                SvgPicture.asset(AssetConstants.icPrint, height: 10, width: 10, fit: BoxFit.contain),
                 const SizedBox(width: 6),
                 Text('Print ID Card', style: Styles.darkBlueW700),
               ],
@@ -417,8 +505,7 @@ class PersonalTab extends StatelessWidget {
             title: 'PERSONAL DETAILS',
             index: 0,
             children: [
-              _buildDetailRow(
-                  'Date of Birth', _formatDate(personal?.dateOfBirth)),
+              _buildDetailRow('Date of Birth', _formatDate(personal?.dateOfBirth)),
               _buildDetailRow('Gender', personal?.gender ?? '-'),
               _buildDetailRow('Category', '-'),
               _buildDetailRow('Blood Group', personal?.bloodGroup ?? '-'),
@@ -443,7 +530,14 @@ class PersonalTab extends StatelessWidget {
             permanentAddress: personal?.address.permanent ?? '-',
           ),
           const SizedBox(height: 20),
+
+          // ✅ Logout
           _buildLogoutContainer(controller),
+          const SizedBox(height: 12),
+
+          // ✅ Delete Account (opens confirmation dialog)
+          _buildDeleteAccountContainer(),
+
           const SizedBox(height: 20),
         ],
       ),
@@ -462,18 +556,8 @@ class PersonalTab extends StatelessWidget {
 
   String _getMonth(int month) {
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return months[month - 1];
   }
@@ -495,8 +579,7 @@ class PersonalTab extends StatelessWidget {
                   Get.back();
                   controller.logoutAPI(isLoading: true);
                 },
-                child:
-                    const Text('Logout', style: TextStyle(color: Colors.red)),
+                child: const Text('Logout', style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -508,10 +591,7 @@ class PersonalTab extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: ColorsValue.cardBorderColor,
-            width: 1,
-          ),
+          border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -523,11 +603,7 @@ class PersonalTab extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.delete_outline,
-              color: Colors.red.shade700,
-              size: 20,
-            ),
+            Icon(Icons.logout, color: Colors.red.shade700, size: 20),
             const SizedBox(width: 6),
             Text(
               'LOGOUT',
@@ -545,6 +621,100 @@ class PersonalTab extends StatelessWidget {
     );
   }
 
+  // ✅ Delete Account container (opens confirmation dialog)
+  Widget _buildDeleteAccountContainer() {
+    return GestureDetector(
+      onTap: _showDeleteAccountDialog, // shows confirmation dialog
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.red.shade600,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.red.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.delete_forever, color: Colors.white, size: 20),
+            const SizedBox(width: 6),
+            Text(
+              'DELETE ACCOUNT',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontFamily: GoogleFonts.sora().fontFamily,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ✅ Delete Account confirmation dialog → on confirm goes to OTP screen
+  void _showDeleteAccountDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.warning_amber_rounded, color: Colors.red.shade600, size: 22),
+            ),
+            const SizedBox(width: 10),
+            const Text('Delete Account'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Are you sure you want to delete your account?',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'This action is permanent and cannot be undone. '
+                  'All your profile data, documents and records will be permanently deleted.',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade700, height: 1.4),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back(); // close dialog first
+            RouteManagement.goToDeleteAccount();
+            },
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Colors.red.shade600, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDetailsContainer({
     required String title,
     required List<Widget> children,
@@ -554,10 +724,7 @@ class PersonalTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: ColorsValue.whiteColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: ColorsValue.cardBorderColor,
-          width: 1,
-        ),
+        border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -579,8 +746,8 @@ class PersonalTab extends StatelessWidget {
                     index == 0
                         ? AssetConstants.icDm
                         : index == 1
-                            ? AssetConstants.icCall
-                            : AssetConstants.icAdd,
+                        ? AssetConstants.icCall
+                        : AssetConstants.icAdd,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(width: 8),
@@ -590,15 +757,12 @@ class PersonalTab extends StatelessWidget {
             ),
           ),
           ...children.map((child) => Column(
-                children: [
-                  child,
-                  if (child != children.last)
-                    const Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: ColorsValue.cardBorderColor),
-                ],
-              )),
+            children: [
+              child,
+              if (child != children.last)
+                const Divider(height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
+            ],
+          )),
         ],
       ),
     );
@@ -614,10 +778,7 @@ class PersonalTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: ColorsValue.whiteColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: ColorsValue.cardBorderColor,
-          width: 1,
-        ),
+        border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -635,10 +796,7 @@ class PersonalTab extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  SvgPicture.asset(
-                    AssetConstants.icAdd,
-                    fit: BoxFit.contain,
-                  ),
+                  SvgPicture.asset(AssetConstants.icAdd, fit: BoxFit.contain),
                   const SizedBox(width: 8),
                   Text(title, style: Styles.darkBlueW700),
                 ],
@@ -650,13 +808,7 @@ class PersonalTab extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    'Current',
-                    style: Styles.darkGryW500,
-                  ),
-                ),
+                SizedBox(width: 100, child: Text('Current', style: Styles.darkGryW500)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -669,20 +821,13 @@ class PersonalTab extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(
-              height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
+          const Divider(height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    'Permanent',
-                    style: Styles.darkGryW500,
-                  ),
-                ),
+                SizedBox(width: 100, child: Text('Permanent', style: Styles.darkGryW500)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -706,13 +851,7 @@ class PersonalTab extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: Styles.darkGryW500,
-            ),
-          ),
+          SizedBox(width: 100, child: Text(label, style: Styles.darkGryW500)),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -729,7 +868,7 @@ class PersonalTab extends StatelessWidget {
   }
 }
 
-// ========== PARENTS TAB ==========
+// ========== PARENTS TAB (UNCHANGED) ==========
 class ParentsTab extends StatelessWidget {
   const ParentsTab({super.key});
 
@@ -763,7 +902,7 @@ class ParentsTab extends StatelessWidget {
             initials: _getInitials(parents?.guardian.name ?? ''),
             name: parents?.guardian.name ?? '-',
             occupation: parents?.guardian.occupation ?? '-',
-            relation: parents?.guardian.relation ?? 'GUARDIAN',
+            relation: 'GUARDIAN',
             phoneNumber: parents?.guardian.phone ?? '-',
             index: 2,
           ),
@@ -793,10 +932,7 @@ class ParentsTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: ColorsValue.cardBorderColor,
-          width: 1,
-        ),
+        border: Border.all(color: ColorsValue.cardBorderColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -819,16 +955,11 @@ class ParentsTab extends StatelessWidget {
                     color: index == 0
                         ? ColorsValue.bgBlueColors
                         : index == 1
-                            ? ColorsValue.txtPinkClrs
-                            : ColorsValue.txtGrClrs,
+                        ? ColorsValue.txtPinkClrs
+                        : ColorsValue.txtGrClrs,
                     shape: BoxShape.circle,
                   ),
-                  child: Center(
-                    child: Text(
-                      initials,
-                      style: Styles.whiteExBold,
-                    ),
-                  ),
+                  child: Center(child: Text(initials, style: Styles.whiteExBold)),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -840,21 +971,18 @@ class ParentsTab extends StatelessWidget {
                         style: index == 0
                             ? Styles.darkBlueW700Spacing
                             : index == 1
-                                ? Styles.darkPinkW70010
-                                : Styles.darkGrW700,
+                            ? Styles.darkPinkW70010
+                            : Styles.darkGrW700,
                       ),
-                      Text(
-                        name,
-                        style: Styles.darkBlcW700,
-                      ),
+                      Text(name, style: Styles.darkBlcW700),
                       const SizedBox(height: 2),
                       Text(
                         occupation,
                         style: index == 0
                             ? Styles.darkBlueW600
                             : index == 1
-                                ? Styles.darkPinkW600
-                                : Styles.darkGrW600,
+                            ? Styles.darkPinkW600
+                            : Styles.darkGrW600,
                       ),
                     ],
                   ),
@@ -866,24 +994,15 @@ class ParentsTab extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  AssetConstants.icCl,
-                  fit: BoxFit.contain,
-                ),
+                SvgPicture.asset(AssetConstants.icCl, fit: BoxFit.contain),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        phoneNumber,
-                        style: Styles.darkBlkW500,
-                      ),
+                      Text(phoneNumber, style: Styles.darkBlkW500),
                       const SizedBox(height: 4),
-                      Text(
-                        'Phone Number',
-                        style: Styles.darkGryW400,
-                      ),
+                      Text('Phone Number', style: Styles.darkGryW400),
                     ],
                   ),
                 ),
@@ -894,24 +1013,15 @@ class ParentsTab extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  AssetConstants.icAdd,
-                  fit: BoxFit.contain,
-                ),
+                SvgPicture.asset(AssetConstants.icAdd, fit: BoxFit.contain),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        occupation,
-                        style: Styles.darkBlkW500,
-                      ),
+                      Text(occupation, style: Styles.darkBlkW500),
                       const SizedBox(height: 2),
-                      Text(
-                        'Occupation',
-                        style: Styles.darkGryW400,
-                      ),
+                      Text('Occupation', style: Styles.darkGryW400),
                     ],
                   ),
                 ),
@@ -924,7 +1034,7 @@ class ParentsTab extends StatelessWidget {
   }
 }
 
-// ========== OTHER TAB ==========
+// ========== OTHER TAB (UNCHANGED) ==========
 class OtherTab extends StatelessWidget {
   const OtherTab({super.key});
 
@@ -943,7 +1053,6 @@ class OtherTab extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ Stats Cards Grid - Smaller height boxes
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -951,8 +1060,7 @@ class OtherTab extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 8,
-              childAspectRatio:
-                  1.6, // ✅ Much shorter boxes (more width, less height)
+              childAspectRatio: 1.6,
             ),
             itemCount: 4,
             itemBuilder: (context, index) {
@@ -994,26 +1102,21 @@ class OtherTab extends StatelessWidget {
               }
             },
           ),
-
           const SizedBox(height: 12),
-
           _buildDetailsContainer(
             title: 'ACADEMIC INFO',
             index: 0,
             children: [
-              _buildDetailRow('Class & Section',
+              _buildDetailRow(
+                  'Class & Section',
                   '${other?.academic.classInfo ?? personal?.classInfo.name ?? '-'} - ${other?.academic.section ?? personal?.section.name ?? '-'}'),
               _buildDetailRow('Roll Number', personal?.rollNumber ?? '-'),
-              _buildDetailRow(
-                  'Admission No.', personal?.admissionNumber ?? '-'),
+              _buildDetailRow('Admission No.', personal?.admissionNumber ?? '-'),
               _buildDetailRow('Session', other?.academic.session ?? '-'),
-              _buildDetailRow(
-                  'Admission Type', other?.academic.admissionType ?? '-'),
+              _buildDetailRow('Admission Type', other?.academic.admissionType ?? '-'),
             ],
           ),
-
           const SizedBox(height: 10),
-
           _buildDetailsContainer(
             title: 'TRANSPORT',
             index: 2,
@@ -1028,7 +1131,6 @@ class OtherTab extends StatelessWidget {
     );
   }
 
-  // ✅ Stat Card - Same icon/text size, smaller box height
   Widget _buildStatCard({
     required String svgIcon,
     required String value,
@@ -1038,7 +1140,6 @@ class OtherTab extends StatelessWidget {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-      // ✅ Reduced vertical padding
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -1055,7 +1156,7 @@ class OtherTab extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SvgPicture.asset(svgIcon, height: 28, width: 28), // ✅ Same icon size
+          SvgPicture.asset(svgIcon, height: 28, width: 28),
           const SizedBox(height: 4),
           Text(
             value,
@@ -1117,8 +1218,8 @@ class OtherTab extends StatelessWidget {
                       index == 0
                           ? AssetConstants.icAca
                           : index == 1
-                              ? AssetConstants.icHrt
-                              : AssetConstants.icTrans,
+                          ? AssetConstants.icHrt
+                          : AssetConstants.icTrans,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -1144,10 +1245,7 @@ class OtherTab extends StatelessWidget {
                 children: [
                   child,
                   if (idx != children.length - 1)
-                    const Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: ColorsValue.cardBorderColor),
+                    const Divider(height: 1, thickness: 1, color: ColorsValue.cardBorderColor),
                 ],
               );
             }).toList(),

@@ -42,7 +42,7 @@ class ApplyLeaveScreen extends StatelessWidget {
                         child: SvgPicture.asset(AssetConstants.icBackBg),
                       ),
                       const SizedBox(width: 8),
-                      Text('Apply Leave', style: Styles.whiteBold),
+                      Text('Student Apply Leave', style: Styles.whiteBold),
                     ],
                   ),
                 ),

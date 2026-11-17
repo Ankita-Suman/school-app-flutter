@@ -2,6 +2,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:school_app/app/pages/staff_apply_leave/staff_apply_leave_presenter.dart';
 import '../../app.dart';
 import '../../widgets/gradient_button.dart';
 import 'staff_apply_leave_controller.dart';
@@ -11,8 +12,9 @@ class StaffApplyLeaveScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final StaffApplyLeaveController controller =
-        Get.put(StaffApplyLeaveController());
+    final StaffApplyLeaveController controller = Get.put(
+      StaffApplyLeaveController(Get.find<StaffApplyLeavePresenter>()),
+    );
 
     final screenHeight = MediaQuery.of(context).size.height;
 

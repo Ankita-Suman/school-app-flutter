@@ -175,7 +175,6 @@ class _DefaulterListScreenState extends State<DefaulterListScreen> {
                         // ========== DEFAULTER LIST ==========
                         Column(
                           children: defaulterList.asMap().entries.map((entry) {
-                            final index = entry.key;
                             final student = entry.value;
                             return Container(
                               margin: const EdgeInsets.only(bottom: 12),

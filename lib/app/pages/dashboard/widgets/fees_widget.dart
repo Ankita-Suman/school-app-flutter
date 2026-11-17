@@ -1,30 +1,61 @@
+// widgets/fees_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:school_app/app/app.dart';
 import 'package:school_app/app/pages/dashboard/dashboard_controller.dart';
+import 'package:school_app/app/pages/payment/payment_webview_screen.dart';
 
 import '../../../../domain/models/fees_response.dart';
 import '../../../widgets/dashed_widget.dart';
 import '../../../widgets/gradient_button.dart';
 
-class FeesDetailsScreen extends StatelessWidget {
+// ✅ 1. StatelessWidget को StatefulWidget में बदला गया है
+class FeesDetailsScreen extends StatefulWidget {
   const FeesDetailsScreen({super.key});
+
+  @override
+  State<FeesDetailsScreen> createState() => _FeesDetailsScreenState();
+}
+
+class _FeesDetailsScreenState extends State<FeesDetailsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // ✅ 2. यह कोड सुनिश्चित करेगा कि स्क्रीन ओपन होते ही API हिट हो
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final DashboardController controller = Get.find<DashboardController>();
+      // अगर डेटा पहले से लोड नहीं है और लोडिंग चल भी नहीं रही है, तो API मारो
+      if (controller.feeData.value == null && !controller.isLoadingFees.value) {
+        controller.getFeesDetails();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final DashboardController controller = Get.find<DashboardController>();
     final screenHeight = MediaQuery.of(context).size.height;
-    final backgroundHeight = screenHeight * 0.26; // 22% of screen height
+    final backgroundHeight = screenHeight * 0.26;
 
-    return Scaffold(
-      body: Obx(() {
-        // Get fee data
-        final feeData = controller.feeData.value?.data;
+    return Obx(() {
+      if (controller.isLoadingFees.value) {
+        return const Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: CircularProgressIndicator(
+              color: Colors.blue,
+              strokeWidth: 3,
+            ),
+          ),
+        );
+      }
 
-        return Stack(
+      final feeData = controller.feeData.value?.data;
+
+      return Scaffold(
+        body: Stack(
           children: [
-            // ✅ Responsive SVG Background - FIXED
             Positioned(
               top: 0,
               left: 0,
@@ -37,11 +68,10 @@ class FeesDetailsScreen extends StatelessWidget {
               ),
             ),
 
-            // Content
             SafeArea(
               child: Column(
                 children: [
-                  // Fixed Header Section (Non-scrollable)
+                  // ===== HEADER =====
                   Column(
                     children: [
                       Padding(
@@ -50,16 +80,6 @@ class FeesDetailsScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(children: [
-                              // GestureDetector(
-                              //   onTap: () {
-                              //     Get.back();
-                              //   },
-                              //   child: SvgPicture.asset(
-                              //       AssetConstants.icBackBg,
-                              //       // height: 20,
-                              //       // width: 20,
-                              //   ),
-                              // ),
                               const SizedBox(width: 8),
                               Text('Fees Details', style: Styles.whiteBold),
                             ]),
@@ -79,7 +99,7 @@ class FeesDetailsScreen extends StatelessWidget {
                                   child: Center(
                                     child: Text(
                                       feeData?.student?.firstName
-                                              ?.substring(0, 1) ??
+                                          ?.substring(0, 1) ??
                                           'AS',
                                       style: Styles.whiteW70011,
                                     ),
@@ -108,7 +128,6 @@ class FeesDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 15),
 
-                      // 3 Containers Row - Total Due, Paid, Pending
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
@@ -200,12 +219,11 @@ class FeesDetailsScreen extends StatelessWidget {
                         ),
                       ),
 
-                      // Dynamic spacing
                       SizedBox(height: backgroundHeight * 0.12),
                     ],
                   ),
 
-                  // Scrollable Content (Grand Total + Expandable List)
+                  // ===== SCROLLABLE CONTENT =====
                   Expanded(
                     child: Container(
                       margin: const EdgeInsets.all(12),
@@ -229,7 +247,6 @@ class FeesDetailsScreen extends StatelessWidget {
                         physics: const BouncingScrollPhysics(),
                         child: Column(
                           children: [
-                            // Grand Total Overview Section
                             Padding(
                               padding: Dimens.edgeInsets10,
                               child: Column(
@@ -242,7 +259,7 @@ class FeesDetailsScreen extends StatelessWidget {
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Expanded(
                                           child: Text('AMOUNT',
@@ -268,10 +285,10 @@ class FeesDetailsScreen extends StatelessWidget {
                                   ),
                                   Container(
                                     padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
+                                    const EdgeInsets.symmetric(vertical: 8),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                      MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Expanded(
                                           child: Text(
@@ -315,7 +332,6 @@ class FeesDetailsScreen extends StatelessWidget {
                               ),
                             ),
 
-                            // Expandable List - Pass invoices data
                             if (feeData?.invoices != null &&
                                 feeData!.invoices!.isNotEmpty)
                               ExpandableFeesList(
@@ -329,7 +345,7 @@ class FeesDetailsScreen extends StatelessWidget {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
                                   border:
-                                      Border.all(color: Colors.grey.shade300),
+                                  Border.all(color: Colors.grey.shade300),
                                 ),
                                 child: const Center(
                                   child: Text(
@@ -348,13 +364,15 @@ class FeesDetailsScreen extends StatelessWidget {
               ),
             ),
           ],
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 }
 
-// ExpandableFeesList with API data integration - No changes
+// ============================================================
+// ExpandableFeesList
+// ============================================================
 class ExpandableFeesList extends StatefulWidget {
   final List<Invoice> invoices;
 
@@ -400,6 +418,120 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
     }
   }
 
+  // ============================================================
+  // ✅ _handlePayNow — WebView result await + refresh
+  // ============================================================
+  Future<void> _handlePayNow(Invoice invoice) async {
+    final DashboardController controller = Get.find<DashboardController>();
+
+    final pendingAmount = (invoice.pendingAmount ?? 0).toDouble();
+    if (pendingAmount <= 0) {
+      Get.snackbar(
+        'Info',
+        'This invoice has no pending amount.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 10,
+      );
+      return;
+    }
+
+    // ✅ Loading dialog
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      ),
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+    );
+
+    final res = await controller.createPaymentOrder(
+      invoiceId: invoice.id ?? '',
+      amount: pendingAmount,
+    );
+
+    if (Get.isDialogOpen == true) Get.back();
+
+    if (res == null) {
+      Get.snackbar(
+        'Error',
+        'Failed to create payment order. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 10,
+      );
+      return;
+    }
+
+    if (res.status != true || res.data == null) {
+      Get.snackbar(
+        'Error',
+        res.message.isNotEmpty ? res.message : 'Payment order failed',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 10,
+      );
+      return;
+    }
+
+    final url = res.data!.paymentUrl;
+    if (url.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Payment URL not available',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 10,
+      );
+      return;
+    }
+
+    // ✅ WebView खोलें और RESULT का इंतज़ार करें
+    final result = await Get.to<Map<String, dynamic>?>(
+          () => PaymentWebViewScreen(
+        paymentUrl: url,
+        orderId: res.data!.orderId,
+      ),
+    );
+
+    // ✅ Payment successful → fees refresh (status update hoga)
+    if (result != null && result['success'] == true) {
+      await controller.refreshFeesAfterPayment(invoiceId: invoice.id);
+
+      if (Get.context != null) {
+        Get.snackbar(
+          'Success',
+          'Payment completed. Invoice updated.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(12),
+          borderRadius: 10,
+        );
+      }
+    } else if (result != null &&
+        result['success'] == false &&
+        result['cancelled'] != true) {
+      Get.snackbar(
+        'Payment Failed',
+        'Your payment was not completed.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 10,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -432,6 +564,14 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
           final totalPaidAmount = invoice.paidAmount ?? 0;
           final totalPendingAmount = invoice.pendingAmount ?? 0;
 
+          // ✅ Invoice paid hai ya nahi
+          final invoiceStatus = (invoice.status ?? '').toUpperCase();
+          final isInvoicePaid =
+              invoiceStatus == 'PAID' || totalPendingAmount <= 0;
+
+          // ✅ Status color (PAID=green, PARTIAL=orange, PENDING=red, UPCOMING=blue)
+          final statusColor = getStatusColor(invoice.status ?? 'UPCOMING');
+
           return Column(
             children: [
               Container(
@@ -460,8 +600,7 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   width: 12,
                                   height: 12,
                                   decoration: BoxDecoration(
-                                    color: getStatusColor(
-                                        invoice.status ?? 'UPCOMING'),
+                                    color: statusColor,
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -479,23 +618,29 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                   style: Styles.darkGryW70012,
                                 ),
                                 const SizedBox(width: 8),
+
+                                // ✅ Status tag — color status ke hisaab se
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: getStatusColor(
-                                            invoice.status ?? 'UPCOMING')
-                                        .withOpacity(0.1),
+                                    color: statusColor.withOpacity(0.12),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                        color: ColorsValue.lightOrangeColors,
-                                        width: 1),
+                                      color: statusColor.withOpacity(0.5),
+                                      width: 1,
+                                    ),
                                   ),
                                   child: Text(
                                     invoice.status ?? 'UPCOMING',
-                                    style: Styles.darkOrangeW8009,
+                                    style: TextStyle(
+                                      color: statusColor,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 9,
+                                    ),
                                   ),
                                 ),
+
                                 const SizedBox(width: 12),
                                 Icon(
                                   isExpanded
@@ -521,7 +666,7 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                     padding: Dimens.edgeInsets15,
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(item.feeTitle ?? '',
                                             style: Styles.darkBlackW400),
@@ -539,13 +684,13 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                             padding: const EdgeInsets.only(
                                 top: 15, left: 25, right: 25, bottom: 15),
                             decoration:
-                                const BoxDecoration(color: Colors.white),
+                            const BoxDecoration(color: Colors.white),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Net Amount',
                                         style: Styles.darkBlkW400),
@@ -561,7 +706,7 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                 ),
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Paid', style: Styles.darkBlkW400),
                                     Text('₹$totalPaidAmount',
@@ -576,9 +721,10 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                 ),
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Pending', style: Styles.darkBlkW400),
+                                    Text('Pending',
+                                        style: Styles.darkBlkW400),
                                     Text('₹$totalPendingAmount',
                                         style: Styles.darkRedW70012),
                                   ],
@@ -587,17 +733,66 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                             ),
                           ),
                           const SizedBox(height: 10),
+
+                          // =============================================
+                          // ✅ UPDATED — Paid badge FULL WIDTH (double.infinity)
+                          //    Left/right space kam, button jaisa size
+                          // =============================================
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding:
+                            const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Expanded(
                                   flex: 3,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      RouteManagement.goToPayment();
-                                    },
+                                  child: isInvoicePaid
+                                  // ✅ PAID → full width green badge
+                                      ? Container(
+                                    height: 70,
+                                    width: double.infinity,
+                                    alignment: Alignment.center,
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: Colors.green
+                                            .withOpacity(0.1),
+                                        borderRadius:
+                                        BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.green
+                                              .withOpacity(0.4),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.check_circle,
+                                            color: Colors.green,
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Paid',
+                                            style: TextStyle(
+                                              color:
+                                              Colors.green.shade700,
+                                              fontWeight:
+                                              FontWeight.w700,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                  // ✅ PENDING → Pay Now button
+                                      : GestureDetector(
+                                    onTap: () =>
+                                        _handlePayNow(invoice),
                                     child: Container(
                                       height: 70,
                                       alignment: Alignment.center,
@@ -605,11 +800,9 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                         alignment: Alignment.center,
                                         children: [
                                           GradientButton(
-                                            onPressed: () {
-                                              RouteManagement.goToPayment();
-                                            },
-                                            text:
-                                                'Pay Now →', // Just add arrow in text
+                                            onPressed: () =>
+                                                _handlePayNow(invoice),
+                                            text: 'Pay Now →',
                                           )
                                         ],
                                       ),
@@ -634,11 +827,11 @@ class _ExpandableFeesListState extends State<ExpandableFeesList> {
                                             vertical: 8),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(8)),
+                                            BorderRadius.circular(8)),
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         children: [
                                           SvgPicture.asset(
                                             AssetConstants.icView,

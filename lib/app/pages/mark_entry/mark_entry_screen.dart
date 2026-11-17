@@ -22,6 +22,14 @@ class MarkEntryScreen extends StatelessWidget {
       'color': Colors.orangeAccent,
       'position': 1,
     },
+    // ✅ ADDED: Co-Curricular
+    {
+      'title': 'Co-Curricular',
+      'subtitle': 'Enter co-curricular marks',
+      'icon': Icons.create_outlined,
+      'color': Colors.orangeAccent,
+      'position': 2,
+    },
   ];
 
   @override
@@ -139,6 +147,10 @@ class MarkEntryScreen extends StatelessWidget {
             break;
           case 1:
             RouteManagement.goToExternalMarks();
+            break;
+        // ✅ ADDED: Co-Curricular navigation
+          case 2:
+            RouteManagement.goToCurricularMarks();
             break;
           default:
           // Fallback snackbar for any undefined position

@@ -1,4 +1,4 @@
-package com.school.app.school_app
+package com.decentgroupofschool.app
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine

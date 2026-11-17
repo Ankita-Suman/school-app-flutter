@@ -14,8 +14,7 @@ class StaffProfileWidget extends StatefulWidget {
 
 class _StaffProfileWidgetState extends State<StaffProfileWidget> {
   late final TeacherDashboardController controller;
-
-  int _selectedTab = 0; // 0: Basic Information, 1: Other Details
+  int _selectedTab = 0;
 
   @override
   void initState() {
@@ -23,9 +22,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     controller = Get.find<TeacherDashboardController>();
   }
 
-  // ========== MAKE PHONE CALL ==========
   void _makePhoneCall(String phoneNumber) async {
-    // Clean the number: keep only digits and '+'
     final String cleanedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9+]'), '');
     if (cleanedNumber.isEmpty) return;
     final Uri phoneUri = Uri(scheme: 'tel', path: cleanedNumber);
@@ -33,9 +30,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
       await launchUrl(phoneUri);
     } else {
       Get.snackbar('Error', 'Could not open dialer.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white);
+          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 
@@ -59,23 +54,13 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
 
         return Stack(
           children: [
-            // Header background
             Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: SvgPicture.asset(
-                AssetConstants.icBlueBg,
-                width: double.infinity,
-                height: backgroundHeight,
-                fit: BoxFit.cover,
-              ),
+              top: 0, left: 0, right: 0,
+              child: SvgPicture.asset(AssetConstants.icBlueBg, width: double.infinity, height: backgroundHeight, fit: BoxFit.cover),
             ),
-
             SafeArea(
               child: Column(
                 children: [
-                  // Header
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
@@ -90,56 +75,9 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-                  // Profile card
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(top: 16),
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    color: Colors.white,
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            shape: BoxShape.circle,
-                          ),
-                          child: controller.hasPhoto
-                              ? ClipOval(
-                            child: Image.network(
-                              controller.photo,
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  _buildDefaultAvatar(),
-                            ),
-                          )
-                              : _buildDefaultAvatar(),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          controller.staffName.isNotEmpty
-                              ? controller.staffName
-                              : '-- --',
-                          style: Styles.darkBlcW700,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Employee ID: ${controller.employeeId.isNotEmpty ? controller.employeeId : '--'} • ${controller.role.isNotEmpty ? controller.role : ''}',
-                          style: Styles.darkBlueW400,
-                        ),
-                      ],
-                    ),
-                  ),
-
+                  _ProfileCard(controller: controller),
                   const SizedBox(height: 16),
-
-                  // Tabs
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Container(
@@ -147,12 +85,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.08),
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
+                          BoxShadow(color: Colors.grey.withOpacity(0.08), spreadRadius: 1, blurRadius: 8, offset: const Offset(0, 2)),
                         ],
                       ),
                       child: Row(
@@ -163,10 +96,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Content
                   Expanded(
                     child: _selectedTab == 0
                         ? _buildBasicInformationContent()
@@ -181,30 +111,19 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     );
   }
 
-  // ========== HEADER ==========
   Widget _buildHeader(double backgroundHeight) {
     return Stack(
       children: [
         Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: SvgPicture.asset(
-            AssetConstants.icBlueBg,
-            width: double.infinity,
-            height: backgroundHeight,
-            fit: BoxFit.cover,
-          ),
+          top: 0, left: 0, right: 0,
+          child: SvgPicture.asset(AssetConstants.icBlueBg, width: double.infinity, height: backgroundHeight, fit: BoxFit.cover),
         ),
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(AssetConstants.icBackBg),
-                ),
+                GestureDetector(onTap: () => Get.back(), child: SvgPicture.asset(AssetConstants.icBackBg)),
                 const SizedBox(width: 8),
                 Text('Staff Profile', style: Styles.whiteBold),
               ],
@@ -215,21 +134,8 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     );
   }
 
-  // ========== DEFAULT AVATAR ==========
-  Widget _buildDefaultAvatar() {
-    return Center(
-      child: Icon(
-        Icons.person,
-        size: 40,
-        color: Colors.blue.shade700,
-      ),
-    );
-  }
-
-  // ========== TAB BUTTON ==========
   Widget _buildTabButton(String title, int index) {
     final isSelected = _selectedTab == index;
-
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _selectedTab = index),
@@ -240,12 +146,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color:
-                  isSelected ? Colors.blue.shade700 : Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isSelected ? Colors.blue.shade700 : Colors.grey.shade600),
               ),
               const SizedBox(height: 4),
               Container(
@@ -264,29 +165,18 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     );
   }
 
-  // ========== BASIC INFORMATION CONTENT ==========
   Widget _buildBasicInformationContent() {
-    // Build full name from parts
     final String fullName = [
-      controller.prefix != '--' && controller.prefix.isNotEmpty
-          ? controller.prefix
-          : '',
-      controller.firstName != '--' && controller.firstName.isNotEmpty
-          ? controller.firstName
-          : '',
-      controller.middleName != '--' && controller.middleName.isNotEmpty
-          ? controller.middleName
-          : '',
-      controller.lastName != '--' && controller.lastName.isNotEmpty
-          ? controller.lastName
-          : '',
+      controller.prefix != '--' && controller.prefix.isNotEmpty ? controller.prefix : '',
+      controller.firstName != '--' && controller.firstName.isNotEmpty ? controller.firstName : '',
+      controller.middleName != '--' && controller.middleName.isNotEmpty ? controller.middleName : '',
+      controller.lastName != '--' && controller.lastName.isNotEmpty ? controller.lastName : '',
     ].where((s) => s.isNotEmpty).join(' ');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Column(
         children: [
-          // ---------- ROLE DETAILS ----------
           _buildInfoCard(
             title: 'Role Details',
             children: [
@@ -298,10 +188,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                       children: [
                         Text('Staff Type', style: Styles.darkBlueW400),
                         const SizedBox(height: 4),
-                        Text(
-                          'TEACHING',
-                          style: Styles.darkBlcW600,
-                        ),
+                        Text('TEACHING', style: Styles.darkBlcW600),
                       ],
                     ),
                   ),
@@ -311,10 +198,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
                       children: [
                         Text('Staff Role', style: Styles.darkBlueW400),
                         const SizedBox(height: 4),
-                        Text(
-                          'TEACHER',
-                          style: Styles.darkBlcW600,
-                        ),
+                        Text('TEACHER', style: Styles.darkBlcW600),
                       ],
                     ),
                   ),
@@ -322,8 +206,6 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               ),
             ],
           ),
-
-          // ---------- PERSONAL DETAILS ----------
           _buildInfoCard(
             title: 'Personal Details',
             children: [
@@ -335,21 +217,12 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               _buildInfoRow('Religion', controller.religion),
               _buildInfoRow('Marital Status', controller.maritalStatus),
               _buildInfoRow('Spouse Name', controller.spouseName),
-              // ---------- FAMILY DETAILS (added) ----------
               _buildInfoRow('Father Name', controller.fatherName ?? '--'),
               _buildInfoRow('Father Contact', controller.fatherContact ?? '--'),
               _buildInfoRow('Mother Name', controller.motherName),
               _buildInfoRow('Mother Contact', controller.motherContact ?? '--'),
-              // ---------- SIBLING INFO (added) ----------
-              // if (controller.siblings != null && controller.siblings!.isNotEmpty)
-              //   ..._buildSiblingRows(),
-              // // if no siblings, show a placeholder
-              // if (controller.siblings == null || controller.siblings!.isEmpty)
-              //   _buildInfoRow('Siblings', 'No siblings added'),
             ],
           ),
-
-          // ---------- CONTACT INFO ----------
           _buildInfoCard(
             title: 'Contact Info',
             children: [
@@ -360,8 +233,6 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               _buildInfoRow('Permanent Address', controller.permanentAddress),
             ],
           ),
-
-          // ---------- PROFESSIONAL INFO ----------
           _buildInfoCard(
             title: 'Professional Info',
             children: [
@@ -371,29 +242,32 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
             ],
           ),
 
-          // ---------- ACTION BUTTONS ----------
+          // ✅ Reset Password + Logout Row
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 Expanded(
                   child: _buildOutlinedActionButton(
-                    label: 'Reset Password',
-                    icon: Icons.lock_reset,
+                    label: 'Reset Password', icon: Icons.lock_reset,
                     onPressed: () => RouteManagement.goToStaffResetPassword(),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildOutlinedActionButton(
-                    label: 'Logout',
-                    icon: Icons.logout,
-                    onPressed: _showLogoutDialog,
-                    isDestructive: true,
+                    label: 'Logout', icon: Icons.logout,
+                    onPressed: _showLogoutDialog, isDestructive: true,
                   ),
                 ),
               ],
             ),
+          ),
+
+          // ✅ Delete Account button (opens confirmation dialog)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: _buildDeleteAccountButton(),
           ),
 
           const SizedBox(height: 20),
@@ -402,49 +276,11 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     );
   }
 
-  // ========== BUILD SIBLING ROWS ==========
-  // List<Widget> _buildSiblingRows() {
-  //   List<Widget> rows = [];
-  //   final siblings = controller.siblings!;
-  //   for (int i = 0; i < siblings.length; i++) {
-  //     final sibling = siblings[i];
-  //     // Use sibling.name, sibling.contact, sibling.address
-  //     final name = sibling['name'] ?? '--';
-  //     final contact = sibling['contact'] ?? '--';
-  //     final address = sibling['address'] ?? '--';
-  //     rows.add(
-  //       Padding(
-  //         padding: const EdgeInsets.only(top: 8),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(
-  //               'Sibling ${i + 1}',
-  //               style: Styles.darkBlcW600.copyWith(
-  //                 fontSize: 14,
-  //                 color: Colors.blue.shade700,
-  //               ),
-  //             ),
-  //             const SizedBox(height: 4),
-  //             _buildInfoRow('  Name', name),
-  //             _buildInfoRow('  Contact', contact),
-  //             _buildInfoRow('  Address', address),
-  //             if (i != siblings.length - 1) const Divider(height: 16),
-  //           ],
-  //         ),
-  //       ),
-  //     );
-  //   }
-  //   return rows;
-  // }
-
-  // ========== OTHER DETAILS CONTENT ==========
   Widget _buildOtherDetailsContent() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Column(
         children: [
-          // ---------- EMPLOYMENT DETAILS ----------
           _buildInfoCard(
             title: 'Employment Details',
             children: [
@@ -455,19 +291,14 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               _buildInfoRow('Work Location', controller.workLocation),
             ],
           ),
-
-          // ---------- LEAVE CONFIGURATION ----------
           _buildInfoCard(
             title: 'Leave Configuration',
             children: [
               _buildInfoRow('Paid Leaves', controller.paidLeaves.toString()),
               _buildInfoRow('Half Leaves', controller.halfLeaves.toString()),
-              _buildInfoRow(
-                  'Full Day Leaves', controller.fullDayLeaves.toString()),
+              _buildInfoRow('Full Day Leaves', controller.fullDayLeaves.toString()),
             ],
           ),
-
-          // ---------- BANK ACCOUNT ----------
           _buildInfoCard(
             title: 'Bank Account Information',
             children: [
@@ -478,8 +309,6 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               _buildInfoRow('Branch Name', controller.branchName),
             ],
           ),
-
-          // ---------- SOCIAL MEDIA ----------
           _buildInfoCard(
             title: 'Social Media Profiles',
             children: [
@@ -489,41 +318,21 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               _buildSocialRow('Instagram URL', controller.instagramUrl),
             ],
           ),
-
-          // ---------- DOCUMENT UPLOADS ----------
           _buildInfoCard(
             title: 'Document Uploads',
             children: [
-              _buildDocumentRow(
-                label: 'Resume (PDF, DOC)',
-                fileName: controller.resumeFileName,
-                onTap: () => controller.uploadResume(),
-              ),
-              _buildDocumentRow(
-                label: 'Joining Letter',
-                fileName: controller.joiningLetterFileName,
-                onTap: () => controller.uploadJoiningLetter(),
-              ),
-              _buildDocumentRow(
-                label: 'Other Documents',
-                fileName: controller.otherDocumentsFileName,
-                onTap: () => controller.uploadOtherDocuments(),
-                isMultiple: true,
-              ),
+              _buildDocumentRow(label: 'Resume (PDF, DOC)', fileName: controller.resumeFileName, onTap: () => controller.uploadResume()),
+              _buildDocumentRow(label: 'Joining Letter', fileName: controller.joiningLetterFileName, onTap: () => controller.uploadJoiningLetter()),
+              _buildDocumentRow(label: 'Other Documents', fileName: controller.otherDocumentsFileName, onTap: () => controller.uploadOtherDocuments(), isMultiple: true),
             ],
           ),
-
           const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  // ========== INFO CARD ==========
-  Widget _buildInfoCard({
-    required String title,
-    required List<Widget> children,
-  }) {
+  Widget _buildInfoCard({required String title, required List<Widget> children}) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -532,12 +341,7 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.06),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.grey.withOpacity(0.06), spreadRadius: 1, blurRadius: 4, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -551,112 +355,49 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     );
   }
 
-  // ========== INFO ROW ==========
-  Widget _buildInfoRow(String label, String value,
-      {IconData? icon, Color? iconBgColor, Color? iconColor}) {
+  Widget _buildInfoRow(String label, String value, {IconData? icon, Color? iconBgColor, Color? iconColor}) {
     IconData getIcon(String label) {
-      if (label.contains('Date') ||
-          label.contains('Birth') ||
-          label.contains('Joining')) {
-        return Icons.calendar_today_outlined;
-      } else if (label.contains('Email')) {
-        return Icons.email_outlined;
-      } else if (label.contains('Contact') ||
-          label.contains('Phone') ||
-          label.contains('Emergency')) {
-        return Icons.phone_outlined;
-      } else if (label.contains('Address')) {
-        return Icons.location_on_outlined;
-      } else if (label.contains('Prefix') ||
-          label.contains('Name') ||
-          label.contains('Spouse') ||
-          label.contains('Mother') ||
-          label.contains('Father') ||
-          label.contains('Sibling')) {
-        return Icons.person_outline;
-      } else if (label.contains('Gender')) {
-        return Icons.wc;
-      } else if (label.contains('Marital')) {
-        return Icons.favorite_border;
-      } else if (label.contains('Nationality') ||
-          label.contains('Religion') ||
-          label.contains('Tongue')) {
-        return Icons.language;
-      } else if (label.contains('Qualification') ||
-          label.contains('Experience')) {
-        return Icons.school_outlined;
-      } else if (label.contains('EPF') ||
-          label.contains('Salary') ||
-          label.contains('Contract') ||
-          label.contains('Shift') ||
-          label.contains('Location')) {
-        return Icons.work_outline;
-      } else if (label.contains('Leave') ||
-          label.contains('Paid') ||
-          label.contains('Half') ||
-          label.contains('Full')) {
-        return Icons.calendar_month;
-      } else if (label.contains('Account') ||
-          label.contains('Bank') ||
-          label.contains('IFSC') ||
-          label.contains('Branch')) {
-        return Icons.account_balance_outlined;
-      }
+      if (label.contains('Date') || label.contains('Birth') || label.contains('Joining')) return Icons.calendar_today_outlined;
+      if (label.contains('Email')) return Icons.email_outlined;
+      if (label.contains('Contact') || label.contains('Phone') || label.contains('Emergency')) return Icons.phone_outlined;
+      if (label.contains('Address')) return Icons.location_on_outlined;
+      if (label.contains('Prefix') || label.contains('Name') || label.contains('Spouse') || label.contains('Mother') || label.contains('Father') || label.contains('Sibling')) return Icons.person_outline;
+      if (label.contains('Gender')) return Icons.wc;
+      if (label.contains('Marital')) return Icons.favorite_border;
+      if (label.contains('Nationality') || label.contains('Religion') || label.contains('Tongue')) return Icons.language;
+      if (label.contains('Qualification') || label.contains('Experience')) return Icons.school_outlined;
+      if (label.contains('EPF') || label.contains('Salary') || label.contains('Contract') || label.contains('Shift') || label.contains('Location')) return Icons.work_outline;
+      if (label.contains('Leave') || label.contains('Paid') || label.contains('Half') || label.contains('Full')) return Icons.calendar_month;
+      if (label.contains('Account') || label.contains('Bank') || label.contains('IFSC') || label.contains('Branch')) return Icons.account_balance_outlined;
       return Icons.info_outline;
     }
 
     Color getBgColor(String label) {
       if (label.contains('Email')) return Colors.blue.shade50;
-      if (label.contains('Contact') || label.contains('Phone')) {
-        return Colors.green.shade50;
-      }
+      if (label.contains('Contact') || label.contains('Phone')) return Colors.green.shade50;
       if (label.contains('Address')) return Colors.orange.shade50;
-      if (label.contains('Marital') || label.contains('Spouse') ||
-          label.contains('Father') || label.contains('Mother') ||
-          label.contains('Sibling')) {
-        return Colors.pink.shade50;
-      }
-      if (label.contains('Nationality') || label.contains('Religion')) {
-        return Colors.purple.shade50;
-      }
+      if (label.contains('Marital') || label.contains('Spouse') || label.contains('Father') || label.contains('Mother') || label.contains('Sibling')) return Colors.pink.shade50;
+      if (label.contains('Nationality') || label.contains('Religion')) return Colors.purple.shade50;
       if (label.contains('Leave')) return Colors.teal.shade50;
-      if (label.contains('Bank') || label.contains('Account')) {
-        return Colors.indigo.shade50;
-      }
+      if (label.contains('Bank') || label.contains('Account')) return Colors.indigo.shade50;
       return Colors.blue.shade50;
     }
 
     Color getIconColor(String label) {
       if (label.contains('Email')) return Colors.blue.shade700;
-      if (label.contains('Contact') || label.contains('Phone')) {
-        return Colors.green.shade700;
-      }
+      if (label.contains('Contact') || label.contains('Phone')) return Colors.green.shade700;
       if (label.contains('Address')) return Colors.orange.shade700;
-      if (label.contains('Marital') || label.contains('Spouse') ||
-          label.contains('Father') || label.contains('Mother') ||
-          label.contains('Sibling')) {
-        return Colors.pink.shade700;
-      }
-      if (label.contains('Nationality') || label.contains('Religion')) {
-        return Colors.purple.shade700;
-      }
+      if (label.contains('Marital') || label.contains('Spouse') || label.contains('Father') || label.contains('Mother') || label.contains('Sibling')) return Colors.pink.shade700;
+      if (label.contains('Nationality') || label.contains('Religion')) return Colors.purple.shade700;
       if (label.contains('Leave')) return Colors.teal.shade700;
-      if (label.contains('Bank') || label.contains('Account')) {
-        return Colors.indigo.shade700;
-      }
+      if (label.contains('Bank') || label.contains('Account')) return Colors.indigo.shade700;
       return Colors.blue.shade700;
     }
 
     final iconData = icon ?? getIcon(label);
     final bgColor = iconBgColor ?? getBgColor(label);
     final fgColor = iconColor ?? getIconColor(label);
-
-    // Check if this is a contact field
-    final bool isContactField = label.contains('Contact') ||
-        label.contains('Phone') ||
-        label.contains('Emergency');
-
-    // Trim leading spaces for sibling rows
+    final bool isContactField = label.contains('Contact') || label.contains('Phone') || label.contains('Emergency');
     final displayLabel = label.trim();
 
     return Padding(
@@ -665,15 +406,9 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Icon(iconData, size: 16, color: fgColor),
-            ),
+            width: 32, height: 32,
+            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+            child: Center(child: Icon(iconData, size: 16, color: fgColor)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -682,22 +417,12 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
               children: [
                 Text(displayLabel, style: Styles.darkBlueW400),
                 const SizedBox(height: 2),
-                // If contact field and value is valid, make it clickable
                 (isContactField && value.isNotEmpty && value != '--')
                     ? GestureDetector(
                   onTap: () => _makePhoneCall(value),
-                  child: Text(
-                    value,
-                    style: Styles.darkBlcW600.copyWith(
-                      color: Colors.blue.shade700,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
+                  child: Text(value, style: Styles.darkBlcW600.copyWith(color: Colors.blue.shade700, decoration: TextDecoration.underline)),
                 )
-                    : Text(
-                  value,
-                  style: Styles.darkBlcW600,
-                ),
+                    : Text(value, style: Styles.darkBlcW600),
               ],
             ),
           ),
@@ -706,110 +431,60 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     );
   }
 
-  // ========== SOCIAL ROW ==========
   Widget _buildSocialRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          SizedBox(
-            width: 100,
-            child: Text(label, style: Styles.darkBlueW400),
-          ),
-          Expanded(
-            child: Text(
-              value.isNotEmpty ? value : '--',
-              style: Styles.darkBlcW600,
-            ),
-          ),
+          SizedBox(width: 100, child: Text(label, style: Styles.darkBlueW400)),
+          Expanded(child: Text(value.isNotEmpty ? value : '--', style: Styles.darkBlcW600)),
         ],
       ),
     );
   }
 
-  // ========== DOCUMENT ROW ==========
-  Widget _buildDocumentRow({
-    required String label,
-    required String fileName,
-    required VoidCallback onTap,
-    bool isMultiple = false,
-  }) {
+  Widget _buildDocumentRow({required String label, required String fileName, required VoidCallback onTap, bool isMultiple = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: Styles.darkBlueW400.copyWith(fontWeight: FontWeight.w600),
-          ),
+          Text(label, style: Styles.darkBlueW400.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
           Row(
             children: [
               Expanded(
                 child: Text(
                   fileName.isNotEmpty ? fileName : 'No file chosen',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: fileName.isNotEmpty
-                        ? Colors.green.shade700
-                        : Colors.grey.shade500,
-                  ),
+                  style: TextStyle(fontSize: 13, color: fileName.isNotEmpty ? Colors.green.shade700 : Colors.grey.shade500),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.attach_file, color: Colors.blue.shade700),
-                onPressed: onTap,
-                tooltip: isMultiple ? 'Upload multiple files' : 'Upload file',
-              ),
+              IconButton(icon: Icon(Icons.attach_file, color: Colors.blue.shade700), onPressed: onTap, tooltip: isMultiple ? 'Upload multiple files' : 'Upload file'),
             ],
           ),
           if (isMultiple)
-            Text(
-              'Multiple files allowed',
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
-            ),
+            Text('Multiple files allowed', style: TextStyle(fontSize: 11, color: Colors.grey.shade400)),
         ],
       ),
     );
   }
 
-  // ========== OUTLINED ACTION BUTTON ==========
-  Widget _buildOutlinedActionButton({
-    required String label,
-    required IconData icon,
-    required VoidCallback onPressed,
-    bool isDestructive = false,
-  }) {
+  Widget _buildOutlinedActionButton({required String label, required IconData icon, required VoidCallback onPressed, bool isDestructive = false}) {
     return Container(
       decoration: BoxDecoration(
         color: isDestructive ? Colors.red.shade50 : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isDestructive ? Colors.red.shade300 : Colors.blue.shade300,
-          width: 1.5,
-        ),
+        border: Border.all(color: isDestructive ? Colors.red.shade300 : Colors.blue.shade300, width: 1.5),
       ),
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 16),
-        label: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: isDestructive ? Colors.red.shade700 : Colors.blue.shade700,
-          ),
-        ),
+        label: Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: isDestructive ? Colors.red.shade700 : Colors.blue.shade700)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor:
-          isDestructive ? Colors.red.shade700 : Colors.blue.shade700,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          foregroundColor: isDestructive ? Colors.red.shade700 : Colors.blue.shade700,
+          elevation: 0, shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           minimumSize: const Size(0, 40),
         ),
@@ -817,25 +492,196 @@ class _StaffProfileWidgetState extends State<StaffProfileWidget> {
     );
   }
 
-  // ============================================================
-  // LOGOUT DIALOG
-  // ============================================================
+  // ✅ Delete Account filled red button
+  Widget _buildDeleteAccountButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _showDeleteAccountDialog, // shows confirmation dialog
+        icon: const Icon(Icons.delete_forever, size: 16, color: Colors.white),
+        label: const Text(
+          'Delete Account',
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red.shade600,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+          minimumSize: const Size(0, 40),
+        ),
+      ),
+    );
+  }
+
   void _showLogoutDialog() {
     Get.dialog(
       AlertDialog(
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           TextButton(
             onPressed: () {
-              Get.back(); // Close dialog
+              Get.back();
               controller.logoutAPI(isLoading: true);
             },
             child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ Delete Account confirmation dialog → on confirm goes to OTP screen
+  void _showDeleteAccountDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.warning_amber_rounded, color: Colors.red.shade600, size: 22),
+            ),
+            const SizedBox(width: 10),
+            const Text('Delete Account'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Are you sure you want to delete your account?',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'This action is permanent and cannot be undone. '
+                  'All your profile data, documents and records will be permanently deleted.',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade700, height: 1.4),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back(); // close dialog first
+             RouteManagement.goToDeleteAccount();
+            },
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Colors.red.shade600, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// ✅ PROFILE CARD (UNCHANGED)
+// ============================================================
+class _ProfileCard extends StatefulWidget {
+  final TeacherDashboardController controller;
+
+  const _ProfileCard({required this.controller});
+
+  @override
+  State<_ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<_ProfileCard> {
+  bool _isReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preloadImage();
+    });
+  }
+
+  Future<void> _preloadImage() async {
+    final photoUrl = widget.controller.photo;
+
+    if (photoUrl.isNotEmpty) {
+      try {
+        await precacheImage(NetworkImage(photoUrl), context);
+      } catch (e) {
+        debugPrint("⚠️ Error precaching staff photo: $e");
+      }
+    }
+    if (mounted) setState(() => _isReady = true);
+  }
+
+  Widget _buildDefaultAvatar() {
+    return Center(child: Icon(Icons.person, size: 40, color: Colors.blue.shade700));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isReady) {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(top: 16),
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        color: Colors.white,
+        height: 160,
+        child: const Center(child: CircularProgressIndicator(color: Colors.blue, strokeWidth: 2)),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      color: Colors.white,
+      child: Column(
+        children: [
+          Container(
+            width: 80, height: 80,
+            decoration: BoxDecoration(color: Colors.blue.shade50, shape: BoxShape.circle),
+            child: widget.controller.photo.isNotEmpty
+                ? ClipOval(
+              child: Image.network(
+                widget.controller.photo,
+                width: 80, height: 80, fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(
+                    child: SizedBox(
+                      width: 24, height: 24,
+                      child: CircularProgressIndicator(color: Colors.blue, strokeWidth: 2),
+                    ),
+                  );
+                },
+                errorBuilder: (_, __, ___) => _buildDefaultAvatar(),
+              ),
+            )
+                : _buildDefaultAvatar(),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            widget.controller.staffName.isNotEmpty ? widget.controller.staffName : '-- --',
+            style: Styles.darkBlcW700,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Employee ID: ${widget.controller.employeeId.isNotEmpty ? widget.controller.employeeId : '--'} • ${widget.controller.role.isNotEmpty ? widget.controller.role : ''}',
+            style: Styles.darkBlueW400,
           ),
         ],
       ),

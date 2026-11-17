@@ -83,80 +83,80 @@ class MoreWidget extends StatelessWidget {
                           ),
                         ),
                         child: Obx(() => Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                Stack(
                                   children: [
-                                    Stack(
-                                      children: [
-                                        Container(
-                                          width: 70,
-                                          height: 70,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.blue.shade300,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: _buildAvatar(controller),
+                                    Container(
+                                      width: 70,
+                                      height: 70,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.blue.shade300,
+                                          width: 2,
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            controller.profileData.value
-                                                    ?.personal.name ??
-                                                'Olivier Thomas',
-                                            style: Styles.whiteBold,
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            'Class ${controller.profileData.value?.personal.classInfo.name ?? '1'} – ${controller.profileData.value?.personal.section.name ?? 'A'} - Session ${controller.profileData.value?.other.academic.session ?? '2025 – 26'}',
-                                            style: Styles.whiteW400,
-                                            softWrap: true,
-                                            overflow: TextOverflow.visible,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Wrap(
-                                            spacing: 8,
-                                            runSpacing: 8,
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 10),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white
-                                                      .withOpacity(0.1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  border: Border.all(
-                                                    color: Colors.white
-                                                        .withOpacity(0.3),
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'Roll. No. ${controller.profileData.value?.personal.rollNumber ?? '18001'}',
-                                                  style: Styles.whiteW40011,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
                                       ),
+                                      child: _buildAvatar(controller),
                                     ),
                                   ],
                                 ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        controller.profileData.value
+                                            ?.personal.name ??
+                                            'Olivier Thomas',
+                                        style: Styles.whiteBold,
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Class ${controller.profileData.value?.personal.classInfo.name ?? '1'} – ${controller.profileData.value?.personal.section.name ?? 'A'} - Session ${controller.profileData.value?.other.academic.session ?? '2025 – 26'}',
+                                        style: Styles.whiteW400,
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          Container(
+                                            padding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 5,
+                                                horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                              BorderRadius.circular(20),
+                                              border: Border.all(
+                                                color: Colors.white
+                                                    .withOpacity(0.3),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              'Roll. No. ${controller.profileData.value?.personal.rollNumber ?? '18001'}',
+                                              style: Styles.whiteW40011,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
-                            )),
+                            ),
+                          ],
+                        )),
                       ),
                     ],
                   ),
@@ -183,18 +183,48 @@ class MoreWidget extends StatelessWidget {
     );
   }
 
-  // ✅ Avatar Widget with Image/Initials logic
+  // ✅ Avatar Widget with Image/Initials logic and Loader
   Widget _buildAvatar(DashboardController controller) {
     String? photoUrl = controller.profileData.value?.personal.photo;
     String? fullName = controller.profileData.value?.personal.name;
 
     if (photoUrl != null && photoUrl.isNotEmpty) {
+      // ✅ 1. Base URL जोड़ें अगर API से सिर्फ 'uploads/...' आ रहा है
+      if (!photoUrl.startsWith('http')) {
+        const String baseUrl = 'https://demo.aitsolutions.in/';
+        photoUrl = '$baseUrl$photoUrl';
+      }
+
       return ClipOval(
         child: Image.network(
           photoUrl,
           width: 70,
           height: 70,
           fit: BoxFit.cover,
+          // ✅ 2. जब तक इमेज लोड न हो, लोडर दिखाएं
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              width: 70,
+              height: 70,
+              color: Colors.white.withOpacity(0.2), // हल्का बैकग्राउंड
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: Colors.white,
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                ),
+              ),
+            );
+          },
+          // ✅ 3. अगर इमेज लोड होने में एरर आए तो इनिशियल्स दिखाएं
           errorBuilder: (context, error, stackTrace) {
             return _buildInitialsAvatar(fullName);
           },
@@ -237,30 +267,29 @@ class MoreWidget extends StatelessWidget {
   }
 }
 
-// CombinedGridWidget remains same
+// ==========================================
+// ✅ UPDATED CombinedGridWidget
+// ==========================================
 class CombinedGridWidget extends StatelessWidget {
   const CombinedGridWidget({super.key});
 
+  // ✅ यहाँ 'icon' में String (SVG पाथ) और IconData (Vector) दोनों को सपोर्ट किया गया है
   final List<Map<String, dynamic>> allMenuItems = const [
     {'icon': AssetConstants.icWork, 'label': 'Home Work'},
-    {'icon': AssetConstants.icTask, 'label': 'Daily Task'},
     {'icon': AssetConstants.icLsn, 'label': 'Lesson Plan'},
     {'icon': AssetConstants.icPc, 'label': 'Online Exam'},
     {'icon': AssetConstants.icDown, 'label': 'Downloads'},
     {'icon': AssetConstants.icZoom, 'label': 'Zoom Classes'},
-    {'icon': AssetConstants.icMeet, 'label': 'Gmeet Classes'},
-    {'icon': AssetConstants.icClass, 'label': 'Team Classes'},
     {'icon': AssetConstants.icTime, 'label': 'Time Table'},
     {'icon': AssetConstants.icCourse, 'label': 'Course Status'},
     {'icon': AssetConstants.icAttan, 'label': 'Attendance'},
     {'icon': AssetConstants.icExams, 'label': 'Examinations'},
     {'icon': AssetConstants.icTimeline, 'label': 'Timeline'},
     {'icon': AssetConstants.icDoc, 'label': 'My Documents'},
-    {'icon': AssetConstants.icGrades, 'label': 'Grades'},
-    {'icon': AssetConstants.icPc, 'label': 'CBSE Exams'},
-    {'icon': AssetConstants.icFee, 'label': 'Fees'},
-    {'icon': AssetConstants.icApply, 'label': 'Apply Leave'},
-    {'icon': AssetConstants.icRoutes, 'label': 'Routes'},
+    {'icon': Icons.people_alt, 'label': 'My Classmates'}, // ✅ नया जोड़ा गया (Index 11)
+    {'icon': Icons.account_balance_wallet, 'label': 'Fees'}, // ✅ Index 12
+    {'icon': AssetConstants.icApply, 'label': 'Apply Leave'}, // ✅ Index 13
+    {'icon': Icons.alt_route, 'label': 'Routes'},
     {'icon': AssetConstants.icTo, 'label': 'To Do List'},
     {'icon': AssetConstants.icLib, 'label': 'Library'},
     {'icon': AssetConstants.icRate, 'label': 'Reviews'},
@@ -300,7 +329,7 @@ class CombinedGridWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = allMenuItems[index];
               return _buildMenuItem(
-                svgIcon: item['icon'] as String,
+                iconData: item['icon'],
                 label: item['label'] as String,
                 index: index,
               );
@@ -313,23 +342,30 @@ class CombinedGridWidget extends StatelessWidget {
   }
 
   Widget _buildMenuItem({
-    required String svgIcon,
+    required dynamic iconData,
     required String label,
     required int index,
   }) {
     return GestureDetector(
       onTap: () {
         switch (index) {
-          case 5:
+          case 4:
             RouteManagement.goToZoomLiveClasses();
             break;
           case 7:
-            RouteManagement.goToTeamLiveClasses();
+            RouteManagement.goToAttendanceRecord();
             break;
-          case 16:
-            // RouteManagement.goToFeesDetails();
+          case 10:
+            RouteManagement.goToStudentDocuments();
             break;
-          case 17:
+          case 11: // ✅ My Classmates का क्लिक एक्शन
+          // ⚠️ सुनिश्चित करें कि RouteManagement में goToMyClassmates नाम का मेथड हो
+            RouteManagement.goToMyClassmate();
+            break;
+          case 12: // ✅ Index 12 पर शिफ्ट हो गया
+            RouteManagement.goToFeesDetails();
+            break;
+          case 13: // ✅ Index 13 पर शिफ्ट हो गया
             RouteManagement.goToApplyLeave();
             break;
           default:
@@ -347,8 +383,10 @@ class CombinedGridWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(svgIcon,
-                height: 28, width: 28, fit: BoxFit.contain),
+            iconData is String
+                ? SvgPicture.asset(iconData, height: 28, width: 28, fit: BoxFit.contain)
+                : Icon(iconData as IconData, size: 28, color: Colors.blue.shade700),
+
             const SizedBox(height: 8),
             Flexible(
               child: Text(

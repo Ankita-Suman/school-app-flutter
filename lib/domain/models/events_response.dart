@@ -123,6 +123,7 @@ class Event {
   final String? targetAudience;
   final String? status;
   final String? sessionId;
+  final SchoolSession? schoolSession;   // ✅ YEH ADD KIYA
   final String? createdAt;
   final String? updatedAt;
   final String? deletedAt;
@@ -140,6 +141,7 @@ class Event {
     this.targetAudience,
     this.status,
     this.sessionId,
+    this.schoolSession,                // ✅ YEH ADD KIYA
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -159,6 +161,9 @@ class Event {
       targetAudience: json['target_audience'] as String?,
       status: json['status'] as String?,
       sessionId: json['session_id'] as String?,
+      schoolSession: json['school_session'] != null      // ✅ YEH ADD KIYA
+          ? SchoolSession.fromJson(json['school_session'] as Map<String, dynamic>)
+          : null,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
       deletedAt: json['deleted_at'] as String?,
@@ -179,6 +184,7 @@ class Event {
       'target_audience': targetAudience,
       'status': status,
       'session_id': sessionId,
+      'school_session': schoolSession?.toJson(),        // ✅ YEH ADD KIYA
       'created_at': createdAt,
       'updated_at': updatedAt,
       'deleted_at': deletedAt,
@@ -290,6 +296,39 @@ class Event {
       default:
         return Icons.calendar_today;
     }
+  }
+}
+
+// ✅ NAYI CLASS — school_session ke liye
+class SchoolSession {
+  final String? id;
+  final String? session;
+  final String? startDate;
+  final String? endDate;
+
+  SchoolSession({
+    this.id,
+    this.session,
+    this.startDate,
+    this.endDate,
+  });
+
+  factory SchoolSession.fromJson(Map<String, dynamic> json) {
+    return SchoolSession(
+      id: json['id'] as String?,
+      session: json['session'] as String?,
+      startDate: json['start_date'] as String?,
+      endDate: json['end_date'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'session': session,
+      'start_date': startDate,
+      'end_date': endDate,
+    };
   }
 }
 

@@ -1,4 +1,4 @@
-// screens/change_password_screen.dart
+// screens/create_password_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -60,7 +60,8 @@ class ChangePasswordScreen extends StatelessWidget {
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         Text(
-                          'Enter your new password to reset your account.',
+                          'Enter your new password to reset your account.\n\n'
+                              'Choose a strong password to keep your account secure.',
                           style: Styles.whiteW40013,
                         ),
                         SizedBox(height: screenHeight * 0.025),

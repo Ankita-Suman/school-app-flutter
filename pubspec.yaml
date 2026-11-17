@@ -62,11 +62,11 @@ dev_dependencies:
   flutter_native_splash: ^2.3.10  # Downgraded from 2.4.0
 
 flutter_launcher_icons:
-  android: true
+  android: "ic_launcher"  # यहाँ launcher_icon की जगह ic_launcher कर दें
   ios: true
-  image_path: "assets/images/lg.png"  # apna logo ka path
-  //adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/lg.png"
+  image_path: "assets/images/icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/icon_foreground.png"
 
 flutter_native_splash:
   android_gravity: fill

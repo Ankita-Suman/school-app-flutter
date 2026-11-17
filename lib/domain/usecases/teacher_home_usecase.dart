@@ -1,8 +1,12 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:school_app/domain/domain.dart';
 
 import '../models/class_attendance_response.dart';
+import '../models/co_curricular_marks_response.dart';
+import '../models/document_response.dart';
 import '../models/get_student_attendance_response.dart';
+import '../models/my_classmates_response.dart';
 import '../models/profile_response.dart';
 import '../models/term_attendance_student_response.dart';
 
@@ -22,6 +26,31 @@ class TeacherHomeUseCases {
         token: token,
         branchId: branchId,
       );
+  // ✅ नया मेथड: Classmates API
+  Future<ClassmatesResponse?> getClassmatesAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async =>
+      await repository.getClassmatesAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+  Future<DocumentsResponse?> getStudentDocumentsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async =>
+      await repository.getStudentDocumentsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
 
   Future<LeaveRequestSubmitResponse?> submitLeaveApplication({
     required bool isLoading,
@@ -32,8 +61,46 @@ class TeacherHomeUseCases {
     required String toDate,
     required String reason,
     File? attachment,
+    required String studentId,
   }) async {
     return await repository.submitLeaveApplication(
+      isLoading: isLoading,
+      token: token,
+      branchId: branchId,
+      studentId: studentId,
+      leaveType: leaveType,
+      fromDate: fromDate,
+      toDate: toDate,
+      reason: reason,
+      attachment: attachment,
+    );
+  }
+
+  // ✅ UPDATED: getAnnouncementDetailsAPI with tab parameter
+  Future<ResponseModel?> getStaffAnnouncementDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String tab,
+  }) async =>
+      await repository.getStaffAnnouncementDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        tab: tab,
+      );
+
+  Future<LeaveRequestSubmitResponse?> submitStaffLeaveApplication({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String leaveType,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+    File? attachment,
+  }) async {
+    return await repository.submitStaffLeaveApplication(
       isLoading: isLoading,
       token: token,
       branchId: branchId,
@@ -164,10 +231,10 @@ class TeacherHomeUseCases {
       );
 
   Future<TermSectionResponse?> getTermSectionData(
-          {required bool isLoading,
-          required String token,
-          required String branchId,
-          required String classId}) async =>
+      {required bool isLoading,
+        required String token,
+        required String branchId,
+        required String classId}) async =>
       await repository.getTermSectionData(
         isLoading: isLoading,
         token: token,
@@ -190,7 +257,7 @@ class TeacherHomeUseCases {
         sectionId: sectionId,
       );
 
- Future<StudentFeeStatusResponse?> getStudentFeeList({
+  Future<StudentFeeStatusResponse?> getStudentFeeList({
     required bool isLoading,
     required String token,
     required String branchId,
@@ -242,6 +309,7 @@ class TeacherHomeUseCases {
         classId: classId,
         sectionId: sectionId,
       );
+
   Future<SaveExternalMarksResponse?> saveExternalMarks({
     required bool isLoading,
     required String token,
@@ -255,6 +323,7 @@ class TeacherHomeUseCases {
       payload: payload,
     );
   }
+
   Future<SaveExternalMarksResponse?> saveInternalMarks({
     required bool isLoading,
     required String token,
@@ -268,11 +337,26 @@ class TeacherHomeUseCases {
       payload: payload,
     );
   }
+
+  /// ✅ NEW: Save Co-Curricular Marks
+  Future<SaveExternalMarksResponse?> saveCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async =>
+      await repository.saveCoCurricularMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+
   Future<ExaminationTermResponse?> getExamTermData(
-          {required bool isLoading,
-          required String token,
-          required String branchId,
-          required String examinationGroupId}) async =>
+      {required bool isLoading,
+        required String token,
+        required String branchId,
+        required String examinationGroupId}) async =>
       await repository.getExamTermData(
         isLoading: isLoading,
         token: token,
@@ -304,6 +388,7 @@ class TeacherHomeUseCases {
         markType: markType,
         internalCount: internalCount,
       );
+
   Future<InternalMarksResponse?> getInternalMarks({
     required bool isLoading,
     required String token,
@@ -391,15 +476,16 @@ class TeacherHomeUseCases {
         sectionId: sectionId,
       );
 
-  Future<ClassAttendanceResponse?> getClassAttendance(
-          {required bool isLoading,
-          required String token,
-          required String attendanceDate,
-          required String branchId,
-          required String classId,
-          required String sectionId,
-          required int perPage,
-          required int page}) async =>
+  Future<ClassAttendanceResponse?> getClassAttendance({
+    required bool isLoading,
+    required String token,
+    required String attendanceDate,
+    required String branchId,
+    required String classId,
+    required String sectionId,
+    required int perPage,
+    required int page,
+  }) async =>
       await repository.getClassAttendance(
         isLoading: isLoading,
         token: token,
@@ -459,4 +545,24 @@ class TeacherHomeUseCases {
       payload: payload,
     );
   }
+
+  /// ✅ NEW: Co-Curricular Marks
+  Future<CoCurricularMarksResponse?> getCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async =>
+      await repository.getCoCurricularMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+      );
 }

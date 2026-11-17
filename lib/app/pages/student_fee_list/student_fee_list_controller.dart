@@ -28,29 +28,14 @@ class StudentFeeListController extends GetxController {
   // ========== FEE STATUS RESPONSE ==========
   var feeStatusResponse = Rxn<StudentFeeStatusResponse>();
 
-  // ========== FILTER ==========
-  var selectedFilter = 'All'.obs;
-
   // ========== GETTERS ==========
   List<StudentFeeStudent> get allStudents =>
       feeStatusResponse.value?.data?.students ?? [];
 
   StudentFeeSummary? get summary => feeStatusResponse.value?.data?.summary;
 
-  List<StudentFeeStudent> get filteredStudents {
-    if (selectedFilter.value == 'All') return allStudents;
-    return allStudents
-        .where((s) => s.status.toUpperCase() == selectedFilter.value.toUpperCase())
-        .toList();
-  }
-
-  Map<String, int> get statusCounts {
-    final counts = <String, int>{};
-    for (var s in allStudents) {
-      counts[s.status] = (counts[s.status] ?? 0) + 1;
-    }
-    return counts;
-  }
+  // ✅ CHANGED: Filter hata diya — ab sab students return karega
+  List<StudentFeeStudent> get filteredStudents => allStudents;
 
   // ========== LIFECYCLE ==========
   @override
@@ -144,7 +129,7 @@ class StudentFeeListController extends GetxController {
     }
   }
 
-  // ========== FETCH FEE LIST (FIXED) ==========
+  // ========== FETCH FEE LIST ==========
   Future<void> _checkAndFetchFeeList() async {
     if (selectedClassId.isNotEmpty && selectedSectionId.isNotEmpty) {
       await fetchFeeList();
@@ -173,7 +158,6 @@ class StudentFeeListController extends GetxController {
         return;
       }
 
-      // ✅ presenter returns StudentFeeStatusResponse
       var res = await presenter.getStudentFeeList(
         isLoading: false,
         token: token,
@@ -183,7 +167,6 @@ class StudentFeeListController extends GetxController {
       );
 
       if (res != null && res.status == true && res.data != null) {
-        // ✅ assign the whole response (not res.data)
         feeStatusResponse.value = res;
       } else {
         feeStatusResponse.value = null;
@@ -212,11 +195,6 @@ class StudentFeeListController extends GetxController {
     if (section != null) {
       selectedSectionName.value = section.name;
     }
-  }
-
-  // ========== FILTER METHOD ==========
-  void setFilter(String filter) {
-    selectedFilter.value = filter;
   }
 
   // ========== GETTERS ==========

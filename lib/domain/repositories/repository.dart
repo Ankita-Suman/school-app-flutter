@@ -9,10 +9,19 @@ import 'package:school_app/domain/domain.dart';
 import 'package:school_app/domain/models/invoice_response.dart';
 import 'package:school_app/domain/models/profile_response.dart';
 
+import '../models/attendance_response.dart';
+import '../models/branch_verify_response.dart';
 import '../models/class_attendance_response.dart';
+import '../models/co_curricular_marks_response.dart';
+import '../models/delete_account_response.dart';
+import '../models/document_response.dart';
 import '../models/events_response.dart';
 import '../models/forgot_password_model.dart';
 import '../models/get_student_attendance_response.dart';
+import '../models/my_classmates_response.dart';
+import '../models/payment_order_response.dart';
+import '../models/staff_attendance_response.dart';
+import '../models/student_notice_response.dart';
 import '../models/term_attendance_student_response.dart';
 
 /// The main repository which will get the data from [DeviceRepository] or the
@@ -233,6 +242,69 @@ class Repository {
       return null;
     }
   }
+  Future<ClassmatesResponse?> getClassmatesAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    try {
+      var res = await _dataRepository.getClassmatesAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+
+      if (!res.hasError && res.data != null) {
+        // ✅ सबसे बड़ा फिक्स: चेक करें कि डेटा Map है या String
+        if (res.data is Map<String, dynamic>) {
+          return ClassmatesResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return ClassmatesResponse.fromJson(jsonDecode(res.data));
+        }
+        return null;
+      } else {
+        // Utility.showInfoDialog(res); // इसे हटा दें ताकि ऐप क्रैश न हो
+        debugPrint("⚠️ API Error in getClassmatesAPI: ${res.data}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ getClassmatesAPI Exception: $e");
+      // fallback call हटा दें ताकि अनचाहे एरर न आएं
+      return null;
+    }
+  }
+
+  Future<ResponseModel?> getStaffAnnouncementDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    String? tab, // 'my' या 'other' (Student केस के लिए null भी हो सकता है)
+  }) async {
+    try {
+      var res = await _dataRepository.getStaffAnnouncementDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        tab: tab ?? 'my', // अगर null है तो डिफ़ॉल्ट 'my' भेजें
+      );
+      if (!res.hasError && res.data != null) {
+        return res; // ✅ Raw ResponseModel रिटर्न कर रहे हैं ताकि कंट्रोलर पार्स कर सके
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getStaffAnnouncementDetailsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        tab: tab ?? 'my',
+      );
+      return null;
+    }
+  }
 
   Future<ForgotPasswordResponse?> resendOtpAPI({
     required bool isLoading,
@@ -329,7 +401,99 @@ class Repository {
       return null;
     }
   }
+
+  Future<ResetPasswordResponse?> changePasswordAPI({
+   required bool isLoading,
+    required String branchId,
+    required String token,
+   required String oldPassword,
+   required String newPassword,
+   required String passwordConfirmation,
+  }) async {
+    try {
+      var res = await _dataRepository.changePasswordAPI(
+        isLoading: isLoading,
+        branchId: branchId,
+        token: token,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        passwordConfirmation: passwordConfirmation,
+      );
+      if (!res.hasError) {
+        var data = resetResponseFromJson(res.data);
+        return data;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.changePasswordAPI(
+        isLoading: isLoading,
+        branchId: branchId,
+        token: token,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        passwordConfirmation: passwordConfirmation,
+      );
+      return null;
+    }
+  }
   Future<LeaveRequestSubmitResponse?> submitLeaveApplication({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String leaveType,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+    required File? attachment, required String studentId,
+  }) async {
+    try {
+      var res = await _dataRepository.submitLeaveApplication(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+        leaveType: leaveType,
+        fromDate: fromDate,
+        toDate: toDate,
+        reason: reason,
+        attachment: attachment,
+      );
+      if (!res.hasError && res.data != null) {
+        try {
+          // Handle both Map and String responses
+          if (res.data is Map<String, dynamic>) {
+            return LeaveRequestSubmitResponse.fromJson(res.data as Map<String, dynamic>);
+          } else if (res.data is String) {
+            return LeaveRequestSubmitResponse.fromJson(jsonDecode(res.data));
+          } else {
+            return null;
+          }
+        } catch (e) {
+          return null; // JSON parse error – just return null
+        }
+      } else {
+        // ❌ Do NOT call Utility.showInfoDialog(res) here – it crashes on non‑JSON
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.submitLeaveApplication(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+        leaveType: leaveType,
+        fromDate: fromDate,
+        toDate: toDate,
+        reason: reason,
+        attachment: attachment,
+      );
+      return null;
+    }
+  }
+
+  Future<LeaveRequestSubmitResponse?> submitStaffLeaveApplication({
     required bool isLoading,
     required String token,
     required String branchId,
@@ -340,7 +504,7 @@ class Repository {
     required File? attachment,
   }) async {
     try {
-      var res = await _dataRepository.submitLeaveApplication(
+      var res = await _dataRepository.submitStaffLeaveApplication(
         isLoading: isLoading,
         token: token,
         branchId: branchId,
@@ -368,7 +532,7 @@ class Repository {
         return null;
       }
     } catch (e) {
-      await _deviceRepository.submitLeaveApplication(
+      await _deviceRepository.submitStaffLeaveApplication(
         isLoading: isLoading,
         token: token,
         branchId: branchId,
@@ -418,7 +582,41 @@ class Repository {
       return null;
     }
   }
-
+  Future<StaffAttendanceResponse?> getStaffAttendanceRecordAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String month,
+  }) async {
+    try {
+      var res = await _dataRepository.getStaffAttendanceRecordAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        month: month,
+      );
+      if (!res.hasError && res.data != null) {
+        // ✅ Map और String दोनों रिस्पॉन्स को हैंडल करें
+        if (res.data is Map<String, dynamic>) {
+          return StaffAttendanceResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return StaffAttendanceResponse.fromJson(jsonDecode(res.data));
+        }
+        return null;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getStaffAttendanceRecordAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        month: month,
+      );
+      return null;
+    }
+  }
   Future<ProfileResponse?> getProfileDetailsAPI({
     required bool isLoading,
     required String token,
@@ -447,7 +645,40 @@ class Repository {
       return null;
     }
   }
-
+  Future<DocumentsResponse?> getStudentDocumentsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    try {
+      var res = await _dataRepository.getStudentDocumentsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+      if (!res.hasError && res.data != null) {
+        if (res.data is Map<String, dynamic>) {
+          return DocumentsResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return DocumentsResponse.fromJson(jsonDecode(res.data));
+        }
+        return null;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getStudentDocumentsAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+      return null;
+    }
+  }
   Future<FeeResponseModel?> getFeesDetailsAPI({
     required bool isLoading,
     required String token,
@@ -473,6 +704,74 @@ class Repository {
         branchId: branchId,
         studentId: studentId,
       );
+      return null;
+    }
+  }
+  Future<AttendanceResponse?> getAttendanceRecordAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+    required String month,
+  }) async {
+    try {
+      var res = await _dataRepository.getAttendanceRecordAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+        month: month,
+      );
+      if (!res.hasError && res.data != null) {
+        // ✅ Handle both Map and String responses
+        if (res.data is Map<String, dynamic>) {
+          return AttendanceResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return AttendanceResponse.fromJson(jsonDecode(res.data));
+        }
+        return null;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getAttendanceRecordAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+        month: month,
+      );
+      return null;
+    }
+  }
+  Future<StudentNoticeResponse?> getStudentNoticesAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    try {
+      var res = await _dataRepository.getStudentNoticesAPI(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+      );
+
+      if (!res.hasError && res.data != null) {
+        if (res.data is Map<String, dynamic>) {
+          return StudentNoticeResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return StudentNoticeResponse.fromJson(jsonDecode(res.data));
+        }
+        return null;
+      } else {
+        debugPrint("⚠️ API Error in getStudentNoticesAPI: ${res.data}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ getStudentNoticesAPI Exception: $e");
       return null;
     }
   }
@@ -644,6 +943,31 @@ Future<LeaveBalanceResponse?> getLeaveBalanceAPI({
     }
   }
 
+  Future<BranchVerifyResponse?> getBranchInfo({
+    required bool isLoading, required String branchCode,
+
+  }) async {
+    try {
+      var res = await _dataRepository.getBranchInfo(
+        isLoading: isLoading,
+        branchCode: branchCode,
+
+      );
+      if (!res.hasError && res.data != null) {
+        return branchInfoResponseFromJson(res.data);
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.getBranchInfo(
+        isLoading: isLoading,
+        branchCode: branchCode,
+      );
+      return null;
+    }
+  }
+
   Future<LeaveApplicationsResponse?> getLeaveStatusData({
     required bool isLoading,
     required String token,
@@ -706,10 +1030,11 @@ Future<LeaveHistoryResponse?> getLeaveHistory({
     }
   }
 
- Future<EventsResponseModel?> getAllEvents({
+  Future<EventsResponseModel?> getAllEvents({
     required bool isLoading,
     required String token,
-    required String branchId, required String studentId,
+    required String branchId,
+    required String studentId,
   }) async {
     try {
       var res = await _dataRepository.getAllEvents(
@@ -718,13 +1043,29 @@ Future<LeaveHistoryResponse?> getLeaveHistory({
         branchId: branchId,
         studentId: studentId,
       );
+
+      debugPrint("📥 getAllEvents res.data: ${res.data}");
+      debugPrint("📥 getAllEvents res.hasError: ${res.hasError}");
+
       if (!res.hasError && res.data != null) {
         return eventsResponseFromJson(res.data);
       } else {
         Utility.showInfoDialog(res);
         return null;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // ================================================================
+      // 💥 YAHAN LOGS — pata chalega exact kya error hai
+      // ================================================================
+      debugPrint("════════════════════════════════════════════════");
+      debugPrint("💥 getAllEvents CATCH BLOCK");
+      debugPrint("   Error: $e");
+      debugPrint("   Error runtimeType: ${e.runtimeType}");
+      debugPrint("   StackTrace:");
+      debugPrint("$stackTrace");
+      debugPrint("════════════════════════════════════════════════");
+
+      // Fallback call
       await _deviceRepository.getAllEvents(
         isLoading: isLoading,
         token: token,
@@ -895,6 +1236,126 @@ Future<ExaminationGroupResponse?> getExamGroupData({
       return null;
     }
   }
+  // ============================================================
+  // ✅ NEW: Save Co-Curricular Marks (FIXED — no crash on error)
+  // ============================================================
+  Future<SaveExternalMarksResponse?> saveCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    try {
+      var res = await _dataRepository.saveCoCurricularMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        payload: payload,
+      );
+
+      if (!res.hasError && res.data != null) {
+        // ✅ Parse — Map या String दोनों handle करें
+        try {
+          if (res.data is Map<String, dynamic>) {
+            return SaveExternalMarksResponse.fromJson(
+                res.data as Map<String, dynamic>);
+          } else if (res.data is String) {
+            return saveExternalMarksResponseFromJson(res.data as String);
+          }
+        } catch (parseErr) {
+          debugPrint("⚠️ saveCoCurricularMarks parse error: $parseErr");
+        }
+        return null;
+      } else {
+        // ✅ FIX: showInfoDialog को try-catch में wrap (crash-safe)
+        try {
+          Utility.showInfoDialog(res);
+        } catch (_) {
+          debugPrint("⚠️ showInfoDialog failed, ignoring");
+        }
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ saveCoCurricularMarks error: $e");
+      try {
+        await _deviceRepository.saveCoCurricularMarks(
+          isLoading: isLoading,
+          token: token,
+          branchId: branchId,
+          payload: payload,
+        );
+      } catch (_) {}
+      return null;
+    }
+  }
+
+  Future<DeleteAccountResponse?> sendDeleteAccountOtp({
+    required bool isLoading,
+    required String branchCode,
+    required String username,
+  }) async {
+    try {
+      var res = await _dataRepository.sendDeleteAccountOtp(
+        isLoading: isLoading,
+        branchCode: branchCode,
+        username: username,
+      );
+      if (!res.hasError && res.data != null) {
+        if (res.data is Map<String, dynamic>) {
+          return DeleteAccountResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return DeleteAccountResponse.fromJson(jsonDecode(res.data));
+        }
+        return null;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.sendDeleteAccountOtp(
+        isLoading: isLoading,
+        branchCode: branchCode,
+        username: username,
+      );
+      return null;
+    }
+  }
+
+  Future<DeleteAccountResponse?> verifyDeleteAccountOtp({
+    required bool isLoading,
+    required String branchCode,
+    required String username,
+    required String otp,
+  }) async {
+    try {
+      var res = await _dataRepository.verifyDeleteAccountOtp(
+        isLoading: isLoading,
+        branchCode: branchCode,
+        username: username,
+        otp: otp,
+      );
+      if (!res.hasError && res.data != null) {
+        if (res.data is Map<String, dynamic>) {
+          return DeleteAccountResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return DeleteAccountResponse.fromJson(jsonDecode(res.data));
+        }
+        return null;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      await _deviceRepository.verifyDeleteAccountOtp(
+        isLoading: isLoading,
+        branchCode: branchCode,
+        username: username,
+        otp: otp,
+      );
+      return null;
+    }
+  }
+
   Future<SaveExternalMarksResponse?> saveInternalMarks({
     required bool isLoading,
     required String token,
@@ -1265,6 +1726,45 @@ Future<TermSectionResponse?> getTermSectionData({
       return null;
     }
   }
+  Future<PaymentOrderResponse?> createPaymentOrder({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+    required List<String> invoiceIds,
+    required double amount,
+    required String sessionId,
+  }) async {
+    try {
+      var res = await _dataRepository.createPaymentOrder(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        studentId: studentId,
+        invoiceIds: invoiceIds,
+        amount: amount,
+        sessionId: sessionId,
+      );
+      if (!res.hasError && res.data != null) {
+        try {
+          dynamic data = res.data;
+          if (data is String) data = jsonDecode(data);
+          if (data is Map<String, dynamic>) {
+            return PaymentOrderResponse.fromJson(data);
+          }
+        } catch (parseErr) {
+          debugPrint("⚠️ createPaymentOrder parse error: $parseErr");
+        }
+        return null;
+      } else {
+        debugPrint("⚠️ createPaymentOrder failed: ${res.data}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ createPaymentOrder error: $e");
+      return null;
+    }
+  }
 
   Future<AttendanceReportResponse?> fetchClassAttendanceReport({
     required bool isLoading,
@@ -1438,6 +1938,55 @@ Future<TermSectionResponse?> getTermSectionData({
         token: token,
         branchId: branchId,
         payload: payload,
+      );
+      return null;
+    }
+  }
+  // ============================================================
+  // ✅ NEW: Co-Curricular Marks (returns parsed model)
+  // ============================================================
+  Future<CoCurricularMarksResponse?> getCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    try {
+      var res = await _dataRepository.getCoCurricularMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
+      );
+      if (!res.hasError && res.data != null) {
+        if (res.data is Map<String, dynamic>) {
+          return CoCurricularMarksResponse.fromJson(
+              res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return CoCurricularMarksResponse.fromJson(
+              jsonDecode(res.data as String) as Map<String, dynamic>);
+        }
+        return null;
+      } else {
+        Utility.showInfoDialog(res);
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ getCoCurricularMarks error: $e");
+      await _deviceRepository.getCoCurricularMarks(
+        isLoading: isLoading,
+        token: token,
+        branchId: branchId,
+        examinationGroupId: examinationGroupId,
+        examinationTermId: examinationTermId,
+        classId: classId,
+        sectionId: sectionId,
       );
       return null;
     }

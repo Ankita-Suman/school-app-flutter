@@ -15,12 +15,13 @@ class ApplyLeavePresenter {
     required String fromDate,
     required String toDate,
     required String reason,
-    required File? attachment, // ✅ File? nullable
+    required File? attachment, required String studentId, // ✅ File? nullable
   }) async {
     return await homeUseCases.submitLeaveApplication(
       isLoading: isLoading,
       token: token,
       branchId: branchId,
+      studentId: studentId,
       leaveType: leaveType,
       fromDate: fromDate,
       toDate: toDate,

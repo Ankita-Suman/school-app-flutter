@@ -41,20 +41,26 @@ class MyStudentClassController extends GetxController {
         return;
       }
 
+      // ✅ FIX: isLoading: false कर दिया ताकि डबल लोडर न आए
       var res = await myClassesPresenter.getMyClassData(
-        isLoading: true,
-        token: token, // ✅ dynamic
-        branchId: branchId, // ✅ dynamic
+        isLoading: false,
+        token: token,
+        branchId: branchId,
       );
 
+      // ✅ Response चेक करें और सेट करें
       if (res != null && res.status == true && res.data != null) {
         teacherClassData.value = res;
+
+        // डीबगिंग के लिए (कंसोल में चेक कर सकती हैं)
         if (res.data!.classes != null) {
+          debugPrint("✅ Total Classes Found: ${res.data!.classes!.length}");
           for (var classItem in res.data!.classes!) {
             debugPrint("  - ${classItem.className} ${classItem.sectionName}");
           }
         }
       } else {
+        // अगर डेटा null है या स्टेटस false है
         Get.snackbar(
           'Error',
           res?.message ?? 'Failed to load classes.',
@@ -64,6 +70,8 @@ class MyStudentClassController extends GetxController {
         );
       }
     } catch (e) {
+      // अगर कोई पार्सिंग एरर आता है
+      debugPrint("❌ Exception in MyStudentClassController: $e");
       Get.snackbar(
         'Error',
         'Something went wrong while loading classes.',
@@ -72,6 +80,7 @@ class MyStudentClassController extends GetxController {
         colorText: Colors.white,
       );
     } finally {
+      // ✅ API सक्सेस हो या फेल, लोडर बंद होना चाहिए
       isLoading.value = false;
     }
   }

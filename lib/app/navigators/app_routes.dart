@@ -63,15 +63,21 @@ abstract class Routes {
   static const staffResetPassword = _Paths.staffResetPassword;
   static const staffLeaveHistory = _Paths.staffLeaveHistory;
   static const externalMarks = _Paths.externalMarks;
+  static const createPassword = _Paths.createPassword;
+  static const myChildrenList = _Paths.myChildrenList;
+  static const curricularMarks = _Paths.curricularMarks;
+  static const verifyBranchCode = _Paths.verifyBranchCode;
+  static const attendanceRecord = _Paths.attendanceRecord;
+  static const staffAttendanceRecord = _Paths.staffAttendanceRecord;
+  static const documents = _Paths.documents;
+  static const staffAnnouncements = _Paths.staffAnnouncements;
+  static const myClassmates = _Paths.myClassmates;
+  static const deleteAccount = _Paths.deleteAccount;
 
 }
 
 abstract class _Paths {
   static const splash = '/splash-screen';
-  static const chooseOptions = '/choose-options-screen';
-  static const loginTeacher = '/Login-Teacher-screen';
-  static const loginStudent = '/Login-Student-screen';
-  static const loginParent = '/Login-Parent-screen';
   static const home = '/Home-screen';
   static const forgotPassword = '/Forgot-Password-screen';
   static const otpVerification = '/Otp-Verification-screen';
@@ -130,5 +136,15 @@ abstract class _Paths {
   static const staffResetPassword= '/Staff-Reset-Password-Screen';
   static const staffLeaveHistory= '/Staff-Leave-History-Screen';
   static const externalMarks = '/External-Marks-Screen';
+  static const curricularMarks = '/Curricular-Marks-Screen';
+  static const createPassword = '/Create-Password-Screen';
+  static const myChildrenList = '/My-Children-List-Screen';
+  static const verifyBranchCode = '/Verify-BranchCode-Screen';
+  static const attendanceRecord = '/Attendance-Record-Screen';
+  static const staffAttendanceRecord = '/Staff-Attendance-Record-Screen';
+  static const documents = '/Student-Documents-Screen';
+  static const staffAnnouncements = '/Staff-Announcements-Screen';
+  static const myClassmates = '/My-Classmates-Screen';
+  static const deleteAccount = '/Delete_account-Screen';
 
 }

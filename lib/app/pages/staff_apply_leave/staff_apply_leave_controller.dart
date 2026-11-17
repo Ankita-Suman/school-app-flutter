@@ -4,8 +4,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
+import '../../../device/device_constants.dart';
+import '../../../device/repositories/device_repositories.dart';
+// ⚠️ सुनिश्चित करें कि आपका StaffApplyLeavePresenter यहाँ इम्पोर्ट हो
+import 'staff_apply_leave_presenter.dart';
 
 class StaffApplyLeaveController extends GetxController {
+  // ✅ Presenter इंजेक्ट किया गया
+  StaffApplyLeaveController(this.applyLeavePresenter);
+
+  final StaffApplyLeavePresenter applyLeavePresenter;
+
   // Text Controllers
   final TextEditingController applyDateController = TextEditingController();
   final TextEditingController fromDateController = TextEditingController();
@@ -20,9 +29,7 @@ class StaffApplyLeaveController extends GetxController {
     'Casual Leave (CL)',
     'Sick Leave (SL)',
     'Earned Leave (EL)',
-    'Emergency Leave',
-    'Annual Leave',
-    'Study Leave',
+    'Paid Leave (PL)',
   ];
 
   // Observable variables
@@ -54,7 +61,6 @@ class StaffApplyLeaveController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Add focus listeners
     applyDateFocusNode.addListener(() {
       isApplyDateFocused.value = applyDateFocusNode.hasFocus;
     });
@@ -71,7 +77,6 @@ class StaffApplyLeaveController extends GetxController {
       isReasonFocused.value = reasonFocusNode.hasFocus;
     });
 
-    // Form validation listeners
     applyDate.listen((_) => _validateForm());
     fromDate.listen((_) => _validateForm());
     toDate.listen((_) => _validateForm());
@@ -82,11 +87,10 @@ class StaffApplyLeaveController extends GetxController {
 
   void _validateForm() {
     bool allFieldsFilled = selectedLeaveType.value.isNotEmpty &&
-        applyDate.value.isNotEmpty &&
         fromDate.value.isNotEmpty &&
         toDate.value.isNotEmpty &&
-        reasonController.text.isNotEmpty &&
-        selectedFileName.value.isNotEmpty;
+        reasonController.text.isNotEmpty;
+    // नोट: अगर फाइल अनिवार्य है तो यहाँ selectedFileName.value.isNotEmpty भी जोड़ें
 
     bool noDateError = !dateRangeError.value;
 
@@ -119,13 +123,10 @@ class StaffApplyLeaveController extends GetxController {
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick file. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      Get.snackbar('Error', 'Failed to pick file. Please try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
     }
   }
 
@@ -133,34 +134,6 @@ class StaffApplyLeaveController extends GetxController {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-  }
-
-  Future<void> selectApplyDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2030, 12, 31),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      String formattedDate =
-          "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
-      applyDate.value = formattedDate;
-      applyDateController.text = formattedDate;
-    }
   }
 
   Future<void> selectFromDate(BuildContext context) async {
@@ -173,9 +146,7 @@ class StaffApplyLeaveController extends GetxController {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
+              primary: Colors.blue, onPrimary: Colors.white, onSurface: Colors.black,
             ),
           ),
           child: child!,
@@ -188,9 +159,7 @@ class StaffApplyLeaveController extends GetxController {
           "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
       fromDate.value = formattedDate;
       fromDateController.text = formattedDate;
-      if (toDate.value.isNotEmpty) {
-        validateDateRange();
-      }
+      if (toDate.value.isNotEmpty) validateDateRange();
       _validateForm();
     }
   }
@@ -205,9 +174,7 @@ class StaffApplyLeaveController extends GetxController {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
+              primary: Colors.blue, onPrimary: Colors.white, onSurface: Colors.black,
             ),
           ),
           child: child!,
@@ -220,9 +187,7 @@ class StaffApplyLeaveController extends GetxController {
           "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
       toDate.value = formattedDate;
       toDateController.text = formattedDate;
-      if (fromDate.value.isNotEmpty) {
-        validateDateRange();
-      }
+      if (fromDate.value.isNotEmpty) validateDateRange();
       _validateForm();
     }
   }
@@ -233,27 +198,15 @@ class StaffApplyLeaveController extends GetxController {
       List<String> toParts = toDate.value.split('/');
 
       DateTime fromDateTime = DateTime(
-        int.parse(fromParts[2]),
-        int.parse(fromParts[1]),
-        int.parse(fromParts[0]),
-      );
+          int.parse(fromParts[2]), int.parse(fromParts[1]), int.parse(fromParts[0]));
       DateTime toDateTime = DateTime(
-        int.parse(toParts[2]),
-        int.parse(toParts[1]),
-        int.parse(toParts[0]),
-      );
+          int.parse(toParts[2]), int.parse(toParts[1]), int.parse(toParts[0]));
 
       if (toDateTime.isBefore(fromDateTime)) {
         dateRangeError.value = true;
         isFormValid.value = false;
-        Get.snackbar(
-          'Invalid Date Range',
-          'To Date cannot be before From Date',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
-        );
+        Get.snackbar('Invalid Date Range', 'To Date cannot be before From Date',
+            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
         toDate.value = '';
         toDateController.clear();
       } else {
@@ -262,68 +215,96 @@ class StaffApplyLeaveController extends GetxController {
     }
   }
 
-  // ✅ Submit Leave
-  void submitLeave(BuildContext context) {
+  // ✅ API फॉर्मेट में तारीख (YYYY-MM-DD)
+  String _formatDateForApi(String dateStr) {
+    if (dateStr.isEmpty) return '';
+    List<String> parts = dateStr.split('/');
+    if (parts.length == 3) {
+      return '${parts[2]}-${parts[1]}-${parts[0]}';
+    }
+    return dateStr;
+  }
+
+  // ✅ UI स्ट्रिंग को बैकएंड ईनम में बदलें
+  String _getApiLeaveType(String uiType) {
+    if (uiType.contains('Casual')) return 'CASUAL';
+    if (uiType.contains('Sick')) return 'SICK';
+    if (uiType.contains('Earned')) return 'EARNED';
+    if (uiType.contains('Paid')) return 'PAID';
+    return 'CASUAL'; // Default
+  }
+
+  // ✅ असली API कॉल जोड़ा गया
+  Future<void> submitLeave(BuildContext context) async {
     if (!isFormValid.value) {
-      if (selectedLeaveType.value.isEmpty) {
-        _showErrorSnackbar('Please select Leave Type');
-      } else if (applyDate.value.isEmpty) {
-        _showErrorSnackbar('Please select Apply Date');
-      } else if (fromDate.value.isEmpty) {
-        _showErrorSnackbar('Please select From Date');
-      } else if (toDate.value.isEmpty) {
-        _showErrorSnackbar('Please select To Date');
-      } else if (reasonController.text.isEmpty) {
-        _showErrorSnackbar('Please enter reason for leave');
-      } else if (selectedFileName.value.isEmpty) {
-        _showErrorSnackbar('Please upload a file');
-      }
+      Get.snackbar('Error', 'Please fill all required fields.',
+          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
-    isLoading.value = true;
+    try {
+      isLoading.value = true;
 
-    // Simulate API call
-    Future.delayed(const Duration(seconds: 2), () {
+      var deviceRepo = Get.find<DeviceRepository>();
+      var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
+      var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+
+      if (token.isEmpty || branchId.isEmpty) {
+        Get.snackbar('Error', 'Authentication failed. Please login again.',
+            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+        return;
+      }
+
+      String apiLeaveType = _getApiLeaveType(selectedLeaveType.value);
+      String apiFromDate = _formatDateForApi(fromDate.value);
+      String apiToDate = _formatDateForApi(toDate.value);
+
+      debugPrint("════════════════════════════════════════════════");
+      debugPrint("🚀 STAFF APPLY LEAVE API HIT 🚀");
+      debugPrint("📄 Leave Type: $apiLeaveType");
+      debugPrint("📅 From: $apiFromDate | To: $apiToDate");
+      debugPrint("════════════════════════════════════════════════");
+
+      // ⚠️ सुनिश्चित करें कि आपके StaffApplyLeavePresenter में यह मेथड हो
+      var res = await applyLeavePresenter.submitStaffLeaveApplication(
+        isLoading: false,
+        token: token,
+        branchId: branchId,
+        leaveType: apiLeaveType,
+        fromDate: apiFromDate,
+        toDate: apiToDate,
+        reason: reasonController.text,
+        attachment: selectedFile.value,
+      );
+
+      if (res != null && res.status == true) {
+        Get.snackbar('Success', 'Leave request submitted successfully!',
+            snackPosition: SnackPosition.TOP, backgroundColor: Colors.green, colorText: Colors.white);
+
+        // Form साफ करें
+        selectedLeaveType.value = '';
+        fromDate.value = '';
+        toDate.value = '';
+        fromDateController.clear();
+        toDateController.clear();
+        reasonController.clear();
+        selectedFile.value = null;
+        selectedFileName.value = '';
+
+        // वापस जाएं
+        await Future.delayed(const Duration(milliseconds: 500));
+        Navigator.pop(context);
+      } else {
+        Get.snackbar('Error', res?.message ?? 'Failed to submit request.',
+            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+      }
+    } catch (e) {
+      debugPrint("❌ STAFF APPLY LEAVE API ERROR: $e");
+      Get.snackbar('Error', 'Something went wrong. Please try again.',
+          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+    } finally {
       isLoading.value = false;
-
-      // Clear form
-      selectedLeaveType.value = '';
-      applyDate.value = '';
-      fromDate.value = '';
-      toDate.value = '';
-      dateRangeError.value = false;
-      selectedFile.value = null;
-      selectedFileName.value = '';
-      selectedFileSize.value = '';
-      reasonController.clear();
-
-      // Navigate back FIRST
-      Navigator.pop(context);
-
-      // Then show success snackbar
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Get.snackbar(
-          'Success',
-          'Leave applied successfully!',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-        );
-      });
-    });
-  }
-
-  void _showErrorSnackbar(String message) {
-    Get.snackbar(
-      'Error',
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-    );
+    }
   }
 
   @override

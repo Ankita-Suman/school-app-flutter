@@ -24,26 +24,35 @@ class LoginScreen extends StatelessWidget {
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
           children: [
+            // Background
             SvgPicture.asset(
               AssetConstants.icBackG,
               width: double.infinity,
               height: double.infinity,
               fit: BoxFit.cover,
             ),
-            // Logo
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.06),
-                child: Image.asset(
-                  AssetConstants.iclogo,
-                  height: screenWidth * 0.32,
-                  width: screenWidth * 0.32,
-                  fit: BoxFit.contain,
-                ),
-              ),
+
+            // ========== TOP SECTION: LOGO + SCHOOL INFO (With Loader) ==========
+            Positioned(
+              top: screenHeight * 0.09,
+              left: 0,
+              right: 0,
+              child: Obx(() {
+                final logoUrl = controller.savedLogoUrl.value;
+                final info = controller.branchInfoData.value;
+               // final schoolName = info?.data?.schoolName ?? '';
+                final branchName = info?.data?.branchName ?? '';
+
+                return _SchoolHeader(
+                  key: ValueKey('$logoUrl|$branchName'),
+                  logoUrl: logoUrl,
+                //  schoolName: schoolName,
+                  branchName: branchName,
+                );
+              }),
             ),
-            // Bottom Card
+
+            // ========== BOTTOM CARD: LOGIN FORM ==========
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -77,61 +86,6 @@ class LoginScreen extends StatelessWidget {
                         children: [
                           SizedBox(height: screenHeight * 0.025),
 
-                          // ========== SCHOOL INFO (only shown when data exists) ==========
-                          Obx(() {
-                            final schoolData = controller.schoolInfoData.value;
-                            if (schoolData == null) {
-                              return const SizedBox.shrink();
-                            }
-                            final schoolName = schoolData.data?.schoolName ?? 'School Name';
-                            final branchName = schoolData.data?.branchName ?? 'Branch Name';
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.school, size: 18, color: Colors.grey.shade600),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      schoolName,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade700,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: GoogleFonts.sora().fontFamily,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      softWrap: false,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Container(
-                                    width: 1,
-                                    height: 14,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      'Branch: $branchName',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade700,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: GoogleFonts.sora().fontFamily,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      softWrap: false,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-
                           // Welcome text
                           Padding(
                             padding: const EdgeInsets.only(top: 4),
@@ -144,25 +98,24 @@ class LoginScreen extends StatelessWidget {
                                 'Sign in to continue your learning journey',
                                 style: Styles.darkGry400),
                           ),
-                          SizedBox(height: screenHeight * 0.015),
+                          SizedBox(height: screenHeight * 0.02),
 
                           const TabBarWidget(),
-                          SizedBox(height: screenHeight * 0.015),
+                          SizedBox(height: screenHeight * 0.02),
 
-                          // Branch code field
-                          _buildBranchCodeField(controller, screenWidth, screenHeight),
-                          SizedBox(height: screenHeight * 0.015),
-
-                          // Email field
-                          _buildEmailField(controller, screenWidth, screenHeight),
+                          // Username / Email field
+                          _buildEmailField(
+                              controller, screenWidth, screenHeight),
                           SizedBox(height: screenHeight * 0.015),
 
                           // Password field
-                          _buildPasswordField(controller, screenWidth, screenHeight),
+                          _buildPasswordField(
+                              controller, screenWidth, screenHeight),
                           SizedBox(height: screenHeight * 0.02),
 
                           // Sign in button
-                          _buildSignInButton(controller, screenWidth, screenHeight),
+                          _buildSignInButton(
+                              controller, screenWidth, screenHeight),
                           SizedBox(height: screenHeight * 0.01),
 
                           // Forgot password
@@ -181,98 +134,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  // ---- Field builders (unchanged) ----
-  Widget _buildBranchCodeField(
-      LoginController controller, double screenWidth, double screenHeight) {
-    return Obx(() {
-      final hasError = controller.branchCodeError.value.isNotEmpty;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('BRANCH CODE', style: Styles.darkGryW700),
-          SizedBox(height: screenHeight * 0.008),
-          Container(
-            decoration: BoxDecoration(
-              color: controller.isBranchCodeFocused.value
-                  ? Colors.white
-                  : (controller.branchCodeController?.text.isNotEmpty == true
-                  ? Colors.blue.shade50
-                  : Colors.grey.shade50),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: hasError
-                    ? Colors.red
-                    : (controller.isBranchCodeFocused.value ||
-                    controller.branchCodeController?.text.isNotEmpty ==
-                        true)
-                    ? Colors.blue.shade700
-                    : Colors.grey.shade300,
-                width: hasError
-                    ? 1.5
-                    : (controller.isBranchCodeFocused.value ||
-                    controller.branchCodeController?.text.isNotEmpty ==
-                        true)
-                    ? 1.5
-                    : 1,
-              ),
-            ),
-            child: TextField(
-              controller: controller.branchCodeController,
-              focusNode: controller.branchCodeFocusNode,
-              keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.next,
-              style: Styles.darkBlcW400,
-              onChanged: (value) => controller.validateBranchCode(value),
-              onSubmitted: (value) => FocusScope.of(Get.context!)
-                  .requestFocus(controller.emailFocusNode),
-              decoration: InputDecoration(
-                hintText: 'ASDF34UYGHS',
-                hintStyle: Styles.darkGryW40014,
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.04,
-                    vertical: screenHeight * 0.015),
-                prefixIcon: Icon(
-                  Icons.lock,
-                  size: screenWidth * 0.05,
-                  color: hasError
-                      ? Colors.red
-                      : (controller.isBranchCodeFocused.value ||
-                      controller.branchCodeController?.text.isNotEmpty ==
-                          true)
-                      ? Colors.blue.shade700
-                      : Colors.grey.shade500,
-                ),
-                // ✅ Loader shown while fetching school info
-                suffixIcon: controller.isLoading.value
-                    ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.blue.shade700,
-                    ),
-                  ),
-                )
-                    : null,
-              ),
-            ),
-          ),
-          if (hasError)
-            Padding(
-              padding: const EdgeInsets.only(top: 2, left: 4),
-              child: Text(
-                controller.branchCodeError.value,
-                style: const TextStyle(fontSize: 11, color: Colors.red),
-              ),
-            ),
-        ],
-      );
-    });
-  }
-
+  // ============================================================
+  // ✅ USERNAME / EMAIL FIELD
+  // ============================================================
   Widget _buildEmailField(
       LoginController controller, double screenWidth, double screenHeight) {
     return Obx(() {
@@ -280,7 +144,7 @@ class LoginScreen extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('MOBILE / EMAIL', style: Styles.darkGryW700),
+          Text('USERNAME / EMAIL', style: Styles.darkGryW700),
           SizedBox(height: screenHeight * 0.008),
           Container(
             decoration: BoxDecoration(
@@ -294,38 +158,43 @@ class LoginScreen extends StatelessWidget {
                 color: hasError
                     ? Colors.red
                     : (controller.isEmailFocused.value ||
-                    controller.emailController?.text.isNotEmpty == true)
+                    controller.emailController?.text.isNotEmpty ==
+                        true)
                     ? Colors.blue.shade700
                     : Colors.grey.shade300,
-                width: hasError ? 1.5 : (controller.isEmailFocused.value ||
-                    controller.emailController?.text.isNotEmpty == true
+                width: hasError
                     ? 1.5
-                    : 1),
+                    : (controller.isEmailFocused.value ||
+                    controller.emailController?.text.isNotEmpty ==
+                        true)
+                    ? 1.5
+                    : 1,
               ),
             ),
             child: TextField(
               controller: controller.emailController,
               focusNode: controller.emailFocusNode,
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.text,
               textInputAction: TextInputAction.next,
               style: Styles.darkBlcW400,
               onChanged: (value) => controller.validateEmail(value),
               onSubmitted: (value) => FocusScope.of(Get.context!)
                   .requestFocus(controller.passwordFocusNode),
               decoration: InputDecoration(
-                hintText: 'olivier.thomas@edu.in',
+                hintText: 'Enter username or email',
                 hintStyle: Styles.darkGryW40014,
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
                     horizontal: screenWidth * 0.04,
                     vertical: screenHeight * 0.015),
                 prefixIcon: Icon(
-                  Icons.email_outlined,
+                  Icons.person_outline,
                   size: screenWidth * 0.05,
                   color: hasError
                       ? Colors.red
                       : (controller.isEmailFocused.value ||
-                      controller.emailController?.text.isNotEmpty == true)
+                      controller.emailController?.text.isNotEmpty ==
+                          true)
                       ? Colors.blue.shade700
                       : Colors.grey.shade500,
                 ),
@@ -345,6 +214,9 @@ class LoginScreen extends StatelessWidget {
     });
   }
 
+  // ============================================================
+  // ✅ PASSWORD FIELD
+  // ============================================================
   Widget _buildPasswordField(
       LoginController controller, double screenWidth, double screenHeight) {
     return Obx(() {
@@ -366,13 +238,17 @@ class LoginScreen extends StatelessWidget {
                 color: hasError
                     ? Colors.red
                     : (controller.isPasswordFocused.value ||
-                    controller.passwordController?.text.isNotEmpty == true)
+                    controller.passwordController?.text.isNotEmpty ==
+                        true)
                     ? Colors.blue.shade700
                     : Colors.grey.shade300,
-                width: hasError ? 1.5 : (controller.isPasswordFocused.value ||
-                    controller.passwordController?.text.isNotEmpty == true
+                width: hasError
                     ? 1.5
-                    : 1),
+                    : (controller.isPasswordFocused.value ||
+                    controller.passwordController?.text.isNotEmpty ==
+                        true)
+                    ? 1.5
+                    : 1,
               ),
             ),
             child: TextField(
@@ -400,7 +276,8 @@ class LoginScreen extends StatelessWidget {
                   color: hasError
                       ? Colors.red
                       : (controller.isPasswordFocused.value ||
-                      controller.passwordController?.text.isNotEmpty == true)
+                      controller.passwordController?.text.isNotEmpty ==
+                          true)
                       ? Colors.blue.shade700
                       : Colors.grey.shade500,
                 ),
@@ -413,7 +290,9 @@ class LoginScreen extends StatelessWidget {
                     color: hasError
                         ? Colors.red
                         : (controller.isPasswordFocused.value ||
-                        controller.passwordController?.text.isNotEmpty == true)
+                        controller.passwordController?.text
+                            .isNotEmpty ==
+                            true)
                         ? Colors.blue.shade700
                         : Colors.grey.shade500,
                   ),
@@ -435,6 +314,9 @@ class LoginScreen extends StatelessWidget {
     });
   }
 
+  // ============================================================
+  // ✅ SIGN IN BUTTON
+  // ============================================================
   Widget _buildSignInButton(
       LoginController controller, double screenWidth, double screenHeight) {
     return Obx(() => Opacity(
@@ -447,11 +329,15 @@ class LoginScreen extends StatelessWidget {
         }
             : () {},
         text: 'Sign In',
-        icon: Icon(Icons.login, size: screenWidth * 0.05, color: Colors.white),
+        icon:
+        Icon(Icons.login, size: screenWidth * 0.05, color: Colors.white),
       ),
     ));
   }
 
+  // ============================================================
+  // ✅ FORGOT PASSWORD
+  // ============================================================
   Widget _buildForgotPasswordButton(LoginController controller) {
     return Obx(() {
       final bool isParent = controller.selectedTab.value == 1;
@@ -468,5 +354,144 @@ class LoginScreen extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+// ============================================================
+// ✅ SCHOOL HEADER WIDGET (Logo + Name + Branch + Loader)
+// ============================================================
+class _SchoolHeader extends StatefulWidget {
+  final String logoUrl;
+  //final String schoolName;
+  final String branchName;
+
+  const _SchoolHeader({
+    super.key,
+    required this.logoUrl,
+   // required this.schoolName,
+    required this.branchName,
+  });
+
+  @override
+  State<_SchoolHeader> createState() => _SchoolHeaderState();
+}
+
+class _SchoolHeaderState extends State<_SchoolHeader> {
+  bool _imageReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preloadLogo();
+    });
+  }
+
+  /// Image ko cache me preload karo taaki display ke time delay na ho
+  Future<void> _preloadLogo() async {
+    // Agar logoUrl empty hai to seedha ready ho jao (asset logo turant load hoga)
+    if (widget.logoUrl.isEmpty) {
+      if (mounted) setState(() => _imageReady = true);
+      return;
+    }
+
+    try {
+      await precacheImage(
+        NetworkImage(widget.logoUrl),
+        context,
+      );
+    } catch (e) {
+      debugPrint("⚠️ Logo precache failed: $e");
+    }
+
+    if (mounted) setState(() => _imageReady = true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // ✅ Jab tak logo aur data load na ho jaye, loader dikhao
+    if (!_imageReady) {
+      return SizedBox(
+        height: screenWidth * 0.28 + 60,
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: Colors.white,
+            strokeWidth: 2.5,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // ========== LOGO ==========
+        if (widget.logoUrl.isNotEmpty)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              widget.logoUrl,
+              height: screenWidth * 0.28,
+              width: screenWidth * 0.28,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Image.asset(
+                AssetConstants.iclogo,
+                height: screenWidth * 0.28,
+                width: screenWidth * 0.28,
+                fit: BoxFit.contain,
+              ),
+            ),
+          )
+        else
+          Image.asset(
+            AssetConstants.iclogo,
+            height: screenWidth * 0.28,
+            width: screenWidth * 0.28,
+            fit: BoxFit.contain,
+          ),
+
+        const SizedBox(height: 10),
+
+        // ========== SCHOOL NAME ==========
+        // if (widget.schoolName.isNotEmpty)
+        //   Padding(
+        //     padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+        //     child: Text(
+        //       widget.schoolName,
+        //       textAlign: TextAlign.center,
+        //       style: TextStyle(
+        //         fontSize: 18,
+        //         fontWeight: FontWeight.w700,
+        //         color: Colors.white,
+        //         fontFamily: GoogleFonts.sora().fontFamily,
+        //         shadows: [
+        //           Shadow(
+        //             color: Colors.black.withOpacity(0.25),
+        //             offset: const Offset(0, 1),
+        //             blurRadius: 3,
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+
+        // ========== BRANCH NAME ==========
+        if (widget.branchName.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            widget.branchName,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Colors.white.withOpacity(0.9),
+              fontFamily: GoogleFonts.sora().fontFamily,
+            ),
+          ),
+        ],
+      ],
+    );
   }
 }

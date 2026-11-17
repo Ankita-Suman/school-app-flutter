@@ -13,7 +13,6 @@ class InvoiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final InvoiceController controller = Get.put(InvoiceController(Get.find()));
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final backgroundHeight = screenHeight * 0.26; // 28% of screen height
 
@@ -163,7 +162,7 @@ class InvoiceScreen extends StatelessWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   invoice.invoice?.invoiceNumber ?? 'N/A',
-                                  style: Styles.whiteExBold22,
+                                  style: Styles.whiteW600,
                                 ),
                               ],
                             ),

@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.school.app.school_app"
+    namespace "com.decentgroupofschool.app"
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
@@ -41,7 +41,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.school.app.school_app"
+        applicationId "com.decentgroupofschool.app"
         minSdkVersion 21  // CHANGED FROM flutter.minSdkVersion
         multiDexEnabled true
         targetSdkVersion 34

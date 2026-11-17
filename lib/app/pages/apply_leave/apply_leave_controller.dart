@@ -25,8 +25,8 @@ class ApplyLeaveController extends GetxController {
 
   final List<Map<String, String>> leaveTypes = [
     {'value': 'CASUAL', 'label': 'Casual Leave (CL)'},
-    {'value': 'SICK', 'label': 'Sick Leave (SL)'},
-    {'value': 'EARNED', 'label': 'Earned Leave (EL)'},
+    {'value': 'SICK', 'label': 'Medical Leave (ML)'},
+    // {'value': 'EARNED', 'label': 'Earned Leave (EL)'},
   ];
 
   var selectedFile = Rxn<File>();
@@ -102,25 +102,49 @@ class ApplyLeaveController extends GetxController {
       var deviceRepo = Get.find<DeviceRepository>();
       var token = await deviceRepo.getSecuredValue(DeviceConstants.token);
       var branchId = await deviceRepo.getSecuredValue(DeviceConstants.branchId);
+      // ✅ नया जोड़ा गया: SharedPreferences से studentId निकालें
+      var studentId = await deviceRepo.getSecuredValue(DeviceConstants.studentId);
 
-      if (token.isEmpty || branchId.isEmpty) {
-        Get.snackbar('Error', 'Authentication failed. Please login again.',
+      if (token.isEmpty || branchId.isEmpty || studentId.isEmpty) {
+        Get.snackbar('Error', 'Authentication failed or Student ID missing.',
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.red,
             colorText: Colors.white);
         return;
       }
 
+      String apiLeaveType = leaveType.toUpperCase();
+      if (apiLeaveType == 'MEDICAL' || apiLeaveType == 'MEDICAL LEAVE (ML)') {
+        apiLeaveType = 'SICK';
+      }
+
+      // ✅ LOGS
+      debugPrint("════════════════════════════════════════════════");
+      debugPrint("🚀 STUDENT APPLY LEAVE API HIT 🚀");
+      debugPrint("🔑 Token: $token");
+      debugPrint("🏢 Branch ID: $branchId");
+      debugPrint("🧑‍🎓 Student ID: $studentId"); // ✅ यहाँ Student ID दिखेगी
+      debugPrint("📄 Leave Type (Sent to API): $apiLeaveType");
+      debugPrint("📅 From Date: $fromDate");
+      debugPrint("📅 To Date: $toDate");
+      debugPrint("📝 Reason: $reason");
+      debugPrint("════════════════════════════════════════════════");
+
+      // ⚠️ ध्यान दें: आपको अपने ApplyLeavePresenter में studentId पास करने के लिए उसका सिग्नेचर अपडेट करना होगा
       var res = await applyLeavePresenter.submitLeaveApplication(
         isLoading: false,
         token: token,
         branchId: branchId,
-        leaveType: leaveType,
+        studentId: studentId, // ✅ यहाँ पास कर दिया गया है
+        leaveType: apiLeaveType,
         fromDate: fromDate,
         toDate: toDate,
         reason: reason,
         attachment: selectedFile.value,
       );
+
+      debugPrint("✅ STATUS: ${res?.status}");
+      debugPrint("✅ MESSAGE: ${res?.message}");
 
       if (res != null && res.status == true) {
         Get.snackbar('Success', 'Leave application submitted successfully!',
@@ -137,6 +161,7 @@ class ApplyLeaveController extends GetxController {
             colorText: Colors.white);
       }
     } catch (e) {
+      debugPrint("❌ APPLY LEAVE API ERROR: $e");
       Get.snackbar('Error', 'Something went wrong. Please try again.',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,

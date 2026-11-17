@@ -1,5 +1,7 @@
 import 'package:school_app/domain/domain.dart';
 
+import '../models/branch_verify_response.dart';
+
 /// Use case for getting the data from the API
 class LoginUseCases {
   LoginUseCases(this.repository);
@@ -17,12 +19,12 @@ class LoginUseCases {
           password: password,
           branchCode: branchCode);
 
-  Future<SchoolInfoResponse?> getSchoolInfo({
+  Future<BranchVerifyResponse?> getSchoolInfo({
     required bool isLoading,
     required String branchCode,
 
   }) async =>
-      await repository.getSchoolInfo(
+      await repository.getBranchInfo(
         isLoading: isLoading,
         branchCode: branchCode,
       );

@@ -491,6 +491,8 @@ abstract class Utility {
           ),
         ],
       ),
+      // ✅ CHANGED: Outside tap / back button pe dialog close nahi hoga
+      barrierDismissible: false,
     );
   }
 

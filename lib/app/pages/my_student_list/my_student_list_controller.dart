@@ -1,4 +1,4 @@
-// pages/login/my_student_list_controller.dart
+// pages/login/my_children_list_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../device/device_constants.dart';

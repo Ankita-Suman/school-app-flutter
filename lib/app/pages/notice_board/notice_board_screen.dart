@@ -1,62 +1,75 @@
+// pages/notice_board/notice_board_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../app.dart';
+import 'notice_board_controller.dart';
 
 class NoticeBoardScreen extends StatelessWidget {
   NoticeBoardScreen({super.key});
 
-  final List<Map<String, dynamic>> upcomingEventsList = [
-    {
-      'type': 'URGENT',
-      'date': '28 Jun',
-      'description': 'Drawing Competition on 28 June 2024',
-      'deadline': 'Register yourself on school portal before 25 June.',
-      'color': Colors.orange,
-    },
-    {
-      'type': 'ACADEMIC',
-      'date': '3 Jul',
-      'description': 'Math Olympiad on 3 July 2024',
-      'deadline': 'Register on the school portal. Open to Class 6-10.',
-      'color': Colors.blue,
-    },
-    {
-      'type': 'Holiday',
-      'date': '10 May',
-      'description': 'Summer Vacation: 10–25 May 2025',
-      'deadline': 'School will remain closed for summer holidays.',
-      'color': Colors.green,
-    },
-    {
-      'type': 'PTM',
-      'date': '20 Aug',
-      'description': 'Parent–Teacher Meeting — 14 May',
-      'deadline': 'Book your slot on portal from 1 Apr.',
-      'color': Colors.red,
-    },
-  ];
+  Color _catColor(String category) {
+    switch (category.toUpperCase()) {
+      case 'URGENT':
+        return Colors.orange;
+      case 'ACADEMIC':
+        return Colors.blue;
+      case 'HOLIDAY':
+        return Colors.green;
+      case 'PTM':
+        return Colors.red;
+      default:
+        return Colors.purple;
+    }
+  }
 
-  final TextEditingController searchController = TextEditingController();
-  final RxList<Map<String, dynamic>> filteredEventsList =
-      RxList<Map<String, dynamic>>();
+  IconData _catIcon(String category) {
+    switch (category.toUpperCase()) {
+      case 'URGENT':
+        return Icons.priority_high;
+      case 'ACADEMIC':
+        return Icons.school;
+      case 'HOLIDAY':
+        return Icons.beach_access;
+      case 'PTM':
+        return Icons.person;
+      default:
+        return Icons.campaign;
+    }
+  }
+
+  String _monthName(int m) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[m - 1];
+  }
+
+  // ✅ Time Formatting Helper
+  String _formatTime(DateTime date) {
+    int hour = date.hour;
+    String amPm = 'AM';
+    if (hour >= 12) {
+      amPm = 'PM';
+      if (hour > 12) hour -= 12;
+    }
+    if (hour == 0) hour = 12;
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$hour:$minute $amPm';
+  }
 
   @override
   Widget build(BuildContext context) {
-    filteredEventsList.value = upcomingEventsList;
+    final NoticeBoardController controller = Get.put(NoticeBoardController());
 
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    // ✅ Dynamic background height based on screen size
-    // Small phones: less height, Large phones: more height
     final backgroundHeight = screenHeight < 700 ? 160.0 : 180.0;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // ✅ Fixed height background (not percentage)
           Positioned(
             top: 0,
             left: 0,
@@ -69,128 +82,129 @@ class NoticeBoardScreen extends StatelessWidget {
             ),
           ),
 
-          // Content
           SafeArea(
             child: Column(
               children: [
-                // Fixed Header Section
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () => Get.back(),
-                                child: SvgPicture.asset(
-                                  AssetConstants.icBackBg,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text('Notice Board', style: Styles.whiteBold),
-                            ],
-                          ),
-                        ],
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: SvgPicture.asset(AssetConstants.icBackBg),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Search Field
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: TextField(
-                          controller: searchController,
-                          onChanged: (value) {
-                            if (value.isEmpty) {
-                              filteredEventsList.value = upcomingEventsList;
-                            } else {
-                              filteredEventsList.value =
-                                  upcomingEventsList.where((event) {
-                                return event['type']
-                                        .toString()
-                                        .toLowerCase()
-                                        .contains(value.toLowerCase()) ||
-                                    event['description']
-                                        .toString()
-                                        .toLowerCase()
-                                        .contains(value.toLowerCase()) ||
-                                    event['deadline']
-                                        .toString()
-                                        .toLowerCase()
-                                        .contains(value.toLowerCase());
-                              }).toList();
-                            }
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search notices...',
-                            hintStyle: Styles.darkBlueW500,
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: Colors.grey.shade500,
-                              size: 20,
-                            ),
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 8),
-                          ),
-                          style: Styles.whiteBold14600,
-                        ),
-                      ),
-                    ),
-
-                    // ✅ Fixed spacing (not percentage)
-                    const SizedBox(height: 24),
-                  ],
-                ),
-
-                // Notice List
-                Expanded(
-                  child: Obx(
-                    () => filteredEventsList.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.priority_high,
-                                  size: 64,
-                                  color: Colors.grey.shade400,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'No notices found',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade500,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.all(12),
-                            itemCount: filteredEventsList.length,
-                            itemBuilder: (context, index) {
-                              return _buildEventCard(
-                                  filteredEventsList[index], index);
-                            },
-                          ),
+                      const SizedBox(width: 8),
+                      Text('Notice Board', style: Styles.whiteBold),
+                    ],
                   ),
+                ),
+                const SizedBox(height: 10),
+
+                // ================= SEARCH FIELD =================
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 12),
+                        Icon(
+                          Icons.search,
+                          color: Colors.grey.shade500,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: controller.searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Search notices...',
+                              hintStyle: Styles.darkBlueW500,
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              contentPadding:
+                              const EdgeInsets.symmetric(vertical: 10),
+                            ),
+                            style: Styles.whiteBold14600,
+                          ),
+                        ),
+                        Obx(() {
+                          if (controller.searchText.value.isEmpty) {
+                            return const SizedBox(width: 8);
+                          }
+                          return IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: controller.clearSearch,
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // ================= LIST =================
+                Expanded(
+                  child: Obx(() {
+                    // ✅ लोडर यहाँ दिखाया गया है
+                    if (controller.isLoading.value) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: Colors.blue),
+                      );
+                    }
+
+                    final items = controller.filteredAnnouncements;
+
+                    if (items.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search_off,
+                              size: 64,
+                              color: Colors.grey.shade400,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No notices found',
+                              style: TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final color = _catColor(item.category);
+                        final icon = _catIcon(item.category);
+
+                        return _buildEventCard(
+                          context: context,
+                          item: item,
+                          color: color,
+                          icon: icon,
+                          monthName: _monthName(item.announcementDate.month),
+                        );
+                      },
+                    );
+                  }),
                 ),
               ],
             ),
@@ -200,100 +214,337 @@ class NoticeBoardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEventCard(Map<String, dynamic> event, int index) {
-    Color getLightShade(Color color) {
-      return color.withOpacity(0.10);
-    }
+  Widget _buildEventCard({
+    required BuildContext context,
+    required dynamic item,
+    required Color color,
+    required IconData icon,
+    required String monthName,
+  }) {
+    String dateTimeStr = '${item.announcementDate.day} $monthName, ${_formatTime(item.announcementDate)}';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: getLightShade(event['color']),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _showAnnouncementDetail(
+          context: context,
+          item: item,
+          color: color,
+          icon: icon,
+          monthName: monthName,
+        ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: (event['color'] as Color).withOpacity(0.3),
-          width: 1,
+        splashColor: color.withOpacity(0.15),
+        highlightColor: color.withOpacity(0.05),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.withOpacity(0.3), width: 1),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 4,
+                height: 100,
+                margin: const EdgeInsets.only(top: 5, bottom: 5),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    bottomLeft: Radius.circular(12),
+                  ),
+                ),
+              ),
+              Container(
+                width: 20,
+                height: 20,
+                margin: const EdgeInsets.only(left: 12, top: 25),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            item.category.toUpperCase(),
+                            style: TextStyle(
+                              color: color,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 10,
+                            ),
+                          ),
+                          Text(
+                            dateTimeStr,
+                            style: Styles.darkBlkW60010,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(item.title, style: Styles.darkBlackW700),
+                      const SizedBox(height: 4),
+                      Text(item.description, style: Styles.darkBlkW400),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 4,
-            height: 100,
-            margin: const EdgeInsets.only(bottom: 5, top: 5),
-            decoration: BoxDecoration(
-              color: event['color'],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
+    );
+  }
+
+  // ============================================================
+  // ✅ Beautiful Detail Bottom Sheet
+  // ============================================================
+  void _showAnnouncementDetail({
+    required BuildContext context,
+    required dynamic item,
+    required Color color,
+    required IconData icon,
+    required String monthName,
+  }) {
+    final DateTime date = item.announcementDate as DateTime;
+    final String fullDate = '${date.day} $monthName ${date.year}, ${_formatTime(date)}';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.45),
+      builder: (ctx) {
+        final mediaQuery = MediaQuery.of(ctx);
+        final maxHeight = mediaQuery.size.height * 0.85;
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: mediaQuery.viewInsets.bottom),
+          child: Container(
+            constraints: BoxConstraints(maxHeight: maxHeight),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(28),
+                topRight: Radius.circular(28),
               ),
             ),
-          ),
-          Container(
-            width: 20,
-            height: 20,
-            margin: const EdgeInsets.only(left: 12, top: 25),
-            decoration: BoxDecoration(
-              color: (event['color'] as Color).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              event['type'] == 'URGENT'
-                  ? Icons.priority_high
-                  : event['type'] == 'ACADEMIC'
-                      ? Icons.school
-                      : event['type'] == 'Holiday'
-                          ? Icons.beach_access
-                          : Icons.person,
-              color: event['color'],
-              size: 20,
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 4),
+                  width: 44,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
+                  child: Row(
                     children: [
-                      Text(
-                        event['type'],
-                        style: index == 0
-                            ? Styles.orangeBold700
-                            : index == 1
-                                ? Styles.blueBold70009
-                                : index == 2
-                                    ? Styles.greenBold70009
-                                    : Styles.rdBold70009,
+                      Container(
+                        width: 4,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                      Text(
-                        event['date'],
-                        style: Styles.darkBlkW60010,
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Announcement Details',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
+                          letterSpacing: 0.2,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    event['description'],
-                    style: Styles.darkBlackW700,
+                ),
+
+                Container(
+                  height: 1,
+                  color: Colors.grey.shade200,
+                ),
+
+                Flexible(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: color.withOpacity(0.35),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(icon, color: color, size: 12),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    item.category.toUpperCase(),
+                                    style: TextStyle(
+                                      color: color,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today_rounded,
+                                    size: 11,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    fullDate,
+                                    style: TextStyle(
+                                      color: Colors.grey.shade800,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        Text(
+                          item.title ?? 'Untitled Announcement',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                            height: 1.3,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: color.withOpacity(0.15),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'MESSAGE',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: color,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                item.description ??
+                                    'No description available.',
+                                style: TextStyle(
+                                  fontSize: 14.5,
+                                  height: 1.6,
+                                  color: Colors.grey.shade800,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    event['deadline'],
-                    style: Styles.darkBlkW400,
+                ),
+
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: color,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          'Close',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

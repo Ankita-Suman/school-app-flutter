@@ -90,7 +90,77 @@ class ConnectHelper {
         Request.post, data, isLoading, {'Content-type': 'Application/json'});
     return res;
   }
+  Future<ResponseModel> getClassmatesAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
 
+    String url = '${DataConstants.getProfile}/$branchId/student/$studentId/classmates';
+
+    var res = await apiWrapper.makeRequest(url, Request.get, null, isLoading, headers);
+
+    // ✅ यह लाइन जोड़ें ताकि टर्मिनल में रिस्पॉन्स दिखे
+    debugPrint("📦 CLASSMATES RAW RESPONSE: ${res.data}");
+
+    return res;
+  }
+  Future<ResponseModel> getStudentNoticesAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // ✅ नई Student Notices API
+    String url = '${DataConstants.getProfile}/$branchId/student/$studentId/notices';
+
+    var res = await apiWrapper.makeRequest(url, Request.get, null, isLoading, headers);
+
+    debugPrint("✅ Student Notices URL: $url");
+    debugPrint("📦 RAW RESPONSE: ${res.data}");
+    return res;
+  }
+  Future<ResponseModel> sendDeleteAccountOtp({
+    required bool isLoading,
+    required String branchCode,
+    required String username,
+  }) async {
+    var data = {
+      'branch_code': branchCode,
+      'username': username,
+    };
+    var res = await apiWrapper.makeRequest(
+        '/api/branch/delete-account/send-otp',
+        Request.post, data, isLoading, {'Content-type': 'Application/json'});
+    return res;
+  }
+
+  Future<ResponseModel> verifyDeleteAccountOtp({
+    required bool isLoading,
+    required String branchCode,
+    required String username,
+    required String otp,
+  }) async {
+    var data = {
+      'branch_code': branchCode,
+      'username': username,
+      'otp': otp,
+    };
+    var res = await apiWrapper.makeRequest(
+        '/api/branch/delete-account/verify-otp',
+        Request.post, data, isLoading, {'Content-type': 'Application/json'});
+    return res;
+  }
   Future<ResponseModel> resendOtpAPI(
       {required bool isLoading,
         required String branchCode,
@@ -138,14 +208,14 @@ class ConnectHelper {
     required String fromDate,
     required String toDate,
     required String reason,
-    required File? attachment,
+    required File? attachment, required String studentId,
   }) async {
     var headers = {
       'Authorization': 'Bearer $token',
     };
 
     // ✅ FULL URL with host
-    String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/staff-leaves';
+    String url = 'https://demo.aitsolutions.in/api/$branchId/student/$studentId/leaves';
 
     var formData = dio_package.FormData.fromMap({
       'leave_type': leaveType,
@@ -199,6 +269,76 @@ class ConnectHelper {
       );
     }
   }
+// ========== SUBMIT LEAVE APPLICATION (FIXED) ==========
+  Future<ResponseModel> submitStaffLeaveApplication({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String leaveType,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+    required File? attachment,
+  }) async {
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    // ✅ FULL URL with host
+
+    String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/staff-leaves';
+    var formData = dio_package.FormData.fromMap({
+      'leave_type': leaveType,
+      'from_date': fromDate,
+      'to_date': toDate,
+      'leave_reason': reason,
+      if (attachment != null)
+        'attachment': await dio_package.MultipartFile.fromFile(
+          attachment.path,
+          filename: attachment.path.split('/').last,
+        ),
+    });
+
+    try {
+      var response = await dio.post(
+        url,
+        data: formData,
+        options: dio_package.Options(
+          headers: headers,
+          contentType: 'multipart/form-data',
+        ),
+      );
+      print("✅ Submit Staff Leave Response Status: ${response.statusCode}");
+      print("✅ Submit Staff Leave Response Data: ${response.data}");
+      return ResponseModel(
+        data: response.data,
+        hasError: false,
+        errorCode: null,
+      );
+    } catch (e) {
+      print("❌ Submit Staff Leave Error: $e");
+      // ✅ Handle DioException with structured response (e.g., 409)
+      if (e is DioException && e.response != null && e.response?.data != null) {
+        final responseData = e.response!.data;
+        // If the server returned a JSON response with 'status' and 'message',
+        // treat it as a valid response (not a network error)
+        if (responseData is Map<String, dynamic>) {
+          print("📦 Server error response: $responseData");
+          return ResponseModel(
+            data: responseData,
+            hasError: false, // Important: treat as a valid response
+            errorCode: e.response?.statusCode,
+          );
+        }
+      }
+      // Real network error (no response from server)
+      return ResponseModel(
+        data: e.toString(),
+        hasError: true,
+        errorCode: 500,
+      );
+    }
+  }
 
   Future<ResponseModel> resetPasswordAPI({
     required bool isLoading,
@@ -226,6 +366,38 @@ class ConnectHelper {
         data,
         isLoading,
         headers);
+    return res;
+  }
+
+  Future<ResponseModel> changePasswordAPI({
+    required bool isLoading,
+    required String branchId,
+    required String token,
+    required String oldPassword,
+    required String newPassword,
+    required String passwordConfirmation,
+  }) async {
+
+    final String url = '${DataConstants.getProfile}/$branchId/change-password';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    Map<String, dynamic> body = {
+      'current_password': oldPassword,
+      'password': newPassword,
+      'password_confirmation': passwordConfirmation,
+    };
+
+    var res = await apiWrapper.makeRequest(
+      url,
+      Request.post,
+      body,
+      isLoading,
+      headers,
+    );
     return res;
   }
 
@@ -259,7 +431,46 @@ class ConnectHelper {
     );
     return res;
   }
+  Future<ResponseModel> getStaffAttendanceRecordAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String month,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
 
+    // ✅ आपके द्वारा दी गई नई Teacher API URL
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/my-attendance?month=$month';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers);
+
+    debugPrint("✅ Staff Attendance Record URL: $url");
+    debugPrint("📦 RAW RESPONSE DATA: ${res.data}");
+    return res;
+  }
+  Future<ResponseModel> getStudentDocumentsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+    String url = '${DataConstants.getProfile}/$branchId/student/$studentId/profile/documents';
+    var res = await apiWrapper.makeRequest(url, Request.get, null, isLoading, headers);
+    debugPrint("✅ Student Documents URL: $url");
+    return res;
+  }
   Future<ResponseModel> getProfileDetailsAPI({
     required bool isLoading,
     required String token,
@@ -277,7 +488,32 @@ class ConnectHelper {
     debugPrint("📦 RAW RESPONSE DATA: ${res.data}");
     return res;
   }
+  Future<ResponseModel> getAttendanceRecordAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+    required String month,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
 
+    // ✅ आपके द्वारा दी गई API के अनुसार URL
+    String url = '${DataConstants.getProfile}/$branchId/student/$studentId/attendance?month=$month';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers);
+
+    debugPrint("✅ Student Attendance Record URL: $url");
+    debugPrint("📦 RAW RESPONSE DATA: ${res.data}");
+    return res;
+  }
   Future<ResponseModel> getFeesDetailsAPI({
     required bool isLoading,
     required String token,
@@ -290,6 +526,87 @@ class ConnectHelper {
     };
 
     String url = '${DataConstants.getProfile}/$branchId/fees/student/dashboard?student_id=$studentId';
+
+    var res = await apiWrapper.makeRequest(
+        url,
+        Request.get,
+        null,
+        isLoading,
+        headers);
+
+    debugPrint("✅ Fees Dashboard URL: $url");
+    return res;
+  }
+
+  Future<ResponseModel> getStaffAnnouncementDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String tab,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // ✅ URL बनाना
+    String url = '${DataConstants.getProfile}/$branchId/mobile/teacher/notices?tab=$tab';
+
+    // =========================================================
+    // ✅ 1. API हिट होने से पहले का लॉग
+    // =========================================================
+    debugPrint("════════════════════════════════════════════════");
+    debugPrint("🚀 STAFF ANNOUNCEMENT API CALL STARTED");
+    debugPrint("🔗 URL: $url");
+    debugPrint("🎫 TOKEN: ${token.length > 20 ? token.substring(0, 20) + '...' : token}");
+    debugPrint("════════════════════════════════════════════════");
+
+    try {
+      // ✅ 2. API कॉल
+      var res = await apiWrapper.makeRequest(url, Request.get, null, isLoading, headers);
+
+      // =========================================================
+      // ✅ 3. API से रिस्पॉन्स आने के बाद का लॉग
+      // =========================================================
+      debugPrint("════════════════════════════════════════════════");
+      debugPrint("✅ STAFF ANNOUNCEMENT API RESPONSE RECEIVED");
+      debugPrint("📥 RAW DATA: ${res.data}");
+      debugPrint("❌ HAS ERROR: ${res.hasError}");
+      debugPrint("🔢 ERROR CODE: ${res.errorCode}");
+      debugPrint("════════════════════════════════════════════════");
+
+      return res;
+
+    } catch (e, stackTrace) {
+      // =========================================================
+      // ✅ 4. अगर कोई एक्सेप्शन (Error) आता है तो उसका लॉग
+      // =========================================================
+      debugPrint("════════════════════════════════════════════════");
+      debugPrint("💥 EXCEPTION OCCURRED IN API CALL");
+      debugPrint("⚠️ ERROR: $e");
+      debugPrint("📍 STACKTRACE: $stackTrace");
+      debugPrint("════════════════════════════════════════════════");
+
+      // Fallback Return (ताकि ऐप क्रैश न हो)
+      return ResponseModel(
+        data: {'message': 'Something went wrong: $e'},
+        hasError: true,
+        errorCode: 500,
+      );
+    }
+  }
+
+  Future<ResponseModel> getAnnouncementDetailsAPI({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    String url = '${DataConstants.getProfile}/$branchId/student/dashboard/announcements';
 
     var res = await apiWrapper.makeRequest(
         url,
@@ -447,6 +764,74 @@ class ConnectHelper {
     debugPrint("✅ School Dashboard URL: $res");
     return res;
   }
+
+  Future<ResponseModel> getBranchInfo({
+    required bool isLoading,
+    required String branchCode,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+    };
+
+    // ✅ 1. URL change kiya (school-info -> verify-code, aur query param hataya)
+    String url = '${DataConstants.getProfile}/branch/verify-code';
+
+    // ✅ 2. POST body create ki (branch_code ko JSON me bhejne ke liye)
+    var data = {
+      'branch_code': branchCode,
+    };
+
+    debugPrint("🔍 Verify Branch Code URL: $url");
+    debugPrint("📦 Verify Branch Code Body: $data");
+
+    // ✅ 3. Body (data) ko null ki jagah pass kiya
+    var res = await apiWrapper.makeRequest(
+      url,
+      Request.post,
+      data,
+      isLoading,
+      headers,
+    );
+
+    debugPrint("✅ Verify Branch Code Response: ${res.data}");
+    return res;
+  }
+  // ============================================================
+  // ✅ NEW: Co-Curricular Marks API
+  // ============================================================
+  Future<ResponseModel> getCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String examinationGroupId,
+    required String examinationTermId,
+    required String classId,
+    required String sectionId,
+  }) async {
+    var headers = {
+      'Content-type': 'Application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    String url = '${DataConstants.getProfile}/$branchId/examination/cocurricular-marks?'
+        'examination_group_id=$examinationGroupId'
+        '&examination_term_id=$examinationTermId'
+        '&class_id=$classId'
+        '&section_id=$sectionId';
+
+    var res = await apiWrapper.makeRequest(
+      url,
+      Request.get,
+      null,
+      isLoading,
+      headers,
+    );
+
+    debugPrint("✅ CoCurricular Marks URL: $url");
+    debugPrint("📦 RAW RESPONSE DATA: ${res.data}");
+    return res;
+  }
+
   Future<ResponseModel> getLeaveStatusData({
     required bool isLoading,
     required String token,
@@ -501,6 +886,30 @@ class ConnectHelper {
     return res;
   }
 
+  // Future<ResponseModel> getAllEvents({
+  //   required bool isLoading,
+  //   required String token,
+  //   required String branchId,
+  //   required String studentId,
+  // }) async {
+  //   var headers = {
+  //     'Content-type': 'Application/json',
+  //     'Authorization': 'Bearer $token',
+  //   };
+  //
+  //   String url = '${DataConstants.getProfile}/$branchId/student/dashboard/all-events?student_id=$studentId';
+  //
+  //   var res = await apiWrapper.makeRequest(
+  //       url,
+  //       Request.get,
+  //       null,
+  //       isLoading,
+  //       headers);
+  //
+  //   debugPrint("✅ events Dashboard URL: $url");
+  //   return res;
+  // }
+
   Future<ResponseModel> getAllEvents({
     required bool isLoading,
     required String token,
@@ -509,19 +918,33 @@ class ConnectHelper {
   }) async {
     var headers = {
       'Content-type': 'Application/json',
-      'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer $token',   // ← check karo Authorization header
     };
 
-    String url = '${DataConstants.getProfile}/$branchId/student/dashboard/all-events?student_id=$studentId';
+    final endpoint = '/api/$branchId/student/dashboard/all-events?student_id=$studentId';
+
+    // ✅ Log before API call
+    debugPrint("════════════════════════════════════════════════");
+    debugPrint("🌐 API CALL getAllEvents");
+    debugPrint("   endpoint: $endpoint");
+    debugPrint("   headers: $headers");
+    debugPrint("════════════════════════════════════════════════");
 
     var res = await apiWrapper.makeRequest(
-        url,
-        Request.get,
-        null,
-        isLoading,
-        headers);
+      endpoint,
+      Request.get,
+      null,
+      isLoading,
+      headers,
+    );
 
-    debugPrint("✅ events Dashboard URL: $url");
+    // ✅ Log after API call
+    debugPrint("════════════════════════════════════════════════");
+    debugPrint("🌐 API RESPONSE getAllEvents");
+    debugPrint("   data: ${res.data}");
+    debugPrint("   hasError: ${res.hasError}");
+    debugPrint("════════════════════════════════════════════════");
+
     return res;
   }
 
@@ -740,7 +1163,64 @@ class ConnectHelper {
     debugPrint("📦 RAW RESPONSE DATA: ${res.data}");
     return res;
   }
+  // ============================================================
+  Future<ResponseModel> saveCoCurricularMarks({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required Map<String, dynamic> payload,
+  }) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
 
+    String url =
+        'https://demo.aitsolutions.in/api/$branchId/examination/cocurricular-marks';
+    String jsonPayload = jsonEncode(payload);
+
+    debugPrint("✅ Save CoCurricular Marks URL: $url");
+    debugPrint("✅ Save CoCurricular Marks Payload: $jsonPayload");
+
+    try {
+      var response = await Dio().post(
+        url,
+        data: jsonPayload,
+        options: Options(headers: headers),
+      );
+
+      debugPrint("✅ Save CoCurricular Response: ${response.data}");
+      debugPrint("✅ Status Code: ${response.statusCode}");
+
+      return ResponseModel(
+        data: response.data,
+        hasError: false,
+        errorCode: null,
+      );
+    } catch (e) {
+      debugPrint("❌ Error saving co-curricular marks: $e");
+
+      if (e is DioException && e.response != null && e.response?.data != null) {
+        final responseData = e.response!.data;
+        if (responseData is Map<String, dynamic>) {
+          return ResponseModel(
+            data: responseData,
+            hasError: false,
+            errorCode: e.response?.statusCode,
+          );
+        }
+      }
+
+      return ResponseModel(
+        data: <String, dynamic>{
+          'status': false,
+          'message': e.toString(),
+        },
+        hasError: true,
+        errorCode: 500,
+      );
+    }
+  }
   Future<ResponseModel> saveExternalMarks({
     required bool isLoading,
     required String token,
@@ -986,6 +1466,96 @@ class ConnectHelper {
     debugPrint("✅ invoice Dashboard URL: $url");
     debugPrint("📦 RAW RESPONSE DATA: ${res.data}");
     return res;
+  }
+  // ============================================================
+  // ✅ CREATE PAYMENT ORDER — POST with body
+  // ============================================================
+  Future<ResponseModel> createPaymentOrder({
+    required bool isLoading,
+    required String token,
+    required String branchId,
+    required String studentId,
+    required List<String> invoiceIds,
+    required double amount,
+    required String sessionId,
+  }) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    String url =
+        'https://demo.aitsolutions.in/api/$branchId/fees/student/$studentId/payment/create-order';
+
+    // ✅ Request body — exact जो backend चाहता है
+    final Map<String, dynamic> body = {
+      'amount': amount.toInt(),
+      'invoice_ids': invoiceIds,
+      'session_id': sessionId,
+      'platform': 'mobile',
+    };
+    final String jsonPayload = jsonEncode(body);
+
+    debugPrint("════════════════════════════════════════════════");
+    debugPrint("💳 CREATE PAYMENT ORDER — REQUEST");
+    debugPrint("   URL:  $url");
+    debugPrint("   BODY: $jsonPayload");
+    debugPrint("════════════════════════════════════════════════");
+
+    try {
+      var response = await Dio().post(
+        url,
+        data: jsonPayload,
+        options: Options(headers: headers),
+      );
+
+      debugPrint("════════════════════════════════════════════════");
+      debugPrint("✅ CREATE PAYMENT ORDER — SUCCESS");
+      debugPrint("   Status: ${response.statusCode}");
+      debugPrint("   Data: ${response.data}");
+      debugPrint("════════════════════════════════════════════════");
+
+      return ResponseModel(
+        data: response.data,
+        hasError: false,
+        errorCode: null,
+      );
+    } catch (e) {
+      debugPrint("════════════════════════════════════════════════");
+      debugPrint("❌ CREATE PAYMENT ORDER — ERROR");
+      debugPrint("   Exception: $e");
+      debugPrint("════════════════════════════════════════════════");
+
+      if (e is DioException && e.response != null) {
+        dynamic responseData = e.response!.data;
+
+        if (responseData is String) {
+          try {
+            responseData = jsonDecode(responseData);
+          } catch (_) {}
+        }
+
+        debugPrint("📦 SERVER RESPONSE (status ${e.response?.statusCode})");
+        debugPrint("   $responseData");
+
+        if (responseData is Map<String, dynamic>) {
+          return ResponseModel(
+            data: responseData,
+            hasError: false,
+            errorCode: e.response?.statusCode,
+          );
+        }
+      }
+
+      return ResponseModel(
+        data: <String, dynamic>{
+          'status': false,
+          'message': e.toString(),
+        },
+        hasError: true,
+        errorCode: 500,
+      );
+    }
   }
 
   Future<ResponseModel> fetchClassAttendanceReport({

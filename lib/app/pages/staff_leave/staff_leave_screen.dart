@@ -39,7 +39,7 @@ class StaffLeaveScreen extends StatelessWidget {
   VoidCallback getNavigationCallback(int index) {
     switch (index) {
       case 0:
-        return RouteManagement.goToApplyLeave;      // ✅ returns function
+        return RouteManagement.goToStaffApplyLeave;      // ✅ returns function
       case 1:
         return RouteManagement.goToLeaveBalance;    // ✅ returns function
       case 2:

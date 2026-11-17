@@ -1,5 +1,7 @@
 import 'package:school_app/app/app.dart';
 import 'package:get/get.dart';
+
+import '../pages/dashboard/widgets/fees_widget.dart';
 /// A chunk of routes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        taken in the application.
 ///
 /// Will be ignored for test since all are static values and would not change.
@@ -18,14 +20,37 @@ abstract class RouteManagement {
     Get.offAllNamed(Routes.teacherHome);
     // or Routes.dashboard
   }
-
-  static void goToLogin() {
+  static void goToParentDashboard() {
     // Navigate to home screen (replace with your actual home route)
-    Get.offAllNamed(Routes.login); // or Routes.dashboard
+    Get.offAllNamed(Routes.home);
+    // or Routes.dashboard
   }
 
+  // static void goToLogin() {
+  //   // Navigate to home screen (replace with your actual home route)
+  //   Get.offAllNamed(Routes.login); // or Routes.dashboard
+  // }
+  static void goToVerifyBranchCode() {
+    // Navigate to home screen (replace with your actual home route)
+    Get.offAllNamed(Routes.verifyBranchCode); // or Routes.dashboard
+  }
+  static void goToLogin() {
+    Get.offAllNamed(Routes.login);
+  }
   static void goToPayment() {
     Get.toNamed(Routes.payment);
+  }
+  static void goToStaffAttendanceRecord() {
+    Get.toNamed(Routes.staffAttendanceRecord);
+  }
+  static void goToAttendanceRecord() {
+    Get.toNamed(Routes.attendanceRecord);
+  }
+  static Future<dynamic> goToFeesDetails() async {
+    return Get.to(
+          () => const FeesDetailsScreen(), // आपकी फीस स्क्रीन
+      transition: Transition.rightToLeft, // एनिमेशन (आप अपने हिसाब से बदल सकते हैं)
+    );
   }
   static void goToMyClasses() {
     Get.toNamed(Routes.myClasses);
@@ -135,6 +160,9 @@ abstract class RouteManagement {
   static void goToExternalMarks() {
     Get.toNamed(Routes.externalMarks);
   }
+  static void goToCurricularMarks() {
+    Get.toNamed(Routes.curricularMarks);
+  }
   static void goToInternalMarks() {
     Get.toNamed(Routes.internalMarks);
   }
@@ -147,14 +175,33 @@ abstract class RouteManagement {
   static void goToUpcomingEvents() {
     Get.toNamed(Routes.upcomingEvents);
   }
+  static void goToMyChildrenList() {
+    Get.toNamed(Routes.myChildrenList);
+  }
+
   static void goToZoomLiveClasses() {
     Get.toNamed(Routes.zoomLiveClasses);
   }
   static void goToTeamLiveClasses() {
     Get.toNamed(Routes.teamLiveClasses);
   }
+  static void goToStudentDocuments() {
+    Get.toNamed(Routes.documents);
+  }
   static void goToApplyLeave() {
     Get.toNamed(Routes.applyLeave);
+  }
+  static void goToMyClassmate() {
+    Get.toNamed(Routes.myClassmates);
+  }
+  static void goToDeleteAccount() {
+    Get.toNamed(Routes.deleteAccount);
+  }
+  static void goToStaffAnnouncements() {
+    Get.toNamed(Routes.staffAnnouncements);
+  }
+  static void goToStaffApplyLeave() {
+    Get.toNamed(Routes.staffApplyLeave);
   }
   static void goToAddLeave() {
     Get.toNamed(Routes.addLeave);
@@ -164,6 +211,9 @@ abstract class RouteManagement {
   }
   static void goToChangePassword() {
     Get.toNamed(Routes.changePassword);
+  }
+  static void goToCreatePassword() {
+    Get.toNamed(Routes.createPassword);
   }
   static void goToChangePasswordSuccessfully() {
     Get.toNamed(Routes.changePasswordSuccessfully);
