@@ -1,5 +1,7 @@
 // domain/models/delete_account_response.dart
 
+import 'dart:convert';
+
 class DeleteAccountResponse {
   bool? status;
   String? message;
@@ -7,10 +9,39 @@ class DeleteAccountResponse {
 
   DeleteAccountResponse({this.status, this.message, this.data});
 
-  DeleteAccountResponse.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    message = json['message'];
-    data = json['data'] != null ? DeleteAccountData.fromJson(json['data']) : null;
+  factory DeleteAccountResponse.fromJson(Map<String, dynamic> json) {
+    // ✅ status बool, int, string, null — सब handle
+    bool? parsedStatus;
+    final rawStatus = json['status'];
+    if (rawStatus is bool) {
+      parsedStatus = rawStatus;
+    } else if (rawStatus is int) {
+      parsedStatus = rawStatus == 1;
+    } else if (rawStatus is String) {
+      final s = rawStatus.toLowerCase();
+      parsedStatus = (s == 'true' || s == '1' || s == 'success');
+    }
+
+    // ✅ data केवल Map हो तभी parse करो
+    DeleteAccountData? parsedData;
+    final rawData = json['data'];
+    if (rawData is Map<String, dynamic>) {
+      parsedData = DeleteAccountData.fromJson(rawData);
+    } else if (rawData is String && rawData.isNotEmpty) {
+      // कभी-कभी backend string में JSON देता है
+      try {
+        final decoded = jsonDecode(rawData);
+        if (decoded is Map<String, dynamic>) {
+          parsedData = DeleteAccountData.fromJson(decoded);
+        }
+      } catch (_) {}
+    }
+
+    return DeleteAccountResponse(
+      status: parsedStatus,
+      message: json['message']?.toString(),
+      data: parsedData,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -25,16 +56,12 @@ class DeleteAccountResponse {
 }
 
 class DeleteAccountData {
-  // ==========================================
-  // ✅ Send OTP API के लिए फील्ड्स
-  // ==========================================
+  // Send OTP fields
   int? expiresInMinutes;
   int? resendAfterSeconds;
   String? otp;
 
-  // ==========================================
-  // ✅ Verify OTP API के लिए फील्ड्स
-  // ==========================================
+  // Verify OTP fields
   String? requestId;
   String? status;
   String? requestedAt;
@@ -48,30 +75,35 @@ class DeleteAccountData {
     this.requestedAt,
   });
 
-  DeleteAccountData.fromJson(Map<String, dynamic> json) {
-    // Send OTP Fields
-    expiresInMinutes = json['expires_in_minutes'];
-    resendAfterSeconds = json['resend_after_seconds'];
-    otp = json['otp'];
+  factory DeleteAccountData.fromJson(Map<String, dynamic> json) {
+    return DeleteAccountData(
+      // ✅ सबको safe से parse करो (int/bool/String/null कुछ भी आए)
+      expiresInMinutes: _toInt(json['expires_in_minutes']),
+      resendAfterSeconds: _toInt(json['resend_after_seconds']),
+      otp: json['otp']?.toString(),
+      requestId: json['request_id']?.toString(),
+      status: json['status']?.toString(),
+      requestedAt: json['requested_at']?.toString(),
+    );
+  }
 
-    // Verify OTP Fields
-    requestId = json['request_id'];
-    status = json['status'];
-    requestedAt = json['requested_at'];
+  // ✅ Helper: किसी भी type को safe int में बदलो
+  static int? _toInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    // Send OTP Fields
     data['expires_in_minutes'] = expiresInMinutes;
     data['resend_after_seconds'] = resendAfterSeconds;
     data['otp'] = otp;
-
-    // Verify OTP Fields
     data['request_id'] = requestId;
     data['status'] = status;
     data['requested_at'] = requestedAt;
-
     return data;
   }
 }

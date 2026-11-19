@@ -144,7 +144,7 @@ class StudentDocumentsScreen extends StatelessWidget {
 
   // ========== BUILD DYNAMIC DOCUMENT CARD ==========
   Widget _buildDocumentCard(DocumentItem doc, BuildContext context) {
-    final String baseUrl = 'https://demo.aitsolutions.in/';
+    final String baseUrl = 'https://decentgroupofschools.com/';
     String fullImageUrl = '${baseUrl}${doc.filePath}';
 
     bool isPdf = doc.filePath?.toLowerCase().endsWith('.pdf') ?? false;

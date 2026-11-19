@@ -55,7 +55,7 @@ class TeacherDashboardController extends GetxController {
     final rawPhoto = staffProfileData.value?.data?.staff?.photo ?? '';
     if (rawPhoto.isEmpty) return '';
     if (rawPhoto.startsWith('http')) return rawPhoto;
-    return 'https://demo.aitsolutions.in/$rawPhoto';
+    return 'https://decentgroupofschools.com/$rawPhoto';
   }
 
   String get staffName => staffProfileData.value?.data?.staff?.fullName ?? '--';

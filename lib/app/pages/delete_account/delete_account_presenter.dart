@@ -13,23 +13,29 @@ class DeleteAccountPresenter {
     required bool isLoading,
     required String branchCode,
     required String username,
+    required String branchId, required String token,
   }) async {
     return await homeUseCases.sendDeleteAccountOtp(
       isLoading: isLoading,
+      token: token,
       branchCode: branchCode,
+      branchId: branchId,
       username: username,
     );
   }
 
   Future<DeleteAccountResponse?> verifyDeleteAccountOtp({
     required bool isLoading,
+    required String token,
     required String branchCode,
     required String username,
-    required String otp,
+    required String otp, required String branchId,
   }) async {
     return await homeUseCases.verifyDeleteAccountOtp(
       isLoading: isLoading,
+      token: token,
       branchCode: branchCode,
+      branchId: branchId,
       username: username,
       otp: otp,
     );

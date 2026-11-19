@@ -4,8 +4,8 @@
 /// Will be ignored for test since all are static values and would not change.
 abstract class DataConstants {
   static const String defaultLang = 'en';
-  static const String appBaseUrl =
-  'https://demo.aitsolutions.in'; //Testing Url
+ // static const String appBaseUrl = 'https://demo.aitsolutions.in'; //Testing Url
+  static const String appBaseUrl = 'https://decentgroupofschools.com'; //Live Url
   static const String countryListing = '/api/v1/common/countries';
   static const String register = '/api/v1/user/register';
   static const String socialAuth = '/api/v1/social-auth';

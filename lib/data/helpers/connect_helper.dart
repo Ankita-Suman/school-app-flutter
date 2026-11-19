@@ -130,18 +130,41 @@ class ConnectHelper {
     debugPrint("📦 RAW RESPONSE: ${res.data}");
     return res;
   }
+
   Future<ResponseModel> sendDeleteAccountOtp({
     required bool isLoading,
     required String branchCode,
     required String username,
+    required String branchId,
+    required String token,
   }) async {
     var data = {
       'branch_code': branchCode,
       'username': username,
     };
+    String url = '${DataConstants.getProfile}/$branchId/delete-account/send-otp';
+
+
     var res = await apiWrapper.makeRequest(
-        '/api/branch/delete-account/send-otp',
-        Request.post, data, isLoading, {'Content-type': 'Application/json'});
+      url,
+      Request.post,
+      data,
+      isLoading,
+      {
+        'Content-type': 'Application/json',
+        'Authorization': 'Bearer $token',   // ✅ TOKEN HEADER
+      },
+    );
+
+    debugPrint("════════ SEND OTP API ════════");
+    debugPrint("BODY      : $data");
+    debugPrint("TOKEN     : ${token.isNotEmpty ? '${token.substring(0, 20)}...' : 'EMPTY'}");
+    debugPrint("RAW DATA  : ${res.data}");
+    debugPrint("HAS ERROR : ${res.hasError}");
+    debugPrint("ERR CODE  : ${res.errorCode}");
+    debugPrint("DATA TYPE : ${res.data.runtimeType}");
+    debugPrint("══════════════════════════════");
+
     return res;
   }
 
@@ -150,17 +173,38 @@ class ConnectHelper {
     required String branchCode,
     required String username,
     required String otp,
+    required String branchId,
+    required String token,
   }) async {
     var data = {
       'branch_code': branchCode,
       'username': username,
       'otp': otp,
     };
+
     var res = await apiWrapper.makeRequest(
-        '/api/branch/delete-account/verify-otp',
-        Request.post, data, isLoading, {'Content-type': 'Application/json'});
+      '/api/$branchId/delete-account/verify-otp',
+      Request.post,
+      data,
+      isLoading,
+      {
+        'Content-type': 'Application/json',
+        'Authorization': 'Bearer $token',   // ✅ TOKEN HEADER
+      },
+    );
+
+    debugPrint("════════ VERIFY OTP API ════════");
+    debugPrint("URL       : /api/$branchId/delete-account/verify-otp");
+    debugPrint("BODY      : $data");
+    debugPrint("TOKEN     : ${token.isNotEmpty ? '${token.substring(0, 20)}...' : 'EMPTY'}");
+    debugPrint("RAW DATA  : ${res.data}");
+    debugPrint("HAS ERROR : ${res.hasError}");
+    debugPrint("ERR CODE  : ${res.errorCode}");
+    debugPrint("════════════════════════════════");
+
     return res;
   }
+
   Future<ResponseModel> resendOtpAPI(
       {required bool isLoading,
         required String branchCode,
@@ -215,7 +259,7 @@ class ConnectHelper {
     };
 
     // ✅ FULL URL with host
-    String url = 'https://demo.aitsolutions.in/api/$branchId/student/$studentId/leaves';
+    String url = 'https://decentgroupofschools.com/api/$branchId/student/$studentId/leaves';
 
     var formData = dio_package.FormData.fromMap({
       'leave_type': leaveType,
@@ -286,7 +330,7 @@ class ConnectHelper {
 
     // ✅ FULL URL with host
 
-    String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/staff-leaves';
+    String url = 'https://decentgroupofschools.com/api/$branchId/mobile/teacher/staff-leaves';
     var formData = dio_package.FormData.fromMap({
       'leave_type': leaveType,
       'from_date': fromDate,
@@ -1176,7 +1220,7 @@ class ConnectHelper {
     };
 
     String url =
-        'https://demo.aitsolutions.in/api/$branchId/examination/cocurricular-marks';
+        'https://decentgroupofschools.com/api/$branchId/examination/cocurricular-marks';
     String jsonPayload = jsonEncode(payload);
 
     debugPrint("✅ Save CoCurricular Marks URL: $url");
@@ -1232,7 +1276,7 @@ class ConnectHelper {
       'Authorization': 'Bearer $token',
     };
 
-    String url = 'https://demo.aitsolutions.in/api/$branchId/teacher/marks';
+    String url = 'https://decentgroupofschools.com/api/$branchId/teacher/marks';
     String jsonPayload = jsonEncode(payload);
 
     debugPrint("✅ Save External Marks URL: $url");
@@ -1274,7 +1318,7 @@ class ConnectHelper {
       'Authorization': 'Bearer $token',
     };
 
-    String url = 'https://demo.aitsolutions.in/api/$branchId/teacher/marks';
+    String url = 'https://decentgroupofschools.com/api/$branchId/teacher/marks';
     String jsonPayload = jsonEncode(payload);
 
     debugPrint("✅ Save External Marks URL: $url");
@@ -1485,7 +1529,7 @@ class ConnectHelper {
     };
 
     String url =
-        'https://demo.aitsolutions.in/api/$branchId/fees/student/$studentId/payment/create-order';
+        'https://decentgroupofschools.com/api/$branchId/fees/student/$studentId/payment/create-order';
 
     // ✅ Request body — exact जो backend चाहता है
     final Map<String, dynamic> body = {
@@ -1621,7 +1665,7 @@ class ConnectHelper {
       'Authorization': 'Bearer $token',
     };
 
-    String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/class-attendance';
+    String url = 'https://decentgroupofschools.com/api/$branchId/mobile/teacher/class-attendance';
     String jsonPayload = jsonEncode(payload);
 
     debugPrint("✅ Save Attendance URL: $url");
@@ -1666,7 +1710,7 @@ class ConnectHelper {
       'Authorization': 'Bearer $token',
     };
 
-    String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/class-attendance';
+    String url = 'https://decentgroupofschools.comn/api/$branchId/mobile/teacher/class-attendance';
     String jsonPayload = jsonEncode(payload);
 
     debugPrint("✅ Save Attendance URL: $url");
@@ -1737,7 +1781,7 @@ class ConnectHelper {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    String url = 'https://demo.aitsolutions.in/api/$branchId/mobile/teacher/term-attendance';
+    String url = 'https://decentgroupofschools.com/api/$branchId/mobile/teacher/term-attendance';
     String jsonPayload = jsonEncode(payload);
 
     try {

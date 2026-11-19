@@ -191,7 +191,7 @@ class MoreWidget extends StatelessWidget {
     if (photoUrl != null && photoUrl.isNotEmpty) {
       // ✅ 1. Base URL जोड़ें अगर API से सिर्फ 'uploads/...' आ रहा है
       if (!photoUrl.startsWith('http')) {
-        const String baseUrl = 'https://demo.aitsolutions.in/';
+        const String baseUrl = 'https://decentgroupofschools.com/';
         photoUrl = '$baseUrl$photoUrl';
       }
 

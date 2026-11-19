@@ -201,16 +201,41 @@ class Repository {
         required String password,
         required String branchCode}) async {
     try {
-      var res = await _dataRepository.loginApi(isLoading: isLoading, loginName: loginName, password: password, branchCode: branchCode, );
-      if (!res.hasError) {
-        var data = loginResponseFromJson(res.data);
-        return data;
+      var res = await _dataRepository.loginApi(
+        isLoading: isLoading,
+        loginName: loginName,
+        password: password,
+        branchCode: branchCode,
+      );
+
+      debugPrint("════════ LOGIN API RESPONSE ════════");
+      debugPrint("data     : ${res.data}");
+      debugPrint("hasError : ${res.hasError}");
+      debugPrint("errCode  : ${res.errorCode}");
+      debugPrint("dataType : ${res.data.runtimeType}");
+      debugPrint("════════════════════════════════════");
+
+      if (!res.hasError && res.data != null) {
+        // ✅ Map aur String dono handle karo
+        if (res.data is Map<String, dynamic>) {
+          return LoginResponse.fromJson(res.data as Map<String, dynamic>);
+        } else if (res.data is String) {
+          return loginResponseFromJson(res.data as String);
+        }
+        return null;
       } else {
-        Utility.showInfoDialog(res);
+        debugPrint("❌ loginApi: hasError or data null — skipping showInfoDialog");
+        try {
+          Utility.showInfoDialog(res);
+        } catch (_) {}
         return null;
       }
-    } catch (e) {
-      await _deviceRepository.loginApi(isLoading: isLoading, loginName: loginName, password: password,branchCode: branchCode);
+    } catch (e, st) {
+      debugPrint("════════ LOGIN API EXCEPTION ════════");
+      debugPrint("Error : $e");
+      debugPrint("Stack : $st");
+      debugPrint("════════════════════════════════════");
+      // ❌ _deviceRepository.loginApi mat call karo — wo UnimplementedError throw karta hai
       return null;
     }
   }
@@ -1292,31 +1317,47 @@ Future<ExaminationGroupResponse?> getExamGroupData({
   Future<DeleteAccountResponse?> sendDeleteAccountOtp({
     required bool isLoading,
     required String branchCode,
-    required String username,
+    required String username, required String branchId, required String token,
   }) async {
     try {
       var res = await _dataRepository.sendDeleteAccountOtp(
         isLoading: isLoading,
+        token: token,
         branchCode: branchCode,
+        branchId: branchId,
         username: username,
       );
-      if (!res.hasError && res.data != null) {
-        if (res.data is Map<String, dynamic>) {
-          return DeleteAccountResponse.fromJson(res.data as Map<String, dynamic>);
-        } else if (res.data is String) {
-          return DeleteAccountResponse.fromJson(jsonDecode(res.data));
-        }
-        return null;
-      } else {
-        Utility.showInfoDialog(res);
+
+      // 🔥 DEBUG
+      debugPrint("📦 REPO SEND OTP → data: ${res.data} | hasError: ${res.hasError}");
+
+      // ✅ hasError ko ignore karo — data ko parse karo
+      dynamic raw = res.data;
+      if (raw == null) {
+        debugPrint("❌ sendDeleteAccountOtp: res.data is null");
         return null;
       }
+
+      Map<String, dynamic>? json;
+      if (raw is Map<String, dynamic>) {
+        json = raw;
+      } else if (raw is String && raw.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(raw);
+          if (decoded is Map<String, dynamic>) json = decoded;
+        } catch (e) {
+          debugPrint("❌ sendDeleteAccountOtp jsonDecode error: $e");
+        }
+      }
+
+      if (json == null) {
+        debugPrint("❌ sendDeleteAccountOtp: could not convert to Map");
+        return null;
+      }
+
+      return DeleteAccountResponse.fromJson(json);
     } catch (e) {
-      await _deviceRepository.sendDeleteAccountOtp(
-        isLoading: isLoading,
-        branchCode: branchCode,
-        username: username,
-      );
+      debugPrint("❌ sendDeleteAccountOtp exception: $e");
       return null;
     }
   }
@@ -1325,12 +1366,14 @@ Future<ExaminationGroupResponse?> getExamGroupData({
     required bool isLoading,
     required String branchCode,
     required String username,
-    required String otp,
+    required String otp, required String branchId, required String token,
   }) async {
     try {
       var res = await _dataRepository.verifyDeleteAccountOtp(
         isLoading: isLoading,
+        token: token,
         branchCode: branchCode,
+        branchId: branchId,
         username: username,
         otp: otp,
       );
@@ -1348,7 +1391,9 @@ Future<ExaminationGroupResponse?> getExamGroupData({
     } catch (e) {
       await _deviceRepository.verifyDeleteAccountOtp(
         isLoading: isLoading,
+        token: token,
         branchCode: branchCode,
+        branchId: branchId,
         username: username,
         otp: otp,
       );

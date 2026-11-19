@@ -132,22 +132,28 @@ class HomeUseCases {
     required bool isLoading,
     required String branchCode,
     required String username,
+    required String branchId, required String token,
   }) async =>
       await repository.sendDeleteAccountOtp(
         isLoading: isLoading,
+        token: token,
         branchCode: branchCode,
+        branchId: branchId,
         username: username,
       );
 
   Future<DeleteAccountResponse?> verifyDeleteAccountOtp({
     required bool isLoading,
     required String branchCode,
+    required String branchId,
     required String username,
-    required String otp,
+    required String otp, required String token,
   }) async =>
       await repository.verifyDeleteAccountOtp(
         isLoading: isLoading,
+        token: token,
         branchCode: branchCode,
+        branchId: branchId,
         username: username,
         otp: otp,
       );

@@ -16,7 +16,7 @@ class ProfileWidget extends StatelessWidget {
     if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
       return photoUrl;
     }
-    return 'https://demo.aitsolutions.in/$photoUrl';
+    return 'https://decentgroupofschools.com/$photoUrl';
   }
 
   @override

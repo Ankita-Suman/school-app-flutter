@@ -110,11 +110,13 @@ class DataRepository extends DomainRepository {
   Future<ResponseModel> sendDeleteAccountOtp({
     required bool isLoading,
     required String branchCode,
-    required String username,
+    required String username, required String branchId, required String token,
   }) async {
     var res = await connectHelper.sendDeleteAccountOtp(
       isLoading: isLoading,
+      token: token,
       branchCode: branchCode,
+      branchId: branchId,
       username: username,
     );
     return res;
@@ -124,11 +126,13 @@ class DataRepository extends DomainRepository {
     required bool isLoading,
     required String branchCode,
     required String username,
-    required String otp,
+    required String otp, required String branchId, required String token,
   }) async {
     var res = await connectHelper.verifyDeleteAccountOtp(
       isLoading: isLoading,
+      token: token,
       branchCode: branchCode,
+      branchId: branchId,
       username: username,
       otp: otp,
     );

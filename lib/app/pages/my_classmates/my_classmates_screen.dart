@@ -145,7 +145,7 @@ class MyClassmatesScreen extends StatelessWidget {
 
   // ========== BUILD STUDENT CARD ==========
   Widget _buildClassmateCard(Classmate student) {
-    final String baseUrl = 'https://demo.aitsolutions.in/';
+    final String baseUrl = 'https://decentgroupofschools.com/';
     String fullImageUrl = student.photo != null && student.photo!.isNotEmpty
         ? '${baseUrl}${student.photo}'
         : '';

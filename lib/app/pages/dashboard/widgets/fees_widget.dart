@@ -36,7 +36,7 @@ class _FeesDetailsScreenState extends State<FeesDetailsScreen> {
   Widget build(BuildContext context) {
     final DashboardController controller = Get.find<DashboardController>();
     final screenHeight = MediaQuery.of(context).size.height;
-    final backgroundHeight = screenHeight * 0.26;
+    final backgroundHeight = screenHeight * 0.29;
 
     return Obx(() {
       if (controller.isLoadingFees.value) {
@@ -76,14 +76,18 @@ class _FeesDetailsScreenState extends State<FeesDetailsScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(children: [
-                              const SizedBox(width: 8),
-                              Text('Fees Details', style: Styles.whiteBold),
-                            ]),
+                            const SizedBox(width: 8),
+                            Text('Fees Details', style: Styles.whiteBold),
+                            // Row(children: [
+                            //   const SizedBox(width: 8),
+                            //   Text('Fees Details', style: Styles.whiteBold),
+                            // ]),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Container(
                                   width: 30,

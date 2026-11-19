@@ -7,6 +7,42 @@ LoginResponse loginResponseFromJson(String str) =>
 String loginResponseToJson(LoginResponse data) => json.encode(data.toJson());
 
 // ============================================================
+// ✅ SAFE HELPERS — int/String/double/null sab handle
+// ============================================================
+String? _asString(dynamic v) {
+  if (v == null) return null;
+  if (v is String) return v;
+  return v.toString();
+}
+
+int _asInt(dynamic v) {
+  if (v == null) return 0;
+  if (v is int) return v;
+  if (v is double) return v.toInt();
+  if (v is String) return int.tryParse(v) ?? 0;
+  return 0;
+}
+
+int? _asIntOrNull(dynamic v) {
+  if (v == null) return null;
+  if (v is int) return v;
+  if (v is double) return v.toInt();
+  if (v is String) return int.tryParse(v);
+  return null;
+}
+
+bool _asBool(dynamic v) {
+  if (v == null) return false;
+  if (v is bool) return v;
+  if (v is int) return v == 1;
+  if (v is String) {
+    final s = v.toLowerCase();
+    return s == 'true' || s == '1';
+  }
+  return false;
+}
+
+// ============================================================
 // LOGIN RESPONSE
 // ============================================================
 class LoginResponse {
@@ -22,8 +58,8 @@ class LoginResponse {
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
-      status: json['status'] as bool? ?? false,
-      message: json['message'] as String? ?? '',
+      status: _asBool(json['status']),
+      message: _asString(json['message']) ?? '',
       data: json['data'] != null
           ? LoginData.fromJson(json['data'] as Map<String, dynamic>)
           : null,
@@ -41,7 +77,7 @@ class LoginResponse {
 // LOGIN DATA
 // ============================================================
 class LoginData {
-  final Auth? auth; // ✅ NEW: Auth object added
+  final Auth? auth;
   final User user;
   final String branchId;
   final String branchName;
@@ -67,12 +103,12 @@ class LoginData {
           ? Auth.fromJson(json['auth'] as Map<String, dynamic>)
           : null,
       user: User.fromJson(json['user'] as Map<String, dynamic>),
-      branchId: json['branch_id'] as String? ?? '',
-      branchName: json['branch_name'] as String? ?? '',
-      branchCode: json['branch_code'] as String? ?? '',
-      token: json['token'] as String? ?? '',
-      tokenType: json['token_type'] as String? ?? '',
-      expiresIn: json['expires_in'] as int? ?? 0,
+      branchId: _asString(json['branch_id']) ?? '',
+      branchName: _asString(json['branch_name']) ?? '',
+      branchCode: _asString(json['branch_code']) ?? '',
+      token: _asString(json['token']) ?? '',
+      tokenType: _asString(json['token_type']) ?? '',
+      expiresIn: _asInt(json['expires_in']),
     );
   }
 
@@ -89,7 +125,7 @@ class LoginData {
 }
 
 // ============================================================
-// ✅ NEW: AUTH MODEL (Missing in previous code)
+// AUTH
 // ============================================================
 class Auth {
   final String? userType;
@@ -116,15 +152,17 @@ class Auth {
 
   factory Auth.fromJson(Map<String, dynamic> json) {
     return Auth(
-      userType: json['user_type'] as String?,
-      userId: json['user_id'] as String?,
-      studentId: json['student_id'] as String?,
-      studentParentId: json['student_parent_id'] as String?,
-      staffId: json['staff_id'] as String?,
-      mustChangePassword: json['must_change_password'] as bool?,
-      nextScreen: json['next_screen'] as String?,
-      defaultStudentId: json['default_student_id'] as String?,
-      childrenCount: json['children_count'] as int?,
+      userType: _asString(json['user_type']),
+      userId: _asString(json['user_id']),
+      studentId: _asString(json['student_id']),
+      studentParentId: _asString(json['student_parent_id']),
+      staffId: _asString(json['staff_id']),
+      mustChangePassword: json['must_change_password'] is bool
+          ? json['must_change_password'] as bool
+          : null,
+      nextScreen: _asString(json['next_screen']),
+      defaultStudentId: _asString(json['default_student_id']),
+      childrenCount: _asIntOrNull(json['children_count']),
     );
   }
 
@@ -197,23 +235,23 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as String? ?? '',
-      username: json['username'] as String? ?? '',
-      email: json['email'] as String?,
-      roleId: json['role_id'] as String? ?? '',
-      screenTimeout: json['screen_timeout'] as int? ?? 0,
-      studentId: json['student_id'] as String?,
-      studentParentId: json['student_parent_id'] as String?,
-      staffId: json['staff_id'] as String?,
-      userType: json['user_type'] as String? ?? '',
-      isActive: json['is_active'] as bool? ?? false,
-      mustChangePassword: json['must_change_password'] as bool? ?? false,
-      failedLoginAttempts: json['failed_login_attempts'] as int? ?? 0,
-      lockedAt: json['locked_at'] as String?,
-      lastLoginAt: json['last_login_at'] as String?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      deletedAt: json['deleted_at'] as String?,
+      id: _asString(json['id']) ?? '',
+      username: _asString(json['username']) ?? '',
+      email: _asString(json['email']),
+      roleId: _asString(json['role_id']) ?? '',
+      screenTimeout: _asInt(json['screen_timeout']),
+      studentId: _asString(json['student_id']),
+      studentParentId: _asString(json['student_parent_id']),
+      staffId: _asString(json['staff_id']),
+      userType: _asString(json['user_type']) ?? '',
+      isActive: _asBool(json['is_active']),
+      mustChangePassword: _asBool(json['must_change_password']),
+      failedLoginAttempts: _asInt(json['failed_login_attempts']),
+      lockedAt: _asString(json['locked_at']),
+      lastLoginAt: _asString(json['last_login_at']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
+      deletedAt: _asString(json['deleted_at']),
       role: json['role'] != null
           ? Role.fromJson(json['role'] as Map<String, dynamic>)
           : null,
@@ -225,7 +263,7 @@ class User {
           ? StudentParent.fromJson(
           json['student_parent'] as Map<String, dynamic>)
           : null,
-      name: json['name'] as String? ?? '',
+      name: _asString(json['name']) ?? '',
       children: (json['children'] as List<dynamic>?)
           ?.map((e) => Child.fromJson(e as Map<String, dynamic>))
           .toList() ??
@@ -282,11 +320,11 @@ class Role {
 
   factory Role.fromJson(Map<String, dynamic> json) {
     return Role(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      deletedAt: json['deleted_at'] as String?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
+      id: _asString(json['id']) ?? '',
+      name: _asString(json['name']) ?? '',
+      deletedAt: _asString(json['deleted_at']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
       permissions: (json['permissions'] as List<dynamic>?)
           ?.map((e) => Permission.fromJson(e as Map<String, dynamic>))
           .toList() ??
@@ -328,12 +366,12 @@ class Permission {
 
   factory Permission.fromJson(Map<String, dynamic> json) {
     return Permission(
-      id: json['id'] as String? ?? '',
-      module: json['module'] as String? ?? '',
-      feature: json['feature'] as String? ?? '',
-      deletedAt: json['deleted_at'] as String?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
+      id: _asString(json['id']) ?? '',
+      module: _asString(json['module']) ?? '',
+      feature: _asString(json['feature']) ?? '',
+      deletedAt: _asString(json['deleted_at']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
       pivot: json['pivot'] != null
           ? PermissionPivot.fromJson(json['pivot'] as Map<String, dynamic>)
           : null,
@@ -377,14 +415,14 @@ class PermissionPivot {
 
   factory PermissionPivot.fromJson(Map<String, dynamic> json) {
     return PermissionPivot(
-      roleId: json['role_id'] as String? ?? '',
-      permissionId: json['permission_id'] as String? ?? '',
-      hasViewPermission: json['has_view_permission'] as int? ?? 0,
-      hasCreatePermission: json['has_create_permission'] as int? ?? 0,
-      hasEditPermission: json['has_edit_permission'] as int? ?? 0,
-      hasDeletePermission: json['has_delete_permission'] as int? ?? 0,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
+      roleId: _asString(json['role_id']) ?? '',
+      permissionId: _asString(json['permission_id']) ?? '',
+      hasViewPermission: _asInt(json['has_view_permission']),
+      hasCreatePermission: _asInt(json['has_create_permission']),
+      hasEditPermission: _asInt(json['has_edit_permission']),
+      hasDeletePermission: _asInt(json['has_delete_permission']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
     );
   }
 
@@ -460,31 +498,31 @@ class StudentParent {
 
   factory StudentParent.fromJson(Map<String, dynamic> json) {
     return StudentParent(
-      id: json['id'] as String? ?? '',
-      studentId: json['student_id'] as String?,
-      fatherName: json['father_name'] as String?,
-      fatherContact: json['father_contact'] as String?,
-      fatherOccupation: json['father_occupation'] as String?,
-      fatherAdhaarNumber: json['father_adhaar_number'] as String?,
-      fatherEmail: json['father_email'] as String?,
-      fatherPhoto: json['father_photo'] as String?,
-      motherName: json['mother_name'] as String?,
-      motherContact: json['mother_contact'] as String?,
-      motherOccupation: json['mother_occupation'] as String?,
-      motherAdhaarNumber: json['mother_adhaar_number'] as String?,
-      motherEmail: json['mother_email'] as String?,
-      motherPhoto: json['mother_photo'] as String?,
-      guardianName: json['guardian_name'] as String?,
-      guardianRelation: json['guardian_relation'] as String?,
-      guardianEmail: json['guardian_email'] as String?,
-      guardianContact: json['guardian_contact'] as String?,
-      guardianOccupation: json['guardian_occupation'] as String?,
-      guardianWhatsappContact: json['guardian_whatsapp_contact'] as String?,
-      guardianAddress: json['guardian_address'] as String?,
-      guardianPhoto: json['guardian_photo'] as String?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      deletedAt: json['deleted_at'] as String?,
+      id: _asString(json['id']) ?? '',
+      studentId: _asString(json['student_id']),
+      fatherName: _asString(json['father_name']),
+      fatherContact: _asString(json['father_contact']),
+      fatherOccupation: _asString(json['father_occupation']),
+      fatherAdhaarNumber: _asString(json['father_adhaar_number']),
+      fatherEmail: _asString(json['father_email']),
+      fatherPhoto: _asString(json['father_photo']),
+      motherName: _asString(json['mother_name']),
+      motherContact: _asString(json['mother_contact']),
+      motherOccupation: _asString(json['mother_occupation']),
+      motherAdhaarNumber: _asString(json['mother_adhaar_number']),
+      motherEmail: _asString(json['mother_email']),
+      motherPhoto: _asString(json['mother_photo']),
+      guardianName: _asString(json['guardian_name']),
+      guardianRelation: _asString(json['guardian_relation']),
+      guardianEmail: _asString(json['guardian_email']),
+      guardianContact: _asString(json['guardian_contact']),
+      guardianOccupation: _asString(json['guardian_occupation']),
+      guardianWhatsappContact: _asString(json['guardian_whatsapp_contact']),
+      guardianAddress: _asString(json['guardian_address']),
+      guardianPhoto: _asString(json['guardian_photo']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
+      deletedAt: _asString(json['deleted_at']),
     );
   }
 
@@ -518,7 +556,7 @@ class StudentParent {
 }
 
 // ============================================================
-// ✅ NEW: SIBLING MODEL (Missing in previous code)
+// SIBLING
 // ============================================================
 class Sibling {
   final String id;
@@ -543,14 +581,14 @@ class Sibling {
 
   factory Sibling.fromJson(Map<String, dynamic> json) {
     return Sibling(
-      id: json['id'] as String? ?? '',
-      firstName: json['first_name'] as String?,
-      lastName: json['last_name'] as String?,
-      fullName: json['full_name'] as String?,
-      registrationNumber: json['registration_number'] as String?,
-      admissionNumber: json['admission_number'] as String?,
-      classId: json['class_id'] as String?,
-      sectionId: json['section_id'] as String?,
+      id: _asString(json['id']) ?? '',
+      firstName: _asString(json['first_name']),
+      lastName: _asString(json['last_name']),
+      fullName: _asString(json['full_name']),
+      registrationNumber: _asString(json['registration_number']),
+      admissionNumber: _asString(json['admission_number']),
+      classId: _asString(json['class_id']),
+      sectionId: _asString(json['section_id']),
     );
   }
 
@@ -567,7 +605,7 @@ class Sibling {
 }
 
 // ============================================================
-// CHILD (Student)
+// CHILD
 // ============================================================
 class Child {
   final String id;
@@ -635,7 +673,7 @@ class Child {
   final dynamic libraryMember;
   final dynamic transportMapping;
   final List<String> siblingIds;
-  final List<Sibling> siblings; // ✅ Updated from dynamic to Sibling object
+  final List<Sibling> siblings;
 
   Child({
     required this.id,
@@ -708,70 +746,64 @@ class Child {
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
-      id: json['id'] as String? ?? '',
-      admissionDate: json['admission_date'] as String?,
-      admissionType: json['admission_type'] as String?,
-      registrationNumber: json['registration_number'] as String?,
-      admissionNumber: json['admission_number'] as String?,
-      sessionId: json['session_id'] as String?,
-      classId: json['class_id'] as String?,
-      sectionId: json['section_id'] as String?,
-      rollNumber: json['roll_number'] as String?,
-      previousClass: json['previous_class'] as String?,
-      previousClassName: json['previous_class_name'] as String?,
+      id: _asString(json['id']) ?? '',
+      admissionDate: _asString(json['admission_date']),
+      admissionType: _asString(json['admission_type']),
+      registrationNumber: _asString(json['registration_number']),
+      admissionNumber: _asString(json['admission_number']),
+      sessionId: _asString(json['session_id']),
+      classId: _asString(json['class_id']),
+      sectionId: _asString(json['section_id']),
+      rollNumber: _asString(json['roll_number']),
+      previousClass: _asString(json['previous_class']),
+      previousClassName: _asString(json['previous_class_name']),
       previousClassScorePercentage:
-      json['previous_class_score_percentage']?.toString(),
-      previousSchoolAttended: json['previous_school_attended'] as String?,
-      firstName: json['first_name'] as String?,
-      lastName: json['last_name'] as String?,
-      fullName: json['full_name'] as String? ?? '',
-      gender: json['gender'] as String?,
-      photo: json['photo'] as String?,
-      dateOfBirth: json['date_of_birth'] as String?,
-      adhaarNumber: json['adhaar_number'] as String?,
-      email: json['email'] as String?,
-      currentAddress: json['current_address'] as String?,
-      permanentAddress: json['permanent_address'] as String?,
-      state: json['state'] as String?,
-      city: json['city'] as String?,
-      zipcode: json['zipcode'] as String?,
-      bloodGroup: json['blood_group'] as String?,
-      height: json['height']?.toString(),
-      weight: json['weight']?.toString(),
-      studentHouseId: json['student_house_id'] as String?,
-      studentCategoryId: json['student_category_id'] as String?,
-      parentId: json['parent_id'] as String?,
-      religion: json['religion'] as String?,
-      cast: json['cast'] as String?,
-      bankAccountNumber: json['bank_account_number'] as String?,
-      bankName: json['bank_name'] as String?,
-      bankIfscCode: json['bank_ifsc_code'] as String?,
-      isScholarshipRegistered:
-      json['is_scholarship_registered'] as bool? ?? false,
-      isDayboardingRegistered:
-      json['is_dayboarding_registered'] as bool? ?? false,
-      dayboardingRegisteredDate:
-      json['dayboarding_registered_date'] as String?,
-      isTransportRegistered:
-      json['is_transport_registered'] as bool? ?? false,
-      transportRegisteredDate:
-      json['transport_registered_date'] as String?,
-      isParkingRegistered:
-      json['is_parking_registered'] as bool? ?? false,
-      parkingRegisteredDate: json['parking_registered_date'] as String?,
+      _asString(json['previous_class_score_percentage']),
+      previousSchoolAttended: _asString(json['previous_school_attended']),
+      firstName: _asString(json['first_name']),
+      lastName: _asString(json['last_name']),
+      fullName: _asString(json['full_name']) ?? '',
+      gender: _asString(json['gender']),
+      photo: _asString(json['photo']),
+      dateOfBirth: _asString(json['date_of_birth']),
+      adhaarNumber: _asString(json['adhaar_number']),
+      email: _asString(json['email']),
+      currentAddress: _asString(json['current_address']),
+      permanentAddress: _asString(json['permanent_address']),
+      state: _asString(json['state']),
+      city: _asString(json['city']),
+      zipcode: _asString(json['zipcode']),
+      bloodGroup: _asString(json['blood_group']),
+      height: _asString(json['height']),
+      weight: _asString(json['weight']),
+      studentHouseId: _asString(json['student_house_id']),
+      studentCategoryId: _asString(json['student_category_id']),
+      parentId: _asString(json['parent_id']),
+      religion: _asString(json['religion']),
+      cast: _asString(json['cast']),
+      bankAccountNumber: _asString(json['bank_account_number']),
+      bankName: _asString(json['bank_name']),
+      bankIfscCode: _asString(json['bank_ifsc_code']),
+      isScholarshipRegistered: _asBool(json['is_scholarship_registered']),
+      isDayboardingRegistered: _asBool(json['is_dayboarding_registered']),
+      dayboardingRegisteredDate: _asString(json['dayboarding_registered_date']),
+      isTransportRegistered: _asBool(json['is_transport_registered']),
+      transportRegisteredDate: _asString(json['transport_registered_date']),
+      isParkingRegistered: _asBool(json['is_parking_registered']),
+      parkingRegisteredDate: _asString(json['parking_registered_date']),
       parkingFeeConfigurationId:
-      json['parking_fee_configuration_id'] as String?,
+      _asString(json['parking_fee_configuration_id']),
       previousSessionPendingAmount:
-      json['previous_session_pending_amount']?.toString(),
-      leavingType: json['leaving_type'] as String?,
-      leavingReason: json['leaving_reason'] as String?,
-      leavingDate: json['leaving_date'] as String?,
-      studentStatus: json['student_status'] as String?,
-      isPreAdmission: json['is_pre_admission'] as bool? ?? false,
-      readmissionInitiatedAt: json['readmission_initiated_at'] as String?,
-      pendingFeeAmount: json['pending_fee_amount'] as int? ?? 0,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
+      _asString(json['previous_session_pending_amount']),
+      leavingType: _asString(json['leaving_type']),
+      leavingReason: _asString(json['leaving_reason']),
+      leavingDate: _asString(json['leaving_date']),
+      studentStatus: _asString(json['student_status']),
+      isPreAdmission: _asBool(json['is_pre_admission']),
+      readmissionInitiatedAt: _asString(json['readmission_initiated_at']),
+      pendingFeeAmount: _asInt(json['pending_fee_amount']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
       session: json['session'] != null
           ? Sessions.fromJson(json['session'] as Map<String, dynamic>)
           : null,
@@ -799,7 +831,7 @@ class Child {
       siblings: (json['siblings'] as List<dynamic>?)
           ?.map((e) => Sibling.fromJson(e as Map<String, dynamic>))
           .toList() ??
-          [], // ✅ Updated Mapping
+          [],
     );
   }
 
@@ -874,7 +906,7 @@ class Child {
 }
 
 // ============================================================
-// SESSION
+// SESSIONS — 🔥 YAHI THA PROBLEM
 // ============================================================
 class Sessions {
   final String id;
@@ -911,20 +943,20 @@ class Sessions {
 
   factory Sessions.fromJson(Map<String, dynamic> json) {
     return Sessions(
-      id: json['id'] as String? ?? '',
-      session: json['session'] as String? ?? '',
-      startDate: json['start_date'] as String?,
-      endDate: json['end_date'] as String?,
-      lastCollectionDate: json['last_collection_date'] as String?,
-      newCollectionDate: json['new_collection_date'] as String?,
-      isActive: json['is_active'] as bool? ?? false,
-      isCompleted: json['is_completed'] as bool? ?? false,
-      admissionNumberStart: json['admission_number_start'] as String?,
-      receiptPrefix: json['receipt_prefix'] as String?,
-      startReceipt: json['start_receipt'] as String?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      deletedAt: json['deleted_at'] as String?,
+      id: _asString(json['id']) ?? '',
+      session: _asString(json['session']) ?? '',
+      startDate: _asString(json['start_date']),       // ✅ int bhi handle
+      endDate: _asString(json['end_date']),           // ✅ int bhi handle
+      lastCollectionDate: _asString(json['last_collection_date']),
+      newCollectionDate: _asString(json['new_collection_date']),
+      isActive: _asBool(json['is_active']),
+      isCompleted: _asBool(json['is_completed']),
+      admissionNumberStart: _asString(json['admission_number_start']),
+      receiptPrefix: _asString(json['receipt_prefix']),
+      startReceipt: _asString(json['start_receipt']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
+      deletedAt: _asString(json['deleted_at']),
     );
   }
 
@@ -974,15 +1006,15 @@ class ClassModel {
 
   factory ClassModel.fromJson(Map<String, dynamic> json) {
     return ClassModel(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      order: json['order'] as int? ?? 0,
-      strength: json['strength'] as int? ?? 0,
-      markingScheme: json['marking_scheme'] as String?,
-      isActive: json['is_active'] as int? ?? 0,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      deletedAt: json['deleted_at'] as String?,
+      id: _asString(json['id']) ?? '',
+      name: _asString(json['name']) ?? '',
+      order: _asInt(json['order']),
+      strength: _asInt(json['strength']),
+      markingScheme: _asString(json['marking_scheme']),
+      isActive: _asInt(json['is_active']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
+      deletedAt: _asString(json['deleted_at']),
     );
   }
 
@@ -1025,14 +1057,14 @@ class Section {
 
   factory Section.fromJson(Map<String, dynamic> json) {
     return Section(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      roomNumber: json['room_number'] as String?,
-      status: json['status'] as String?,
-      orderNumber: json['order_number'] as int?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      deletedAt: json['deleted_at'] as String?,
+      id: _asString(json['id']) ?? '',
+      name: _asString(json['name']) ?? '',
+      roomNumber: _asString(json['room_number']),
+      status: _asString(json['status']),
+      orderNumber: _asIntOrNull(json['order_number']),
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
+      deletedAt: _asString(json['deleted_at']),
     );
   }
 
@@ -1163,56 +1195,56 @@ class Staff {
       docs = docsJson.map((e) => e.toString()).toList();
     }
     return Staff(
-      id: json['id'] as String? ?? '',
-      sessionId: json['session_id'] as String?,
-      type: json['type'] as String? ?? '',
-      staffId: json['staff_id'] as String? ?? '',
-      roleId: json['role_id'] as String?,
-      prefix: json['prefix'] as String?,
-      maritalStatus: json['marital_status'] as String?,
-      firstName: json['first_name'] as String? ?? '',
-      middleName: json['middle_name'] as String?,
-      lastName: json['last_name'] as String?,
-      email: json['email'] as String? ?? '',
-      fatherName: json['father_name'] as String?,
-      motherName: json['mother_name'] as String?,
-      nationality: json['nationality'] as String?,
-      religion: json['religion'] as String?,
-      gender: json['gender'] as String?,
-      dateOfBirth: json['date_of_birth'] as String?,
-      motherTongue: json['mother_tongue'] as String?,
-      joiningDate: json['joining_date'] as String?,
-      contact: json['contact'] as String?,
-      emergencyContact: json['emergency_contact'] as String?,
-      photo: json['photo'] as String?,
-      currentAddress: json['current_address'] as String?,
-      permanentAddress: json['permanent_address'] as String?,
-      qualification: json['qualification'] as String?,
-      workExperience: json['work_experience'] as String?,
-      note: json['note'] as String?,
-      epfNumber: json['epf_number'] as String?,
-      basicSalary: json['basic_salary'] as String?,
-      contractType: json['contract_type'] as String?,
-      workShift: json['work_shift'] as String?,
-      location: json['location'] as String?,
-      paidLeaves: json['paid_leaves'] as int?,
-      halfLeaves: json['half_leaves'] as int?,
-      fullDay: json['full_day'] as int?,
-      accountTitle: json['account_title'] as String?,
-      accountNumber: json['account_number'] as String?,
-      bankName: json['bank_name'] as String?,
-      ifscCode: json['ifsc_code'] as String?,
-      bankBranchName: json['bank_branch_name'] as String?,
-      facebookUrl: json['facebook_url'] as String?,
-      twitterUrl: json['twitter_url'] as String?,
-      linkedinUrl: json['linkedin_url'] as String?,
-      instagramUrl: json['instagram_url'] as String?,
-      resume: json['resume'] as String?,
-      joiningLetter: json['joining_letter'] as String?,
+      id: _asString(json['id']) ?? '',
+      sessionId: _asString(json['session_id']),
+      type: _asString(json['type']) ?? '',
+      staffId: _asString(json['staff_id']) ?? '',
+      roleId: _asString(json['role_id']),
+      prefix: _asString(json['prefix']),
+      maritalStatus: _asString(json['marital_status']),
+      firstName: _asString(json['first_name']) ?? '',
+      middleName: _asString(json['middle_name']),
+      lastName: _asString(json['last_name']),
+      email: _asString(json['email']) ?? '',
+      fatherName: _asString(json['father_name']),
+      motherName: _asString(json['mother_name']),
+      nationality: _asString(json['nationality']),
+      religion: _asString(json['religion']),
+      gender: _asString(json['gender']),
+      dateOfBirth: _asString(json['date_of_birth']),
+      motherTongue: _asString(json['mother_tongue']),
+      joiningDate: _asString(json['joining_date']),
+      contact: _asString(json['contact']),
+      emergencyContact: _asString(json['emergency_contact']),
+      photo: _asString(json['photo']),
+      currentAddress: _asString(json['current_address']),
+      permanentAddress: _asString(json['permanent_address']),
+      qualification: _asString(json['qualification']),
+      workExperience: _asString(json['work_experience']),
+      note: _asString(json['note']),
+      epfNumber: _asString(json['epf_number']),
+      basicSalary: _asString(json['basic_salary']),
+      contractType: _asString(json['contract_type']),
+      workShift: _asString(json['work_shift']),
+      location: _asString(json['location']),
+      paidLeaves: _asIntOrNull(json['paid_leaves']),
+      halfLeaves: _asIntOrNull(json['half_leaves']),
+      fullDay: _asIntOrNull(json['full_day']),
+      accountTitle: _asString(json['account_title']),
+      accountNumber: _asString(json['account_number']),
+      bankName: _asString(json['bank_name']),
+      ifscCode: _asString(json['ifsc_code']),
+      bankBranchName: _asString(json['bank_branch_name']),
+      facebookUrl: _asString(json['facebook_url']),
+      twitterUrl: _asString(json['twitter_url']),
+      linkedinUrl: _asString(json['linkedin_url']),
+      instagramUrl: _asString(json['instagram_url']),
+      resume: _asString(json['resume']),
+      joiningLetter: _asString(json['joining_letter']),
       otherDocuments: docs,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      deletedAt: json['deleted_at'] as String?,
+      createdAt: _asString(json['created_at']),
+      updatedAt: _asString(json['updated_at']),
+      deletedAt: _asString(json['deleted_at']),
     );
   }
 

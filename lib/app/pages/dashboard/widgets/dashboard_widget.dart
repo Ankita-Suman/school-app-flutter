@@ -61,7 +61,7 @@ class DashboardHomeScreen extends StatelessWidget {
     if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
       return photoUrl;
     }
-    return 'https://demo.aitsolutions.in/$photoUrl';
+    return 'https://decentgroupofschools.com/$photoUrl';
   }
 
   Widget _buildMainContent(
@@ -552,23 +552,45 @@ class AnnouncementsTabs extends StatelessWidget {
                       builder: (context) {
                         final TabController tabController =
                         DefaultTabController.of(context);
-                        return TextButton(
-                          onPressed: () {
-                            if (tabController.index == 0) {
-                              RouteManagement.goToNoticeBored();
-                            } else {
-                              RouteManagement.goToUpcomingEvents();
-                            }
-                          },
-                          child: const Text(
-                            'See All →',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: ColorsValue.navIconColor,
+                        return Obx(() {
+                          // ✅ Current active tab check karo
+                          final isAnnouncementTab = tabController.index == 0;
+
+                          // ✅ Data availability check
+                          bool hasData;
+                          if (isAnnouncementTab) {
+                            final announcements =
+                                controller.announcementData.value?.data ?? [];
+                            hasData = announcements.isNotEmpty;
+                          } else {
+                            final events =
+                                controller.eventsData.value?.data?.events ?? [];
+                            hasData = events.isNotEmpty;
+                          }
+
+                          // ✅ Data nahi hai to button hide karo
+                          if (!hasData) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return TextButton(
+                            onPressed: () {
+                              if (tabController.index == 0) {
+                                RouteManagement.goToNoticeBored();
+                              } else {
+                                RouteManagement.goToUpcomingEvents();
+                              }
+                            },
+                            child: const Text(
+                              'See All →',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: ColorsValue.navIconColor,
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        });
                       },
                     ),
                   ),

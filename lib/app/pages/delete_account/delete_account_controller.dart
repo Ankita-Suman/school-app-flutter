@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,7 +5,6 @@ import '../../../device/device_constants.dart';
 import '../../../device/repositories/device_repositories.dart';
 import '../../../domain/models/branch_verify_response.dart';
 import '../../navigators/routes_management.dart';
-import '../verify_branch_code/verify_branch_code_presenter.dart';
 import 'delete_account_presenter.dart';
 
 class DeleteAccountController extends GetxController {
@@ -39,11 +37,12 @@ class DeleteAccountController extends GetxController {
   // ========== UI STATES ==========
   var isLoading = false.obs;
   var schoolInfoData = Rxn<BranchVerifyResponse>();
-  bool _isFetching = false;
+
   // Internal
-  Timer? _branchVerifyDebounce;
-  var _lastFetchedBranch = ''.obs;
+  String _lastFetchedBranch = '';
+  bool _isFetchingBranch = false;
   bool _branchCodeErrorShown = false;
+
   // ============================================================
   // INIT
   // ============================================================
@@ -65,33 +64,50 @@ class DeleteAccountController extends GetxController {
             () => isOtpFocused.value = otpFocusNode.hasFocus);
   }
 
-  void verifyBranchCode() {
-    // User ne jo type kiya hai wo yahan aayega
-    String branchCode = branchCodeController?.text.trim() ?? '';
-
-    if (branchCode.isEmpty) {
-      branchCodeError.value = 'Please enter branch code';
-      branchCodeFocusNode?.requestFocus();
-      return;
+  // ============================================================
+  // ✅ Helper: Get branchId — from verify API response (memory)
+  // ============================================================
+  Future<String> _getBranchId() async {
+    final fromApi = schoolInfoData.value?.data?.branchId ?? '';
+    if (fromApi.isNotEmpty) {
+      debugPrint('✅ branchId from verify response: $fromApi');
+      return fromApi;
     }
-
-    if (branchCode.length < 3) {
-      branchCodeError.value = 'Branch code must be at least 3 characters';
-      branchCodeFocusNode?.requestFocus();
-      return;
-    }
-
-    branchCodeError.value = '';
-    fetchSchoolInfoForBranch(branchCode); // Function me bhej diya
+    debugPrint('❌ branchId NOT available — verify branch first');
+    return '';
   }
-  // ========== VALIDATION (only branch code) ==========
+
+  // ============================================================
+  // ✅ Helper: Get auth token from secure storage
+  // ============================================================
+  Future<String> _getToken() async {
+    try {
+      final deviceRepo = Get.find<DeviceRepository>();
+      final token =
+          await deviceRepo.getSecuredValue(DeviceConstants.token) ?? '';
+      if (token.isEmpty) {
+        debugPrint('❌ token EMPTY — user must login again');
+      } else {
+        debugPrint(
+            '✅ token fetched: ${token.substring(0, 20)}... (len: ${token.length})');
+      }
+      return token;
+    } catch (e, st) {
+      debugPrint('❌ _getToken error: $e\n$st');
+      return '';
+    }
+  }
+
+  // ============================================================
+  // ✅ VALIDATION ONLY (no API on typing)
+  // ============================================================
   void validateBranchCode(String value) {
     if (value.isEmpty) {
       isBranchCodeValid.value = false;
       branchCodeError.value = '';
       _branchCodeErrorShown = false;
       schoolInfoData.value = null;
-      _lastFetchedBranch.value = '';
+      _lastFetchedBranch = '';
       isBranchVerified.value = false;
       return;
     }
@@ -100,7 +116,7 @@ class DeleteAccountController extends GetxController {
       isBranchCodeValid.value = false;
       branchCodeError.value = 'Branch code must be at least 3 characters';
       schoolInfoData.value = null;
-      _lastFetchedBranch.value = '';
+      _lastFetchedBranch = '';
       isBranchVerified.value = false;
       return;
     }
@@ -108,16 +124,29 @@ class DeleteAccountController extends GetxController {
     isBranchCodeValid.value = true;
     branchCodeError.value = '';
     _branchCodeErrorShown = false;
+
+    if (value.trim() != _lastFetchedBranch) {
+      isBranchVerified.value = false;
+    }
+    if (isOtpStep.value) {
+      isOtpStep.value = false;
+      otpController.clear();
+      otpError.value = '';
+    }
   }
 
-  // ========== FOCUS CHANGE HANDLERS ==========
+  // ============================================================
+  // ✅ FOCUS CHANGE — API hit on focus loss
+  // ============================================================
   void _onBranchCodeFocusChange() {
     if (branchCodeFocusNode == null) return;
-    isBranchCodeFocused.value = branchCodeFocusNode!.hasFocus;
+    isBranchCodeFocused.value = branchCodeFocusNode.hasFocus;
 
-    if (!branchCodeFocusNode!.hasFocus) {
-      final branchCode = branchCodeController?.text.trim() ?? '';
-      if (branchCode.length >= 3 && isBranchCodeValid.value) {
+    if (!branchCodeFocusNode.hasFocus) {
+      final branchCode = branchCodeController.text.trim();
+      if (branchCode.length >= 3 &&
+          isBranchCodeValid.value &&
+          !isBranchVerified.value) {
         fetchSchoolInfoForBranch(branchCode);
       }
     }
@@ -127,26 +156,24 @@ class DeleteAccountController extends GetxController {
   // ✅ BRANCH VERIFY API
   // ============================================================
   Future<void> fetchSchoolInfoForBranch(String branchCode) async {
-    // ✅ 1. Yahan 'branchCode' wo hai jo user ne input field me type kiya hai
     if (branchCode.isEmpty || branchCode.length < 3) return;
-    if (_isFetching) return;
-
-    if (_lastFetchedBranch.value == branchCode && schoolInfoData.value != null) {
+    if (_isFetchingBranch) return;
+    if (_lastFetchedBranch == branchCode && schoolInfoData.value != null) {
       return;
     }
 
-    _isFetching = true;
+    _isFetchingBranch = true;
+    isBranchVerifying.value = true;
+    branchCodeError.value = '';
+
     try {
-      // ✅ 2. Device Repository ko yahan initialize karo (Yeh missing tha)
       var deviceRepo = Get.find<DeviceRepository>();
 
-      // ✅ 3. User ka type kiya hua branchCode save karo
-      await deviceRepo.saveValueSecurely(DeviceConstants.branchCode, branchCode);
+      await deviceRepo.saveValueSecurely(
+          DeviceConstants.branchCode, branchCode);
 
       isLoading.value = true;
 
-      // ✅ 4. API me yahi user-typed branchCode bhejo verify karne ke liye
-      // (branchCodeController!.text use karne ki zaroorat nahi, parameter me already aya hai)
       var res = await presenter.getSchoolInfo(
         isLoading: false,
         branchCode: branchCode,
@@ -155,48 +182,74 @@ class DeleteAccountController extends GetxController {
       debugPrint("🔍 School Info Response: ${res?.toJson()}");
 
       if (res != null && res.status == true && res.data != null) {
-        // final schoolName = res.data?.schoolName ?? '';
         final branchName = res.data?.branchName ?? '';
 
         if (branchName.isNotEmpty) {
           schoolInfoData.value = res;
-          _lastFetchedBranch.value = branchCode;
+          _lastFetchedBranch = branchCode;
           isBranchVerified.value = true;
+          branchCodeError.value = '';
 
-          // ============================================================
-          // ✅ 5. API SE AAYE PURE MODEL KO SAVE KARO (Jaise aaya hai waise hi)
-          // ============================================================
+          await deviceRepo.saveValueSecurely(
+              DeviceConstants.schoolInfo, jsonEncode(res.toJson()));
+          await deviceRepo.saveValueSecurely(
+              DeviceConstants.branchId, res.data?.branchId ?? '');
+          await deviceRepo.saveValueSecurely('branch_name', branchName);
+          await deviceRepo.saveValueSecurely('branch_code', branchCode);
+          await deviceRepo.saveValueSecurely(
+              'logo_url', res.data?.logoUrl ?? '');
 
+          debugPrint(
+              "✅ Branch saved: $branchCode | $branchName | id=${res.data?.branchId}");
 
-          // ✅ 6. Sab kuch save hone ke baad Login Screen par navigate karo
-          await Future.delayed(const Duration(milliseconds: 500));
-          RouteManagement.goToLogin();
-
+          // ✅ REMOVED: success snackbar — ab koi snackbar nahi aayega
         } else {
           schoolInfoData.value = null;
-          _lastFetchedBranch.value = '';
+          _lastFetchedBranch = '';
           isBranchVerified.value = false;
-          debugPrint("❌ Branch not found: Empty school/branch names");
+          branchCodeError.value = 'Branch not found';
         }
       } else {
         schoolInfoData.value = null;
-        _lastFetchedBranch.value = '';
+        _lastFetchedBranch = '';
         isBranchVerified.value = false;
-        debugPrint("❌ School info failed: ${res?.message}");
+        branchCodeError.value = res?.message ?? 'Invalid branch code';
       }
-    } catch (e) {
-      debugPrint("❌ School info error: $e");
+    } catch (e, st) {
+      debugPrint("❌ School info error: $e\n$st");
       schoolInfoData.value = null;
-      _lastFetchedBranch.value = '';
+      _lastFetchedBranch = '';
       isBranchVerified.value = false;
+      branchCodeError.value = 'Something went wrong';
     } finally {
       isLoading.value = false;
-      _isFetching = false;
+      isBranchVerifying.value = false;
+      _isFetchingBranch = false;
     }
   }
 
   // ============================================================
-  // ✅ SEND OTP
+  // ✅ MANUAL VERIFY
+  // ============================================================
+  void verifyBranchCode() {
+    String branchCode = branchCodeController.text.trim();
+
+    if (branchCode.isEmpty) {
+      branchCodeError.value = 'Please enter branch code';
+      branchCodeFocusNode.requestFocus();
+      return;
+    }
+    if (branchCode.length < 3) {
+      branchCodeError.value = 'Branch code must be at least 3 characters';
+      branchCodeFocusNode.requestFocus();
+      return;
+    }
+    branchCodeError.value = '';
+    fetchSchoolInfoForBranch(branchCode);
+  }
+
+  // ============================================================
+  // ✅ SEND OTP — with branch_id + TOKEN
   // ============================================================
   Future<void> onSendOtpPressed() async {
     final branchCode = branchCodeController.text.trim();
@@ -219,13 +272,49 @@ class DeleteAccountController extends GetxController {
       return;
     }
 
+    final branchId = await _getBranchId();
+    final token = await _getToken();
+
+    debugPrint('════════ SEND OTP ════════');
+    debugPrint('║ branchCode : $branchCode');
+    debugPrint('║ branchId   : $branchId');
+    debugPrint('║ username   : $username');
+    debugPrint(
+        '║ token      : ${token.isNotEmpty ? "${token.substring(0, 20)}..." : "EMPTY"}');
+    debugPrint('══════════════════════════');
+
+    if (branchId.isEmpty) {
+      Get.snackbar('Error', 'Branch ID missing. Please re-verify branch code.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+      return;
+    }
+
+    if (token.isEmpty) {
+      Get.snackbar('Error', 'Session expired. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+      return;
+    }
+
     isLoading.value = true;
     try {
       final res = await presenter.sendDeleteAccountOtp(
         isLoading: false,
         branchCode: branchCode,
+        branchId: branchId,
         username: username,
+        token: token,
       );
+
+      debugPrint("════════ SEND OTP RESULT ════════");
+      debugPrint("res is null : ${res == null}");
+      debugPrint("res.status  : ${res?.status}");
+      debugPrint("res.message : ${res?.message}");
+      debugPrint("res.data    : ${res?.data?.toJson()}");
+      debugPrint("═════════════════════════════════");
 
       if (res != null && res.status == true) {
         isOtpStep.value = true;
@@ -240,13 +329,16 @@ class DeleteAccountController extends GetxController {
             backgroundColor: Colors.green,
             colorText: Colors.white);
       } else {
-        Get.snackbar('Error', res?.message ?? 'Failed to send OTP.',
+        final msg = res == null
+            ? 'Server response could not be read. Please try again.'
+            : (res.message ?? 'Failed to send OTP.');
+        Get.snackbar('Error', msg,
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.red,
             colorText: Colors.white);
       }
-    } catch (e) {
-      debugPrint('❌ Send OTP: $e');
+    } catch (e, st) {
+      debugPrint('❌ Send OTP: $e\n$st');
       Get.snackbar('Error', 'Something went wrong.',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
@@ -257,7 +349,7 @@ class DeleteAccountController extends GetxController {
   }
 
   // ============================================================
-  // ✅ VERIFY OTP → DELETE → LOGIN (kill all)
+  // ✅ VERIFY OTP → DELETE → LOGIN — with branch_id + TOKEN
   // ============================================================
   Future<void> onVerifyOtpPressed() async {
     final branchCode = branchCodeController.text.trim();
@@ -270,35 +362,77 @@ class DeleteAccountController extends GetxController {
       return;
     }
 
+    final branchId = await _getBranchId();
+    final token = await _getToken();
+
+    debugPrint('════════ VERIFY OTP ════════');
+    debugPrint('║ branchCode : $branchCode');
+    debugPrint('║ branchId   : $branchId');
+    debugPrint('║ username   : $username');
+    debugPrint('║ otp        : $otp');
+    debugPrint(
+        '║ token      : ${token.isNotEmpty ? "${token.substring(0, 20)}..." : "EMPTY"}');
+    debugPrint('════════════════════════════');
+
+    if (branchId.isEmpty) {
+      Get.snackbar('Error', 'Branch ID missing. Please re-verify branch code.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+      return;
+    }
+
+    if (token.isEmpty) {
+      Get.snackbar('Error', 'Session expired. Please login again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+      return;
+    }
+
     isLoading.value = true;
     try {
       final res = await presenter.verifyDeleteAccountOtp(
         isLoading: false,
         branchCode: branchCode,
+        branchId: branchId,
         username: username,
         otp: otp,
+        token: token,
       );
 
+      debugPrint("════════ VERIFY OTP RESULT ════════");
+      debugPrint("res is null : ${res == null}");
+      debugPrint("res.status  : ${res?.status}");
+      debugPrint("res.message : ${res?.message}");
+      debugPrint("res.data    : ${res?.data?.toJson()}");
+      debugPrint("═══════════════════════════════════");
+
       if (res != null && res.status == true) {
-        Get.snackbar('Success', res.message ?? 'Account deleted successfully.',
+        Get.snackbar(
+            'Success', res.message ?? 'Account deleted successfully.',
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.green,
             colorText: Colors.white,
             duration: const Duration(seconds: 2));
 
         await Future.delayed(const Duration(seconds: 2));
+
         Get.deleteAll(force: true);
         RouteManagement.goToLogin();
         return;
       } else {
-        Get.snackbar('Error', res?.message ?? 'Invalid OTP.',
+        final msg = res == null
+            ? 'Server response could not be read. Please try again.'
+            : (res.message ?? 'Invalid OTP.');
+        Get.snackbar('Error', msg,
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.red,
             colorText: Colors.white);
         isLoading.value = false;
       }
-    } catch (e) {
-      debugPrint('❌ Verify OTP: $e');
+    } catch (e, st) {
+      debugPrint('❌ Verify OTP: $e\n$st');
       Get.snackbar('Error', 'Something went wrong.',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
@@ -318,7 +452,7 @@ class DeleteAccountController extends GetxController {
     } else if (isBranchVerified.value) {
       onSendOtpPressed();
     } else {
-      verifyBranchCode(); // fallback — immediate verify
+      verifyBranchCode();
     }
   }
 
@@ -338,7 +472,6 @@ class DeleteAccountController extends GetxController {
   // ============================================================
   @override
   void onClose() {
-    _branchVerifyDebounce?.cancel();
     branchCodeFocusNode.removeListener(_onBranchCodeFocusChange);
     branchCodeController.dispose();
     branchCodeFocusNode.dispose();

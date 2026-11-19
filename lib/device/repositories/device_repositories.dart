@@ -210,7 +210,7 @@ class DeviceRepository extends DomainRepository {
   Future<ResponseModel> sendDeleteAccountOtp({
     required bool isLoading,
     required String branchCode,
-    required String username,
+    required String username, required String branchId,
   }) {
     throw UnimplementedError();
   }
@@ -219,7 +219,7 @@ class DeviceRepository extends DomainRepository {
     required bool isLoading,
     required String branchCode,
     required String username,
-    required String otp,
+    required String otp, required String branchId, required String token,
   }) {
     throw UnimplementedError();
   }
